@@ -32,7 +32,9 @@ export function Dialog({
   return (
     <dialog
       ref={ref}
-      onClose={onClose}
+      // close/cancel events propagate through the React tree → ignore those from nested dialogs
+      onClose={(e) => e.target === e.currentTarget && onClose()}
+      onCancel={(e) => e.stopPropagation()}
       onClick={(e) => e.target === ref.current && onClose()}
       className={cn("m-auto w-[calc(100%-2rem)] rounded-2xl bg-white p-0 shadow-2xl", widths[size])}
     >

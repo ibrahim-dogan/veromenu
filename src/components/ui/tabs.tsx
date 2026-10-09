@@ -18,6 +18,7 @@ export function Tabs<T extends string>({
       {items.map((it) => (
         <button
           key={it.value}
+          type="button"
           role="tab"
           aria-selected={value === it.value}
           onClick={() => onChange(it.value)}

@@ -23,7 +23,10 @@ export async function requireUser(): Promise<SessionUser> {
 
 export async function requirePlatformAdmin(): Promise<SessionUser> {
   const user = await requireUser();
-  if (!user.isPlatformAdmin) throw new ForbiddenError();
+  if (!user.isPlatformAdmin) {
+    const locale = await getLocale();
+    redirect({ href: "/dashboard", locale });
+  }
   return user;
 }
 
@@ -84,7 +87,11 @@ export async function requireRestaurant(restaurantId: string, permission?: Permi
     const locale = await getLocale();
     redirect({ href: "/dashboard", locale });
   }
-  if (permission && !ctx!.can(permission)) throw new ForbiddenError(`missing permission ${permission}`);
+  if (permission && !ctx!.can(permission)) {
+    // Friendly page inside the dashboard shell instead of a 500.
+    const locale = await getLocale();
+    redirect({ href: `/dashboard/${restaurantId}/forbidden`, locale });
+  }
   return ctx!;
 }
 

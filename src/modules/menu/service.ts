@@ -290,3 +290,67 @@ export async function reorder(restaurantId: string, kind: "menu" | "category" | 
       .where(and(eq(table.id, id), eq(table.restaurantId, restaurantId)));
   }
 }
+
+/**
+ * Puts the given items (in this order) into a category. Items coming from another category are moved
+ * (same restaurant only); siblings are re-sorted. Used by drag & drop in the editor.
+ */
+export async function arrangeItems(restaurantId: string, categoryId: string, orderedIds: string[], tx: DbOrTx = db) {
+  await getCategory(restaurantId, categoryId, tx);
+  if (!orderedIds.length) return;
+  const rows = await tx
+    .select({ id: items.id, categoryId: items.categoryId })
+    .from(items)
+    .where(and(inArray(items.id, orderedIds), eq(items.restaurantId, restaurantId)));
+  if (rows.length !== new Set(orderedIds).size) throw new AppError("notFound");
+  for (const r of rows) if (r.categoryId !== categoryId) await updateItem(restaurantId, r.id, { categoryId }, tx);
+  await reorder(restaurantId, "item", orderedIds, tx);
+}
+
+/** Copies an item (incl. variants, tags, image). Allergens are not copied – they must be confirmed per dish. */
+export async function duplicateItem(restaurantId: string, itemId: string, nameSuffix: string, tx: DbOrTx = db) {
+  const src = await getItem(restaurantId, itemId, tx);
+  const vs = await tx.select().from(itemVariants).where(eq(itemVariants.itemId, itemId)).orderBy(asc(itemVariants.sort));
+  const copy = await createItem(
+    restaurantId,
+    src.categoryId,
+    {
+      name: `${src.name} ${nameSuffix}`.trim(),
+      description: src.description,
+      ingredients: src.ingredients,
+      priceCents: src.priceCents,
+      imageMediaId: src.imageMediaId,
+      isVisible: false,
+      isAvailable: src.isAvailable,
+      tags: src.tags,
+      variants: vs.map((v) => ({ name: v.name, priceCents: v.priceCents })),
+    },
+    tx,
+  );
+  // place the copy right after the original
+  const siblings = await tx
+    .select({ id: items.id })
+    .from(items)
+    .where(eq(items.categoryId, src.categoryId))
+    .orderBy(asc(items.sort), asc(items.createdAt));
+  const ids = siblings.map((s) => s.id).filter((id) => id !== copy.id);
+  ids.splice(ids.indexOf(src.id) + 1, 0, copy.id);
+  await reorder(restaurantId, "item", ids, tx);
+  return copy;
+}
+
+/** Guest presentation switch (digital menu vs. PDF/photo menu). Merges into settings, keeps other keys. */
+export async function setMenuMode(restaurantId: string, mode: "digital" | "pdf", tx: DbOrTx = db) {
+  await tx
+    .update(restaurants)
+    .set({ settings: dsql`${restaurants.settings} || jsonb_build_object('menuMode', ${mode}::text)`, updatedAt: new Date() })
+    .where(eq(restaurants.id, restaurantId));
+}
+
+export async function countUsage(restaurantId: string, tx: DbOrTx = db) {
+  const [[i], [m]] = await Promise.all([
+    tx.select({ n: dsql<number>`count(*)::int` }).from(items).where(eq(items.restaurantId, restaurantId)),
+    tx.select({ n: dsql<number>`count(*)::int` }).from(menus).where(eq(menus.restaurantId, restaurantId)),
+  ]);
+  return { items: i.n, menus: m.n };
+}

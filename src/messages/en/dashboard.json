@@ -5,5 +5,8 @@
   "createCta": "Create restaurant",
   "adminMode": "Admin mode: you are viewing this restaurant with full permissions.",
   "plan": "Plan",
-  "role": "Role"
+  "role": "Role",
+  "forbiddenTitle": "No access",
+  "forbiddenText": "You don't have permission for this area. Please ask the restaurant owner.",
+  "forbiddenBack": "Back to overview"
 }

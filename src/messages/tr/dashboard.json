@@ -5,5 +5,8 @@
   "createCta": "Restoran oluştur",
   "adminMode": "Admin modu: Bu restoranı tam yetkiyle görüntülüyorsun.",
   "plan": "Paket",
-  "role": "Rol"
+  "role": "Rol",
+  "forbiddenTitle": "Erişim yok",
+  "forbiddenText": "Bu alan için yetkin yok. Lütfen restoran sahibine başvur.",
+  "forbiddenBack": "Genel bakışa dön"
 }

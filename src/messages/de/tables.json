@@ -1,0 +1,97 @@
+{
+  "title": "Tische & QR-Codes",
+  "description": "Ein QR-Code für das ganze Restaurant oder eigene Codes pro Tisch – so siehst du, woher Bestellungen kommen.",
+  "add": "Tisch hinzufügen",
+  "edit": "Bearbeiten",
+  "delete": "Löschen",
+  "downloadPng": "QR-Code als PNG herunterladen",
+  "created": "Tisch angelegt",
+  "deleted": "Tisch gelöscht",
+  "regenerated": "Neuer QR-Code erstellt",
+  "deleteTitle": "„{label}“ löschen?",
+  "deleteDescription": "Der QR-Code dieses Tisches funktioniert danach nicht mehr. Bisherige Bestellungen bleiben erhalten.",
+  "generic": {
+    "alt": "QR-Code deiner Speisekarte",
+    "title": "Allgemeiner QR-Code",
+    "description": "Führt zu deiner Speisekarte – ideal für Fenster, Flyer, Website oder Social Media. In jedem Tarif enthalten.",
+    "open": "Speisekarte öffnen",
+    "copyLink": "Link kopieren",
+    "tentPdf": "Tischaufsteller (A6)"
+  },
+  "list": {
+    "title": "Tische",
+    "usage": "{used} von {limit} Tischen",
+    "limitReached": "Du hast das Tisch-Limit deines Tarifs erreicht.",
+    "emptyTitle": "Noch keine Tische",
+    "emptyDescription": "Lege deine Tische an – zum Beispiel „Tisch 1–12“ in einem Schritt. Jeder Tisch bekommt seinen eigenen QR-Code.",
+    "allAreas": "Alle Bereiche",
+    "selectAll": "Alle auswählen",
+    "selected": "{count} ausgewählt",
+    "seats": "{count, plural, one {# Platz} other {# Plätze}}",
+    "active": "Aktiv",
+    "inactive": "Inaktiv"
+  },
+  "preview": {
+    "open": "QR-Code von {label} anzeigen",
+    "alt": "QR-Code für {label}",
+    "inactive": "Dieser Tisch ist inaktiv – der QR-Code öffnet die Speisekarte ohne Tischzuordnung."
+  },
+  "regenerate": {
+    "button": "Neuen QR-Code erzeugen",
+    "title": "Neuen QR-Code für „{label}“ erzeugen?",
+    "description": "Der bisher gedruckte QR-Code dieses Tisches funktioniert danach nicht mehr. Drucke den neuen Code aus und tausche ihn am Tisch aus.",
+    "confirm": "Neu erzeugen"
+  },
+  "form": {
+    "createTitle": "Tisch hinzufügen",
+    "editTitle": "Tisch bearbeiten",
+    "label": "Bezeichnung",
+    "labelPlaceholder": "z. B. Tisch 7",
+    "labelRequired": "Bitte gib eine Bezeichnung ein.",
+    "area": "Bereich",
+    "areaHint": "Optional, z. B. Terrasse oder Bar",
+    "areaPlaceholder": "z. B. Terrasse",
+    "seats": "Plätze",
+    "active": "Tisch ist aktiv"
+  },
+  "bulk": {
+    "button": "Mehrere anlegen",
+    "title": "Mehrere Tische anlegen",
+    "description": "Erstelle eine ganze Reihe nummerierter Tische auf einmal.",
+    "defaultPrefix": "Tisch",
+    "prefix": "Bezeichnung",
+    "from": "Von",
+    "to": "Bis",
+    "submit": "{count, plural, one {# Tisch anlegen} other {# Tische anlegen}}",
+    "preview": "Es werden {count} Tische angelegt: {first} … {last}",
+    "overLimit": "Dein Tarif erlaubt nur noch {remaining} weitere Tische.",
+    "invalidRange": "Bitte gib einen gültigen Bereich an (höchstens 200 Tische).",
+    "skipHint": "Bereits vorhandene Bezeichnungen werden übersprungen.",
+    "done": "{count, plural, =0 {Keine neuen Tische – alle gab es schon.} one {# Tisch angelegt} other {# Tische angelegt}}"
+  },
+  "print": {
+    "button": "QR-Codes drucken",
+    "title": "QR-Codes drucken",
+    "description": "Lade ein druckfertiges PDF herunter.",
+    "download": "PDF herunterladen",
+    "layout": "Format",
+    "sheet": "A4-Bogen",
+    "sheetHint": "6 Karten pro Seite zum Ausschneiden",
+    "tent": "Tischaufsteller A6",
+    "tentHint": "Eine Karte pro Tisch, passt in A6-Aufsteller",
+    "scope": "Welche Tische?",
+    "allActive": "Alle aktiven Tische",
+    "selectedOnly": "Nur ausgewählte ({count})",
+    "includeGeneric": "Allgemeinen QR-Code zusätzlich drucken",
+    "includeLogo": "Logo auf den Karten zeigen",
+    "noLogo": "Kein Logo hinterlegt (Einstellungen → Allgemein)"
+  },
+  "pdf": {
+    "genericLabel": "Speisekarte",
+    "title": "QR-Codes"
+  },
+  "locked": {
+    "title": "QR-Codes pro Tisch sind in deinem Tarif nicht enthalten",
+    "description": "Mit eigenen Tisch-Codes weißt du bei jeder Bestellung, von welchem Tisch sie kommt. Der allgemeine QR-Code oben funktioniert trotzdem."
+  }
+}

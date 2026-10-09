@@ -1,0 +1,53 @@
+{
+  "title": "Statistiken",
+  "description": "Wie oft deine Speisekarte geöffnet wird, was Gäste interessiert und wann am meisten los ist.",
+  "rangeLabel": "Zeitraum",
+  "range": "{days} Tage",
+  "privacyNote": "Datenschutzfreundlich: Wir verwenden keine Cookies und speichern keine IP-Adressen. Besucher werden nur über einen täglich wechselnden, anonymen Schlüssel gezählt.",
+  "kpi": {
+    "views": "Aufrufe",
+    "visitors": "Besucher",
+    "scans": "QR-Scans",
+    "orders": "Bestellungen",
+    "revenue": "Umsatz",
+    "avgOrder": "Ø Bestellwert",
+    "trend": "{value} zum Vorzeitraum",
+    "noTrend": "kein Vergleich",
+    "previous": "Vorzeitraum ({days} Tage): {value}"
+  },
+  "charts": {
+    "viewsTitle": "Aufrufe pro Tag",
+    "viewsDescription": "Speisekarten-Aufrufe und Besucher (pro Tag gezählt)",
+    "revenueTitle": "Umsatz pro Tag",
+    "revenueDescription": "Angenommene Bestellungen, in deiner Währung",
+    "ordersCount": "{count, plural, one {# Bestellung} other {# Bestellungen}}",
+    "scansTitle": "Scans pro Tisch",
+    "scansDescription": "Welche QR-Codes genutzt werden",
+    "genericQr": "Allgemeiner QR-Code",
+    "deletedTable": "Gelöschter Tisch",
+    "topViewed": "Meistgesehene Gerichte",
+    "topOrdered": "Meistbestellte Gerichte",
+    "languages": "Sprachen",
+    "languagesDescription": "In welcher Sprache Gäste die Karte lesen",
+    "unknownLanguage": "Unbekannt",
+    "viewsCount": "{count, plural, one {# Aufruf} other {# Aufrufe}}",
+    "noScans": "Noch keine Scans in diesem Zeitraum.",
+    "noItemViews": "Noch keine Gerichte angesehen.",
+    "noOrders": "Noch keine Bestellungen in diesem Zeitraum.",
+    "noViews": "Noch keine Aufrufe in diesem Zeitraum."
+  },
+  "heatmap": {
+    "title": "Stoßzeiten",
+    "description": "Wochentag × Uhrzeit (deutsche Zeit)",
+    "views": "Aufrufe",
+    "orders": "Bestellungen",
+    "days": "Mo,Di,Mi,Do,Fr,Sa,So",
+    "cell": "{day}, {hour} Uhr: {count}",
+    "less": "weniger",
+    "more": "mehr"
+  },
+  "empty": {
+    "title": "Noch keine Daten",
+    "description": "Sobald Gäste deinen QR-Code scannen, erscheinen hier die ersten Zahlen. Tipp: Drucke deine QR-Codes unter „Tische & QR“ aus."
+  }
+}

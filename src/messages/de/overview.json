@@ -1,0 +1,73 @@
+{
+  "greeting": {
+    "morning": "Guten Morgen, {name}",
+    "day": "Hallo, {name}",
+    "evening": "Guten Abend, {name}"
+  },
+  "greetingNoName": {
+    "morning": "Guten Morgen",
+    "day": "Hallo",
+    "evening": "Guten Abend"
+  },
+  "subtitle": "Das passiert gerade bei {restaurant}.",
+  "quick": {
+    "guestMenu": "Gästeansicht öffnen",
+    "qr": "QR-Codes"
+  },
+  "orders": {
+    "title": "Bestellungen",
+    "pending": "{count, plural, one {# neue Bestellung wartet} other {# neue Bestellungen warten}}",
+    "open": "{count, plural, =0 {Keine offenen Bestellungen} one {# offene Bestellung} other {# offene Bestellungen}}"
+  },
+  "reviews": {
+    "title": "Prüfungen",
+    "open": "{count, plural, one {# offene Prüfung} other {# offene Prüfungen}}",
+    "none": "Alles geprüft"
+  },
+  "ai": {
+    "title": "KI-Credits diesen Monat",
+    "remaining": "{remaining} von {limit} übrig"
+  },
+  "onboarding": {
+    "title": "Deine Speisekarte startklar machen",
+    "progress": "{done} von {total} Schritten erledigt",
+    "allDone": "Super – deine Speisekarte ist startklar!",
+    "done": "erledigt",
+    "todo": "offen",
+    "steps": {
+      "items": {
+        "title": "Gerichte anlegen",
+        "hint": "Lege deine Speisekarte an – oder importiere sie per Foto."
+      },
+      "languages": {
+        "title": "Sprachen aktivieren",
+        "hint": "Wähle aus, in welchen Sprachen Gäste die Karte lesen können."
+      },
+      "translations": {
+        "title": "Übersetzungen prüfen",
+        "hint": "Kontrolliere die automatischen Übersetzungen mit der Rückübersetzung."
+      },
+      "allergens": {
+        "title": "Allergene bestätigen",
+        "hint": "Gäste sehen nur bestätigte Allergene (LMIV)."
+      },
+      "impressum": {
+        "title": "Impressum ausfüllen",
+        "hint": "Pflicht für deine Online-Speisekarte (§ 5 DDG)."
+      },
+      "qr": {
+        "title": "QR-Codes drucken",
+        "hint": "Lade das druckfertige PDF für deine Tische herunter."
+      },
+      "design": {
+        "title": "Design auswählen",
+        "hint": "Passe Farben und Stil an dein Restaurant an."
+      }
+    }
+  },
+  "kpis": {
+    "title": "Letzte 7 Tage",
+    "more": "Alle Statistiken"
+  },
+  "limitedAccess": "Willkommen! Mit deiner Rolle {role} findest du links im Menü alle Bereiche, auf die du Zugriff hast."
+}

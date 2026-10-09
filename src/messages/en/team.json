@@ -1,0 +1,79 @@
+{
+  "title": "Team & roles",
+  "description": "Invite your team and decide who can see and change what.",
+  "roleChanged": "Role changed",
+  "removed": "Member removed",
+  "tabs": {
+    "members": "Members",
+    "roles": "Roles"
+  },
+  "members": {
+    "title": "Members",
+    "seats": "{used} of {limit} seats used (incl. open invitations)",
+    "full": "All seats of your plan are taken. Remove a member, revoke an invitation or change your plan.",
+    "you": "You",
+    "joined": "joined {date}",
+    "role": "Role",
+    "remove": "Remove",
+    "removeTitle": "Remove {name} from the team?",
+    "removeDescription": "They lose access to this restaurant immediately. Their account stays.",
+    "leaveTitle": "Leave the team?",
+    "leaveDescription": "You lose access to this restaurant immediately."
+  },
+  "invite": {
+    "button": "Invite",
+    "title": "Invite a team member",
+    "description": "We send an invitation by email. The link is valid for 7 days.",
+    "submit": "Send invitation",
+    "alreadyMember": "This person is already on the team.",
+    "invalidEmail": "Please enter a valid email address.",
+    "sentTitle": "Invitation created",
+    "emailSent": "We sent an email to {email}.",
+    "emailFailed": "The email could not be sent. Just share the link yourself, e.g. via WhatsApp.",
+    "linkLabel": "Invitation link",
+    "linkHint": "For security reasons we only show the link now. You can create a new one at any time."
+  },
+  "invites": {
+    "title": "Open invitations",
+    "description": "Invitations expire after {days} days.",
+    "empty": "No open invitations.",
+    "expires": "valid until {date}",
+    "expired": "expired",
+    "resend": "Resend",
+    "revoke": "Revoke",
+    "revoked": "Invitation revoked",
+    "revokeTitle": "Revoke the invitation for {email}?",
+    "revokeDescription": "The invitation link will stop working."
+  },
+  "roles": {
+    "create": "Create role",
+    "createTitle": "New role",
+    "editTitle": "Edit role “{name}”",
+    "edit": "Edit",
+    "view": "View",
+    "delete": "Delete",
+    "deleted": "Role deleted",
+    "created": "Role created",
+    "deleteTitle": "Delete role “{name}”?",
+    "deleteDescription": "The role will be deleted permanently.",
+    "deleteWithInvites": "{count, plural, one {One open invitation with this role will also be deleted.} other {# open invitations with this role will also be deleted.}}",
+    "inUse": "Role is still assigned to members",
+    "empty": "No roles",
+    "system": "Default",
+    "custom": "Custom",
+    "lockedBadge": "Locked",
+    "memberCount": "{count, plural, one {# member} other {# members}}",
+    "permissionCount": "{count, plural, one {# permission} other {# permissions}}",
+    "locked": "Custom roles and adjusted permissions are part of the Pro plan. You can always assign the default roles.",
+    "ownerLocked": "The owner role always has all rights and cannot be changed.",
+    "matrixHint": "Choose what people with this role are allowed to do.",
+    "systemNameHint": "Default roles keep their name.",
+    "namePlaceholder": "e.g. Social media",
+    "allInGroup": "All",
+    "noneInGroup": "None"
+  },
+  "mail": {
+    "subject": "Invitation to {restaurant} on VeroMenu",
+    "body": "Hello,\n\n{inviter} invited you to {restaurant} on VeroMenu as “{role}”.\n\nAccept the invitation:\n{link}\n\nThe link is valid for {days} days. If you did not expect this invitation, you can ignore this email."
+  }
+}

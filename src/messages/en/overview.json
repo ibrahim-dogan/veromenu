@@ -1,0 +1,73 @@
+{
+  "greeting": {
+    "morning": "Good morning, {name}",
+    "day": "Hello, {name}",
+    "evening": "Good evening, {name}"
+  },
+  "greetingNoName": {
+    "morning": "Good morning",
+    "day": "Hello",
+    "evening": "Good evening"
+  },
+  "subtitle": "Here is what is happening at {restaurant}.",
+  "quick": {
+    "guestMenu": "Open guest view",
+    "qr": "QR codes"
+  },
+  "orders": {
+    "title": "Orders",
+    "pending": "{count, plural, one {# new order waiting} other {# new orders waiting}}",
+    "open": "{count, plural, =0 {No open orders} one {# open order} other {# open orders}}"
+  },
+  "reviews": {
+    "title": "Reviews",
+    "open": "{count, plural, one {# open review} other {# open reviews}}",
+    "none": "Everything reviewed"
+  },
+  "ai": {
+    "title": "AI credits this month",
+    "remaining": "{remaining} of {limit} left"
+  },
+  "onboarding": {
+    "title": "Get your menu ready",
+    "progress": "{done} of {total} steps done",
+    "allDone": "Great – your menu is ready to go!",
+    "done": "done",
+    "todo": "open",
+    "steps": {
+      "items": {
+        "title": "Add dishes",
+        "hint": "Create your menu – or import it from a photo."
+      },
+      "languages": {
+        "title": "Enable languages",
+        "hint": "Choose the languages guests can read your menu in."
+      },
+      "translations": {
+        "title": "Review translations",
+        "hint": "Check the automatic translations using the back-translation."
+      },
+      "allergens": {
+        "title": "Confirm allergens",
+        "hint": "Guests only see confirmed allergens (EU FIC)."
+      },
+      "impressum": {
+        "title": "Fill in the legal notice",
+        "hint": "Mandatory for your online menu in Germany (§ 5 DDG)."
+      },
+      "qr": {
+        "title": "Print QR codes",
+        "hint": "Download the print-ready PDF for your tables."
+      },
+      "design": {
+        "title": "Pick a design",
+        "hint": "Match colours and style to your restaurant."
+      }
+    }
+  },
+  "kpis": {
+    "title": "Last 7 days",
+    "more": "All statistics"
+  },
+  "limitedAccess": "Welcome! With your role {role} you find all areas you have access to in the menu on the left."
+}

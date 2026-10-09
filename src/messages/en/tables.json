@@ -1,0 +1,97 @@
+{
+  "title": "Tables & QR codes",
+  "description": "One QR code for the whole restaurant or individual codes per table – so you know where orders come from.",
+  "add": "Add table",
+  "edit": "Edit",
+  "delete": "Delete",
+  "downloadPng": "Download QR code as PNG",
+  "created": "Table created",
+  "deleted": "Table deleted",
+  "regenerated": "New QR code created",
+  "deleteTitle": "Delete “{label}”?",
+  "deleteDescription": "This table's QR code will stop working. Past orders are kept.",
+  "generic": {
+    "alt": "QR code of your menu",
+    "title": "General QR code",
+    "description": "Opens your menu – perfect for windows, flyers, your website or social media. Included in every plan.",
+    "open": "Open menu",
+    "copyLink": "Copy link",
+    "tentPdf": "Table tent (A6)"
+  },
+  "list": {
+    "title": "Tables",
+    "usage": "{used} of {limit} tables",
+    "limitReached": "You have reached the table limit of your plan.",
+    "emptyTitle": "No tables yet",
+    "emptyDescription": "Add your tables – e.g. “Table 1–12” in one step. Every table gets its own QR code.",
+    "allAreas": "All areas",
+    "selectAll": "Select all",
+    "selected": "{count} selected",
+    "seats": "{count, plural, one {# seat} other {# seats}}",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "preview": {
+    "open": "Show QR code of {label}",
+    "alt": "QR code for {label}",
+    "inactive": "This table is inactive – the QR code opens the menu without a table."
+  },
+  "regenerate": {
+    "button": "Generate new QR code",
+    "title": "Generate a new QR code for “{label}”?",
+    "description": "The QR code printed so far for this table will stop working. Print the new code and replace it at the table.",
+    "confirm": "Regenerate"
+  },
+  "form": {
+    "createTitle": "Add table",
+    "editTitle": "Edit table",
+    "label": "Label",
+    "labelPlaceholder": "e.g. Table 7",
+    "labelRequired": "Please enter a label.",
+    "area": "Area",
+    "areaHint": "Optional, e.g. terrace or bar",
+    "areaPlaceholder": "e.g. Terrace",
+    "seats": "Seats",
+    "active": "Table is active"
+  },
+  "bulk": {
+    "button": "Add several",
+    "title": "Add several tables",
+    "description": "Create a whole range of numbered tables at once.",
+    "defaultPrefix": "Table",
+    "prefix": "Label",
+    "from": "From",
+    "to": "To",
+    "submit": "{count, plural, one {Create # table} other {Create # tables}}",
+    "preview": "{count} tables will be created: {first} … {last}",
+    "overLimit": "Your plan only allows {remaining} more tables.",
+    "invalidRange": "Please enter a valid range (at most 200 tables).",
+    "skipHint": "Labels that already exist are skipped.",
+    "done": "{count, plural, =0 {No new tables – they all existed already.} one {# table created} other {# tables created}}"
+  },
+  "print": {
+    "button": "Print QR codes",
+    "title": "Print QR codes",
+    "description": "Download a print-ready PDF.",
+    "download": "Download PDF",
+    "layout": "Format",
+    "sheet": "A4 sheet",
+    "sheetHint": "6 cards per page to cut out",
+    "tent": "A6 table tent",
+    "tentHint": "One card per table, fits A6 stands",
+    "scope": "Which tables?",
+    "allActive": "All active tables",
+    "selectedOnly": "Selected only ({count})",
+    "includeGeneric": "Also print the general QR code",
+    "includeLogo": "Show logo on the cards",
+    "noLogo": "No logo set (Settings → General)"
+  },
+  "pdf": {
+    "genericLabel": "Menu",
+    "title": "QR codes"
+  },
+  "locked": {
+    "title": "Per-table QR codes are not included in your plan",
+    "description": "With table codes you know which table every order comes from. The general QR code above works anyway."
+  }
+}

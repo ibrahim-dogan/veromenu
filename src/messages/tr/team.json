@@ -1,0 +1,79 @@
+{
+  "title": "Ekip ve roller",
+  "description": "Ekibini davet et ve kimin neyi görüp değiştirebileceğini belirle.",
+  "roleChanged": "Rol değiştirildi",
+  "removed": "Üye çıkarıldı",
+  "tabs": {
+    "members": "Üyeler",
+    "roles": "Roller"
+  },
+  "members": {
+    "title": "Üyeler",
+    "seats": "{limit} yerden {used} tanesi dolu (açık davetler dahil)",
+    "full": "Paketindeki tüm yerler dolu. Bir üyeyi çıkar, bir daveti geri çek veya paketini değiştir.",
+    "you": "Sen",
+    "joined": "{date} tarihinden beri",
+    "role": "Rol",
+    "remove": "Çıkar",
+    "removeTitle": "{name} ekipten çıkarılsın mı?",
+    "removeDescription": "Bu kişi restorana erişimini hemen kaybeder. Hesabı silinmez.",
+    "leaveTitle": "Ekipten ayrılmak istiyor musun?",
+    "leaveDescription": "Bu restorana erişimini hemen kaybedersin."
+  },
+  "invite": {
+    "button": "Davet et",
+    "title": "Ekip üyesi davet et",
+    "description": "Davetiyeyi e-postayla göndeririz. Bağlantı 7 gün geçerlidir.",
+    "submit": "Davet gönder",
+    "alreadyMember": "Bu kişi zaten ekipte.",
+    "invalidEmail": "Lütfen geçerli bir e-posta adresi gir.",
+    "sentTitle": "Davet oluşturuldu",
+    "emailSent": "{email} adresine bir e-posta gönderdik.",
+    "emailFailed": "E-posta gönderilemedi. Bağlantıyı kendin paylaş, örneğin WhatsApp ile.",
+    "linkLabel": "Davet bağlantısı",
+    "linkHint": "Güvenlik nedeniyle bağlantıyı yalnızca şimdi gösteriyoruz. İstediğin zaman yenisini oluşturabilirsin."
+  },
+  "invites": {
+    "title": "Açık davetler",
+    "description": "Davetlerin süresi {days} gün sonra dolar.",
+    "empty": "Açık davet yok.",
+    "expires": "{date} tarihine kadar geçerli",
+    "expired": "süresi doldu",
+    "resend": "Yeniden gönder",
+    "revoke": "Geri çek",
+    "revoked": "Davet geri çekildi",
+    "revokeTitle": "{email} için davet geri çekilsin mi?",
+    "revokeDescription": "Davet bağlantısı artık çalışmayacak."
+  },
+  "roles": {
+    "create": "Rol oluştur",
+    "createTitle": "Yeni rol",
+    "editTitle": "“{name}” rolünü düzenle",
+    "edit": "Düzenle",
+    "view": "Görüntüle",
+    "delete": "Sil",
+    "deleted": "Rol silindi",
+    "created": "Rol oluşturuldu",
+    "deleteTitle": "“{name}” rolü silinsin mi?",
+    "deleteDescription": "Rol kalıcı olarak silinir.",
+    "deleteWithInvites": "Bu role sahip {count} açık davet de silinecek.",
+    "inUse": "Rol hâlâ üyelere atanmış",
+    "empty": "Rol yok",
+    "system": "Standart",
+    "custom": "Özel",
+    "lockedBadge": "Kilitli",
+    "memberCount": "{count} üye",
+    "permissionCount": "{count} yetki",
+    "locked": "Özel roller ve özelleştirilmiş yetkiler Pro pakette. Standart rolleri her zaman atayabilirsin.",
+    "ownerLocked": "Sahip rolü her zaman tüm yetkilere sahiptir ve değiştirilemez.",
+    "matrixHint": "Bu role sahip kişilerin neler yapabileceğini seç.",
+    "systemNameHint": "Standart roller adlarını korur.",
+    "namePlaceholder": "örn. Sosyal medya",
+    "allInGroup": "Tümü",
+    "noneInGroup": "Hiçbiri"
+  },
+  "mail": {
+    "subject": "VeroMenu'de {restaurant} için davet",
+    "body": "Merhaba,\n\n{inviter} seni VeroMenu'de {restaurant} ekibine “{role}” olarak davet etti.\n\nDaveti kabul et:\n{link}\n\nBağlantı {days} gün geçerlidir. Bu daveti beklemiyorsan bu e-postayı yok sayabilirsin."
+  }
+}

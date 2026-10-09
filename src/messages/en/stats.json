@@ -1,0 +1,53 @@
+{
+  "title": "Statistics",
+  "description": "How often your menu is opened, what guests are interested in and when it gets busy.",
+  "rangeLabel": "Period",
+  "range": "{days} days",
+  "privacyNote": "Privacy-friendly: we use no cookies and store no IP addresses. Visitors are only counted via an anonymous key that changes daily.",
+  "kpi": {
+    "views": "Views",
+    "visitors": "Visitors",
+    "scans": "QR scans",
+    "orders": "Orders",
+    "revenue": "Revenue",
+    "avgOrder": "Avg. order value",
+    "trend": "{value} vs. previous period",
+    "noTrend": "no comparison",
+    "previous": "Previous period ({days} days): {value}"
+  },
+  "charts": {
+    "viewsTitle": "Views per day",
+    "viewsDescription": "Menu views and visitors (counted per day)",
+    "revenueTitle": "Revenue per day",
+    "revenueDescription": "Accepted orders, in your currency",
+    "ordersCount": "{count, plural, one {# order} other {# orders}}",
+    "scansTitle": "Scans per table",
+    "scansDescription": "Which QR codes are used",
+    "genericQr": "General QR code",
+    "deletedTable": "Deleted table",
+    "topViewed": "Most viewed dishes",
+    "topOrdered": "Most ordered dishes",
+    "languages": "Languages",
+    "languagesDescription": "Which language guests read the menu in",
+    "unknownLanguage": "Unknown",
+    "viewsCount": "{count, plural, one {# view} other {# views}}",
+    "noScans": "No scans in this period yet.",
+    "noItemViews": "No dishes viewed yet.",
+    "noOrders": "No orders in this period yet.",
+    "noViews": "No views in this period yet."
+  },
+  "heatmap": {
+    "title": "Peak hours",
+    "description": "Weekday × time of day (German time)",
+    "views": "Views",
+    "orders": "Orders",
+    "days": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
+    "cell": "{day}, {hour}: {count}",
+    "less": "less",
+    "more": "more"
+  },
+  "empty": {
+    "title": "No data yet",
+    "description": "As soon as guests scan your QR code, the first numbers appear here. Tip: print your QR codes under “Tables & QR”."
+  }
+}

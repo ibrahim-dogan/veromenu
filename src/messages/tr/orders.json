@@ -1,0 +1,92 @@
+{
+  "title": "Siparişler",
+  "description": "Yeni siparişler burada anında görünür – mutfaktaki tablette veya telefonunda.",
+  "disabledHint": "Menü üzerinden sipariş şu anda kapalı. Misafirler sipariş veremez.",
+  "openSettings": "Ayarlara git",
+  "newOrderToast": "{count, plural, one {Yeni sipariş: {number}} other {# yeni sipariş}}",
+  "refresh": "Yenile",
+  "fullscreen": "Tam ekran",
+  "emptyColumn": "Sipariş yok",
+  "emptyBoard": "Henüz açık sipariş yok. Bir misafir sipariş verdiğinde burada duyacaksın.",
+  "tabs": {
+    "board": "Canlı pano",
+    "history": "Geçmiş"
+  },
+  "columns": {
+    "pending": "Yeni",
+    "accepted": "Onaylandı",
+    "preparing": "Hazırlanıyor",
+    "ready": "Hazır",
+    "served": "Servis edildi"
+  },
+  "status": {
+    "pending": "Yeni",
+    "accepted": "Onaylandı",
+    "preparing": "Hazırlanıyor",
+    "ready": "Hazır",
+    "served": "Servis edildi",
+    "rejected": "Reddedildi",
+    "cancelled": "İptal edildi"
+  },
+  "connection": {
+    "live": "Canlı bağlı",
+    "connecting": "Bağlanıyor …",
+    "polling": "Çevrimdışı mod – 10 saniyede bir yenileniyor"
+  },
+  "sound": {
+    "on": "Ses açık",
+    "enable": "Sesi etkinleştir"
+  },
+  "card": {
+    "aria": "Sipariş {number}",
+    "noTable": "Masasız",
+    "justNow": "az önce",
+    "minutes": "{count} dk",
+    "autoAccepted": "Otomatik onaylandı"
+  },
+  "actions": {
+    "accept": "Onayla",
+    "startPreparing": "Hazırla",
+    "markReady": "Hazır",
+    "markServed": "Servis edildi",
+    "reject": "Reddet",
+    "back": "Bir adım geri"
+  },
+  "reject": {
+    "title": "#{number} numaralı sipariş reddedilsin mi?",
+    "description": "Misafir, siparişin reddedildiğini telefonunda görür.",
+    "reason": "Sebep",
+    "placeholder": "Misafir için sebep (isteğe bağlı)",
+    "hint": "Sebep misafire gösterilir. Lütfen kişisel veri girme.",
+    "confirm": "Reddet",
+    "quick": {
+      "soldOut": "Maalesef tükendi",
+      "kitchenClosed": "Mutfak kapandı",
+      "tooBusy": "Şu an çok yoğunuz – lütfen personele sipariş verin"
+    }
+  },
+  "history": {
+    "range": {
+      "today": "Bugün",
+      "7d": "Son 7 gün"
+    },
+    "status": "Durum",
+    "allStatuses": "Tüm durumlar",
+    "table": "Masa",
+    "allTables": "Tüm masalar",
+    "count": "Siparişler",
+    "revenue": "Ciro (onaylanan)",
+    "average": "Ort. sipariş tutarı",
+    "time": "Saat",
+    "items": "Ürünler",
+    "total": "Toplam",
+    "guestNote": "Not",
+    "rejectReason": "Ret sebebi",
+    "emptyTitle": "Bu dönemde sipariş yok",
+    "emptyDescription": "Dönemi veya filtreleri değiştir."
+  },
+  "locked": {
+    "title": "Siparişler paketine dahil değil",
+    "description": "Pro paketle misafirler doğrudan menüden sipariş verir – her şeyi canlı bir panoda görürsün."
+  }
+}

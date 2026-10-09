@@ -1,0 +1,53 @@
+{
+  "title": "İstatistikler",
+  "description": "Menünün ne sıklıkla açıldığı, misafirlerin neyle ilgilendiği ve en yoğun saatler.",
+  "rangeLabel": "Dönem",
+  "range": "{days} gün",
+  "privacyNote": "Gizlilik dostu: Çerez kullanmıyoruz ve IP adresi saklamıyoruz. Ziyaretçiler yalnızca her gün değişen anonim bir anahtarla sayılır.",
+  "kpi": {
+    "views": "Görüntüleme",
+    "visitors": "Ziyaretçi",
+    "scans": "QR tarama",
+    "orders": "Sipariş",
+    "revenue": "Ciro",
+    "avgOrder": "Ort. sipariş tutarı",
+    "trend": "önceki döneme göre {value}",
+    "noTrend": "karşılaştırma yok",
+    "previous": "Önceki dönem ({days} gün): {value}"
+  },
+  "charts": {
+    "viewsTitle": "Günlük görüntüleme",
+    "viewsDescription": "Menü görüntülemeleri ve ziyaretçiler (günlük sayılır)",
+    "revenueTitle": "Günlük ciro",
+    "revenueDescription": "Onaylanan siparişler, kendi para biriminde",
+    "ordersCount": "{count} sipariş",
+    "scansTitle": "Masa başına tarama",
+    "scansDescription": "Hangi QR kodların kullanıldığı",
+    "genericQr": "Genel QR kod",
+    "deletedTable": "Silinmiş masa",
+    "topViewed": "En çok bakılan yemekler",
+    "topOrdered": "En çok sipariş edilen yemekler",
+    "languages": "Diller",
+    "languagesDescription": "Misafirlerin menüyü hangi dilde okuduğu",
+    "unknownLanguage": "Bilinmiyor",
+    "viewsCount": "{count} görüntüleme",
+    "noScans": "Bu dönemde henüz tarama yok.",
+    "noItemViews": "Henüz yemek görüntülenmedi.",
+    "noOrders": "Bu dönemde henüz sipariş yok.",
+    "noViews": "Bu dönemde henüz görüntüleme yok."
+  },
+  "heatmap": {
+    "title": "Yoğun saatler",
+    "description": "Gün × saat (Almanya saati)",
+    "views": "Görüntüleme",
+    "orders": "Sipariş",
+    "days": "Pzt,Sal,Çar,Per,Cum,Cmt,Paz",
+    "cell": "{day}, {hour}: {count}",
+    "less": "az",
+    "more": "çok"
+  },
+  "empty": {
+    "title": "Henüz veri yok",
+    "description": "Misafirler QR kodunu taradığı anda ilk rakamlar burada görünür. İpucu: QR kodlarını “Masalar ve QR” bölümünden yazdır."
+  }
+}

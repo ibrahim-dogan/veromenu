@@ -1,0 +1,73 @@
+{
+  "greeting": {
+    "morning": "Günaydın, {name}",
+    "day": "Merhaba, {name}",
+    "evening": "İyi akşamlar, {name}"
+  },
+  "greetingNoName": {
+    "morning": "Günaydın",
+    "day": "Merhaba",
+    "evening": "İyi akşamlar"
+  },
+  "subtitle": "{restaurant} restoranında şu an olanlar.",
+  "quick": {
+    "guestMenu": "Misafir görünümünü aç",
+    "qr": "QR kodları"
+  },
+  "orders": {
+    "title": "Siparişler",
+    "pending": "{count} yeni sipariş bekliyor",
+    "open": "{count, plural, =0 {Açık sipariş yok} other {# açık sipariş}}"
+  },
+  "reviews": {
+    "title": "Kontroller",
+    "open": "{count} açık kontrol",
+    "none": "Her şey kontrol edildi"
+  },
+  "ai": {
+    "title": "Bu ayki yapay zekâ kredileri",
+    "remaining": "{limit} krediden {remaining} kaldı"
+  },
+  "onboarding": {
+    "title": "Menünü hazır hâle getir",
+    "progress": "{total} adımdan {done} tanesi tamam",
+    "allDone": "Harika – menün hazır!",
+    "done": "tamamlandı",
+    "todo": "açık",
+    "steps": {
+      "items": {
+        "title": "Yemek ekle",
+        "hint": "Menünü oluştur – ya da fotoğraftan içe aktar."
+      },
+      "languages": {
+        "title": "Dilleri etkinleştir",
+        "hint": "Misafirlerin menüyü hangi dillerde okuyabileceğini seç."
+      },
+      "translations": {
+        "title": "Çevirileri kontrol et",
+        "hint": "Otomatik çevirileri geri çeviri yardımıyla kontrol et."
+      },
+      "allergens": {
+        "title": "Alerjenleri onayla",
+        "hint": "Misafirler yalnızca onaylı alerjenleri görür (LMIV)."
+      },
+      "impressum": {
+        "title": "Künyeyi doldur",
+        "hint": "Almanya'da çevrimiçi menü için zorunlu (§ 5 DDG)."
+      },
+      "qr": {
+        "title": "QR kodları yazdır",
+        "hint": "Masaların için baskıya hazır PDF'i indir."
+      },
+      "design": {
+        "title": "Tasarım seç",
+        "hint": "Renkleri ve stili restoranına göre ayarla."
+      }
+    }
+  },
+  "kpis": {
+    "title": "Son 7 gün",
+    "more": "Tüm istatistikler"
+  },
+  "limitedAccess": "Hoş geldin! {role} rolünle erişebildiğin tüm alanları soldaki menüde bulursun."
+}

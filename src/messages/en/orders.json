@@ -1,0 +1,92 @@
+{
+  "title": "Orders",
+  "description": "New orders show up here instantly – on the kitchen tablet or your phone.",
+  "disabledHint": "Ordering via the menu is currently switched off. Guests cannot order.",
+  "openSettings": "Open settings",
+  "newOrderToast": "{count, plural, one {New order no. {number}} other {# new orders}}",
+  "refresh": "Refresh",
+  "fullscreen": "Full screen",
+  "emptyColumn": "No orders",
+  "emptyBoard": "No open orders yet. As soon as a guest orders, you will hear it here.",
+  "tabs": {
+    "board": "Live board",
+    "history": "History"
+  },
+  "columns": {
+    "pending": "New",
+    "accepted": "Accepted",
+    "preparing": "Preparing",
+    "ready": "Ready",
+    "served": "Served"
+  },
+  "status": {
+    "pending": "New",
+    "accepted": "Accepted",
+    "preparing": "Preparing",
+    "ready": "Ready",
+    "served": "Served",
+    "rejected": "Rejected",
+    "cancelled": "Cancelled"
+  },
+  "connection": {
+    "live": "Live",
+    "connecting": "Connecting …",
+    "polling": "Offline mode – refreshing every 10 seconds"
+  },
+  "sound": {
+    "on": "Sound on",
+    "enable": "Enable sound"
+  },
+  "card": {
+    "aria": "Order {number}",
+    "noTable": "No table",
+    "justNow": "just now",
+    "minutes": "{count} min",
+    "autoAccepted": "Accepted automatically"
+  },
+  "actions": {
+    "accept": "Accept",
+    "startPreparing": "Prepare",
+    "markReady": "Ready",
+    "markServed": "Served",
+    "reject": "Reject",
+    "back": "One step back"
+  },
+  "reject": {
+    "title": "Reject order #{number}?",
+    "description": "The guest will see on their phone that the order was rejected.",
+    "reason": "Reason",
+    "placeholder": "Reason for the guest (optional)",
+    "hint": "The reason is shown to the guest. Please do not enter personal data.",
+    "confirm": "Reject",
+    "quick": {
+      "soldOut": "Sorry, sold out",
+      "kitchenClosed": "The kitchen is already closed",
+      "tooBusy": "Very busy right now – please order with our staff"
+    }
+  },
+  "history": {
+    "range": {
+      "today": "Today",
+      "7d": "Last 7 days"
+    },
+    "status": "Status",
+    "allStatuses": "All statuses",
+    "table": "Table",
+    "allTables": "All tables",
+    "count": "Orders",
+    "revenue": "Revenue (accepted)",
+    "average": "Avg. order value",
+    "time": "Time",
+    "items": "Items",
+    "total": "Total",
+    "guestNote": "Note",
+    "rejectReason": "Rejection reason",
+    "emptyTitle": "No orders in this period",
+    "emptyDescription": "Change the period or the filters."
+  },
+  "locked": {
+    "title": "Ordering is not included in your plan",
+    "description": "With the Pro plan guests order directly from the menu – you see everything live on a board."
+  }
+}

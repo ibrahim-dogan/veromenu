@@ -1,0 +1,92 @@
+{
+  "title": "Bestellungen",
+  "description": "Neue Bestellungen erscheinen hier sofort – auf dem Tablet in der Küche oder auf dem Handy.",
+  "disabledHint": "Bestellungen über die Speisekarte sind gerade ausgeschaltet. Gäste können nichts bestellen.",
+  "openSettings": "Zu den Einstellungen",
+  "newOrderToast": "{count, plural, one {Neue Bestellung Nr. {number}} other {# neue Bestellungen}}",
+  "refresh": "Aktualisieren",
+  "fullscreen": "Vollbild",
+  "emptyColumn": "Keine Bestellungen",
+  "emptyBoard": "Noch keine offenen Bestellungen. Sobald ein Gast bestellt, hörst du es hier.",
+  "tabs": {
+    "board": "Live-Board",
+    "history": "Verlauf"
+  },
+  "columns": {
+    "pending": "Neu",
+    "accepted": "Angenommen",
+    "preparing": "In Zubereitung",
+    "ready": "Fertig",
+    "served": "Serviert"
+  },
+  "status": {
+    "pending": "Neu",
+    "accepted": "Angenommen",
+    "preparing": "In Zubereitung",
+    "ready": "Fertig",
+    "served": "Serviert",
+    "rejected": "Abgelehnt",
+    "cancelled": "Storniert"
+  },
+  "connection": {
+    "live": "Live verbunden",
+    "connecting": "Verbinde …",
+    "polling": "Offline-Modus – aktualisiert alle 10 Sekunden"
+  },
+  "sound": {
+    "on": "Ton an",
+    "enable": "Ton aktivieren"
+  },
+  "card": {
+    "aria": "Bestellung {number}",
+    "noTable": "Ohne Tisch",
+    "justNow": "gerade eben",
+    "minutes": "{count} Min.",
+    "autoAccepted": "Automatisch angenommen"
+  },
+  "actions": {
+    "accept": "Annehmen",
+    "startPreparing": "Zubereiten",
+    "markReady": "Fertig",
+    "markServed": "Serviert",
+    "reject": "Ablehnen",
+    "back": "Einen Schritt zurück"
+  },
+  "reject": {
+    "title": "Bestellung #{number} ablehnen?",
+    "description": "Der Gast sieht auf seinem Handy, dass die Bestellung abgelehnt wurde.",
+    "reason": "Grund",
+    "placeholder": "Grund für den Gast (optional)",
+    "hint": "Der Grund wird dem Gast angezeigt. Bitte keine persönlichen Daten eintragen.",
+    "confirm": "Ablehnen",
+    "quick": {
+      "soldOut": "Leider ausverkauft",
+      "kitchenClosed": "Küche hat schon geschlossen",
+      "tooBusy": "Gerade zu viel los – bitte beim Personal bestellen"
+    }
+  },
+  "history": {
+    "range": {
+      "today": "Heute",
+      "7d": "Letzte 7 Tage"
+    },
+    "status": "Status",
+    "allStatuses": "Alle Status",
+    "table": "Tisch",
+    "allTables": "Alle Tische",
+    "count": "Bestellungen",
+    "revenue": "Umsatz (angenommen)",
+    "average": "Ø Bestellwert",
+    "time": "Zeit",
+    "items": "Artikel",
+    "total": "Summe",
+    "guestNote": "Notiz",
+    "rejectReason": "Ablehnungsgrund",
+    "emptyTitle": "Keine Bestellungen in diesem Zeitraum",
+    "emptyDescription": "Ändere den Zeitraum oder die Filter."
+  },
+  "locked": {
+    "title": "Bestellungen sind in deinem Tarif nicht enthalten",
+    "description": "Mit dem Pro-Tarif bestellen Gäste direkt über die Speisekarte – du siehst alles live auf einem Board."
+  }
+}

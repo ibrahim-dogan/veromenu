@@ -1,0 +1,97 @@
+{
+  "title": "Masalar ve QR kodları",
+  "description": "Tüm restoran için tek bir QR kod ya da her masaya ayrı kod – böylece siparişin nereden geldiğini görürsün.",
+  "add": "Masa ekle",
+  "edit": "Düzenle",
+  "delete": "Sil",
+  "downloadPng": "QR kodunu PNG olarak indir",
+  "created": "Masa oluşturuldu",
+  "deleted": "Masa silindi",
+  "regenerated": "Yeni QR kod oluşturuldu",
+  "deleteTitle": "“{label}” silinsin mi?",
+  "deleteDescription": "Bu masanın QR kodu artık çalışmayacak. Önceki siparişler korunur.",
+  "generic": {
+    "alt": "Menünün QR kodu",
+    "title": "Genel QR kod",
+    "description": "Menüne yönlendirir – vitrin, el ilanı, web sitesi veya sosyal medya için ideal. Her pakete dahil.",
+    "open": "Menüyü aç",
+    "copyLink": "Bağlantıyı kopyala",
+    "tentPdf": "Masa standı (A6)"
+  },
+  "list": {
+    "title": "Masalar",
+    "usage": "{limit} masadan {used} tanesi",
+    "limitReached": "Paketinin masa sınırına ulaştın.",
+    "emptyTitle": "Henüz masa yok",
+    "emptyDescription": "Masalarını ekle – örneğin “Masa 1–12” tek adımda. Her masa kendi QR kodunu alır.",
+    "allAreas": "Tüm alanlar",
+    "selectAll": "Tümünü seç",
+    "selected": "{count} seçildi",
+    "seats": "{count} kişilik",
+    "active": "Aktif",
+    "inactive": "Pasif"
+  },
+  "preview": {
+    "open": "{label} QR kodunu göster",
+    "alt": "{label} için QR kod",
+    "inactive": "Bu masa pasif – QR kod menüyü masa bilgisi olmadan açar."
+  },
+  "regenerate": {
+    "button": "Yeni QR kod oluştur",
+    "title": "“{label}” için yeni QR kod oluşturulsun mu?",
+    "description": "Bu masa için şimdiye kadar basılan QR kod artık çalışmayacak. Yeni kodu yazdırıp masadakiyle değiştir.",
+    "confirm": "Yeniden oluştur"
+  },
+  "form": {
+    "createTitle": "Masa ekle",
+    "editTitle": "Masayı düzenle",
+    "label": "Ad",
+    "labelPlaceholder": "örn. Masa 7",
+    "labelRequired": "Lütfen bir ad gir.",
+    "area": "Alan",
+    "areaHint": "İsteğe bağlı, örn. teras veya bar",
+    "areaPlaceholder": "örn. Teras",
+    "seats": "Kişi sayısı",
+    "active": "Masa aktif"
+  },
+  "bulk": {
+    "button": "Toplu ekle",
+    "title": "Birden fazla masa ekle",
+    "description": "Numaralı masaları tek seferde oluştur.",
+    "defaultPrefix": "Masa",
+    "prefix": "Ad",
+    "from": "Başlangıç",
+    "to": "Bitiş",
+    "submit": "{count} masa oluştur",
+    "preview": "{count} masa oluşturulacak: {first} … {last}",
+    "overLimit": "Paketin yalnızca {remaining} masa daha eklemene izin veriyor.",
+    "invalidRange": "Lütfen geçerli bir aralık gir (en fazla 200 masa).",
+    "skipHint": "Zaten var olan adlar atlanır.",
+    "done": "{count, plural, =0 {Yeni masa yok – hepsi zaten vardı.} other {# masa oluşturuldu}}"
+  },
+  "print": {
+    "button": "QR kodlarını yazdır",
+    "title": "QR kodlarını yazdır",
+    "description": "Baskıya hazır bir PDF indir.",
+    "download": "PDF indir",
+    "layout": "Format",
+    "sheet": "A4 sayfa",
+    "sheetHint": "Kesip ayırmak için sayfa başına 6 kart",
+    "tent": "A6 masa standı",
+    "tentHint": "Masa başına bir kart, A6 standlara uyar",
+    "scope": "Hangi masalar?",
+    "allActive": "Tüm aktif masalar",
+    "selectedOnly": "Yalnızca seçilenler ({count})",
+    "includeGeneric": "Genel QR kodu da yazdır",
+    "includeLogo": "Kartlarda logoyu göster",
+    "noLogo": "Logo yok (Ayarlar → Genel)"
+  },
+  "pdf": {
+    "genericLabel": "Menü",
+    "title": "QR kodları"
+  },
+  "locked": {
+    "title": "Masa başına QR kodlar paketine dahil değil",
+    "description": "Masa kodlarıyla her siparişin hangi masadan geldiğini bilirsin. Yukarıdaki genel QR kod yine de çalışır."
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "eyebrow": "Rechtliches",
+  "updated": "Stand: {date}",
+  "bannerTitle": "Vorlage – vor Livegang juristisch prüfen lassen",
+  "bannerBody": "Dieser Text ist eine sorgfältig erstellte Vorlage, ersetzt aber keine Rechtsberatung. Bitte lass ihn vor dem Livegang von einer Anwältin oder einem Anwalt prüfen und an deinen Betrieb anpassen.",
+  "summaryTitle": "Kurzfassung",
+  "bindingNotice": "Rechtsverbindlich ist ausschließlich die deutsche Fassung.",
+  "germanTextFollows": "Rechtsverbindlich ist ausschließlich die deutsche Fassung.",
+  "toc": "Inhalt",
+  "backToTop": "Nach oben",
+  "questions": "Fragen zu diesem Dokument?",
+  "contactLink": "Schreib uns",
+  "placeholder": "{name} fehlt – in .env setzen",
+  "impressum": {
+    "title": "Impressum",
+    "metaDescription": "Anbieterkennzeichnung von VeroMenu gemäß § 5 DDG.",
+    "s1": "Hier findest du Name, Anschrift und Kontaktdaten des Betreibers von VeroMenu.",
+    "s2": "Angegeben sind außerdem Umsatzsteuer-ID, Registereintrag und die inhaltlich verantwortliche Person.",
+    "s3": "VeroMenu richtet sich nur an Unternehmen; an Verbraucherschlichtungsverfahren nehmen wir nicht teil.",
+    "s4": "Für die Speisekarten der Restaurants ist der jeweilige Betrieb verantwortlich."
+  },
+  "datenschutz": {
+    "title": "Datenschutzerklärung",
+    "metaDescription": "Wie VeroMenu personenbezogene Daten verarbeitet: Hosting in Deutschland, keine Tracking-Cookies, cookiefreie Statistik.",
+    "s1": "Wir hosten in Deutschland und setzen nur technisch notwendige Cookies ein – kein Tracking, kein Cookie-Banner.",
+    "s2": "Statistiken der Speisekarte entstehen ohne Cookies über einen täglich wechselnden, nicht umkehrbaren Hashwert.",
+    "s3": "Bestellungen von Gästen verarbeiten wir im Auftrag des Restaurants, das dafür verantwortlich ist.",
+    "s4": "Für KI-Funktionen gehen nur Speisekarteninhalte an OpenRouter (USA) – niemals Daten von Gästen.",
+    "s5": "Drittlandübermittlungen stützen sich auf das EU-US Data Privacy Framework bzw. Standardvertragsklauseln.",
+    "s6": "Du hast Rechte auf Auskunft, Löschung, Widerspruch und Beschwerde bei der Aufsichtsbehörde."
+  },
+  "agb": {
+    "title": "Allgemeine Geschäftsbedingungen",
+    "metaDescription": "AGB für die Nutzung von VeroMenu durch Gastronomiebetriebe (nur für Unternehmer).",
+    "s1": "Die AGB gelten nur für Unternehmen, insbesondere Gastronomiebetriebe – nicht für Verbraucher.",
+    "s2": "Tarife sind Free, Starter und Pro; bezahlte Tarife sind monatlich kündbar.",
+    "s3": "KI-Ergebnisse sind Vorschläge, die du vor der Veröffentlichung prüfen musst.",
+    "s4": "Allergen- und Zusatzstoffangaben bleiben allein in der Verantwortung des Restaurants.",
+    "s5": "Wir sichern 98,5 % Verfügbarkeit im Jahresmittel zu; die Haftung ist bei leichter Fahrlässigkeit begrenzt.",
+    "s6": "Es gilt deutsches Recht; nach Vertragsende werden deine Daten innerhalb von 30 Tagen gelöscht."
+  },
+  "avv": {
+    "title": "Auftragsverarbeitungsvertrag (AVV)",
+    "metaDescription": "Zusammenfassung des Auftragsverarbeitungsvertrags nach Art. 28 DSGVO inklusive Unterauftragsverarbeitern.",
+    "s1": "Das Restaurant ist Verantwortlicher, VeroMenu verarbeitet Gäste- und Teamdaten in seinem Auftrag.",
+    "s2": "Verarbeitet werden vor allem Bestellungen, pseudonymisierte Statistikdaten und Teamkonten.",
+    "s3": "Wir sichern die Daten mit Hosting in Deutschland, Verschlüsselung und Rollenrechten.",
+    "s4": "Unterauftragsverarbeiter sind Hosting, E-Mail-Versand und – nur für Speisekarteninhalte – OpenRouter.",
+    "s5": "Datenschutzverletzungen melden wir innerhalb von 48 Stunden; nach Vertragsende löschen wir alles binnen 30 Tagen."
+  }
+}

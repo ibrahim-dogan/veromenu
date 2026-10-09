@@ -1,0 +1,28 @@
+# Automatic HTTPS (Let's Encrypt) in front of the VeroMenu app.
+# Started with: docker compose --profile https up -d
+# DOMAIN comes from .env (e.g. DOMAIN=menu.example.de).
+
+{$DOMAIN} {
+	encode zstd gzip
+
+	# Uploads / server actions are limited to 25 MB in the app; allow a little headroom.
+	request_body {
+		max_size 30MB
+	}
+
+	reverse_proxy app:3000 {
+		# Server-sent events (live orders) must not be buffered.
+		flush_interval -1
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}
+
+# Optional: redirect www → apex. Only enable when a DNS record for www exists,
+# otherwise certificate issuance for www fails repeatedly.
+# www.{$DOMAIN} {
+# 	redir https://{$DOMAIN}{uri} permanent
+# }

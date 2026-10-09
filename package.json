@@ -16,7 +16,10 @@
     "themes:sync": "tsx scripts/sync-themes.ts",
     "i18n:check": "tsx scripts/check-i18n.ts",
     "db:seed:demo": "tsx --env-file=.env --conditions=react-server scripts/seed.ts --demo",
-    "ai:smoke": "tsx --env-file=.env --conditions=react-server scripts/ai-smoke.ts"
+    "ai:smoke": "tsx --env-file=.env --conditions=react-server scripts/ai-smoke.ts",
+    "build:scripts": "node scripts/build-scripts.mjs",
+    "docker:build": "docker build -t veromenu:latest .",
+    "start:prod": "node .next/standalone/server.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

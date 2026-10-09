@@ -1,0 +1,51 @@
+{
+  "eyebrow": "Legal",
+  "updated": "Last updated: {date}",
+  "bannerTitle": "Template – have it reviewed by a lawyer before going live",
+  "bannerBody": "This text is a carefully prepared template but does not replace legal advice. Please have it reviewed by a lawyer and adapted to your business before going live.",
+  "summaryTitle": "Summary in English",
+  "bindingNotice": "Only the German version below is legally binding. This summary is provided for your convenience.",
+  "germanTextFollows": "Legally binding German text:",
+  "toc": "Contents",
+  "backToTop": "Back to top",
+  "questions": "Questions about this document?",
+  "contactLink": "Get in touch",
+  "placeholder": "{name} missing – set it in .env",
+  "impressum": {
+    "title": "Legal notice",
+    "metaDescription": "Provider identification of VeroMenu under Section 5 of the German Digital Services Act (DDG).",
+    "s1": "This page lists the name, address and contact details of the company operating VeroMenu.",
+    "s2": "It also states the VAT ID, the commercial register entry and the person responsible for the content.",
+    "s3": "VeroMenu is offered to businesses only; we do not take part in consumer arbitration proceedings.",
+    "s4": "Each restaurant is responsible for its own menu and its own legal notice."
+  },
+  "datenschutz": {
+    "title": "Privacy policy",
+    "metaDescription": "How VeroMenu processes personal data: hosting in Germany, no tracking cookies, cookie-free analytics.",
+    "s1": "We host in Germany and only use strictly necessary cookies – no tracking, no cookie banner.",
+    "s2": "Menu analytics work without cookies, using a daily-rotating, irreversible hash.",
+    "s3": "Guest orders are processed on behalf of the restaurant, which is the controller for that data.",
+    "s4": "For AI features, only menu content is sent to OpenRouter (USA) – never any guest data.",
+    "s5": "Transfers to third countries rely on the EU-US Data Privacy Framework or Standard Contractual Clauses.",
+    "s6": "You have the right to access, erasure and objection, and to complain to the supervisory authority."
+  },
+  "agb": {
+    "title": "Terms and conditions",
+    "metaDescription": "Terms and conditions for the use of VeroMenu by restaurants (business customers only).",
+    "s1": "These terms apply to businesses only, in particular restaurants – not to consumers.",
+    "s2": "Plans are Free, Starter and Pro; paid plans can be cancelled monthly.",
+    "s3": "AI results are suggestions that you must review before publishing.",
+    "s4": "Allergen and additive information remains the sole responsibility of the restaurant.",
+    "s5": "We commit to 98.5% annual average availability; liability for slight negligence is limited.",
+    "s6": "German law applies; after the contract ends your data is deleted within 30 days."
+  },
+  "avv": {
+    "title": "Data processing agreement (DPA)",
+    "metaDescription": "Summary of the data processing agreement under Art. 28 GDPR, including sub-processors.",
+    "s1": "The restaurant is the controller; VeroMenu processes guest and team data on its behalf.",
+    "s2": "This mainly covers orders, pseudonymised analytics data and team accounts.",
+    "s3": "We protect the data with hosting in Germany, encryption and role-based permissions.",
+    "s4": "Sub-processors are hosting, email delivery and – for menu content only – OpenRouter.",
+    "s5": "We report data breaches within 48 hours and delete everything within 30 days after the contract ends."
+  }
+}

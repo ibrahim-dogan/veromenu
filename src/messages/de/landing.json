@@ -1,0 +1,228 @@
+{
+  "metaTitle": "VeroMenu – Mehrsprachige QR-Speisekarte für Restaurants",
+  "metaDescription": "QR-Speisekarte in Minuten: geprüfte KI-Übersetzungen in bis zu 16 Sprachen, LMIV-konforme Allergenkennzeichnung, Bestellungen am Tisch und Statistiken ohne Cookie-Banner. Hosting in Deutschland.",
+  "nav": {
+    "label": "Hauptnavigation",
+    "features": "Funktionen",
+    "pricing": "Preise",
+    "faq": "FAQ",
+    "contact": "Kontakt",
+    "login": "Anmelden",
+    "cta": "Kostenlos starten",
+    "menu": "Menü öffnen"
+  },
+  "footer": {
+    "tagline": "Die mehrsprachige QR-Speisekarte für Restaurants, Cafés und Imbisse – mit geprüften Übersetzungen und sicheren Allergenangaben.",
+    "product": "Produkt",
+    "legal": "Rechtliches",
+    "company": "Unternehmen",
+    "features": "Funktionen",
+    "pricing": "Preise",
+    "register": "Registrieren",
+    "login": "Anmelden",
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "terms": "AGB",
+    "dpa": "AV-Vertrag",
+    "contact": "Kontakt",
+    "faq": "Häufige Fragen",
+    "trustHosting": "Hosting in Deutschland",
+    "trustGdpr": "DSGVO-konform, AVV inklusive",
+    "trustCookies": "Keine Tracking-Cookies",
+    "copyright": "© {year} VeroMenu. Alle Rechte vorbehalten.",
+    "madeIn": "Mit Sorgfalt entwickelt in Hamburg."
+  },
+  "hero": {
+    "eyebrow": "Die QR-Speisekarte für die Gastronomie in Deutschland",
+    "titleLead": "Deine Speisekarte –",
+    "titleAccent": "in jeder Sprache",
+    "titleTail": "in Minuten online.",
+    "subtitle": "VeroMenu macht aus deiner Karte eine QR-Speisekarte in bis zu 16 Sprachen. Jede KI-Übersetzung wird gegengeprüft und für dich zurück ins Deutsche übersetzt, Allergene werden LMIV-konform gekennzeichnet – und nichts geht live, bevor du es freigibst.",
+    "ctaPrimary": "Kostenlos starten",
+    "ctaSecondary": "Funktionen ansehen",
+    "point1": "Ohne Kreditkarte",
+    "point2": "Foto der Karte genügt",
+    "point3": "Server in Deutschland"
+  },
+  "mockup": {
+    "label": "Beispiel einer Gäste-Speisekarte auf dem Smartphone",
+    "switchHint": "Sprache wechseln",
+    "translationTitle": "Übersetzung geprüft",
+    "translationBody": "Qualität 4,8/5 · Rückübersetzung passt",
+    "allergenTitle": "Allergene bestätigt",
+    "allergenBody": "von Maria K. · heute, 10:42",
+    "orderTitle": "Neue Bestellung · Tisch 7",
+    "orderBody": "2× Flammkuchen, 1× Apfelschorle"
+  },
+  "trust": {
+    "label": "Darauf kannst du dich verlassen",
+    "lmiv": "Allergene LMIV-konform",
+    "gdpr": "DSGVO-konform",
+    "languages": "16 Gästesprachen",
+    "cookieless": "Ohne Cookie-Banner",
+    "hosting": "Server in Deutschland"
+  },
+  "features": {
+    "eyebrow": "Funktionen",
+    "title": "Alles, was eine gute Karte braucht – und nichts, was dich aufhält.",
+    "subtitle": "Weniger Tipparbeit, weniger Rückfragen am Tisch, mehr Sicherheit bei Allergenen. Gebaut für den Alltag in Küche und Service.",
+    "translate": {
+      "title": "KI-Übersetzung mit Zweitprüfung",
+      "body": "Ein zweites Modell bewertet jede Übersetzung, die Rückübersetzung ins Deutsche zeigt dir, ob die Bedeutung stimmt. Begriffe wie „Maultaschen“ schützt du im Glossar."
+    },
+    "allergens": {
+      "title": "Allergen-Assistent mit Prüfschritt",
+      "body": "Die KI schlägt die 14 Hauptallergene und Zusatzstoffe aus deinen Zutaten vor. Gäste sehen nur, was du bestätigt hast – LMIV-konform."
+    },
+    "import": {
+      "title": "Karte aus Foto oder PDF importieren",
+      "body": "Abfotografieren, hochladen, fertig: Kategorien, Gerichte, Preise und Größen werden erkannt. Du prüfst die Vorschau, bevor etwas übernommen wird."
+    },
+    "assistant": {
+      "title": "KI-Assistent per Sprache",
+      "body": "„Setz den Mittagstisch auf 9,90 € und markier die Kürbissuppe als vegan.“ Jede Änderung erscheint erst als Vorschau – übernommen wird sie nur mit deinem OK."
+    },
+    "tables": {
+      "title": "QR pro Tisch & Bestellungen",
+      "body": "Druckfertige QR-Codes für jeden Tisch. Im Pro-Tarif bestellen Gäste direkt – die Küche sieht es sofort auf dem Bestell-Board."
+    },
+    "stats": {
+      "title": "Statistiken ohne Cookie-Banner",
+      "body": "Aufrufe, beliebte Gerichte und die Sprachen deiner Gäste – cookiefrei gezählt, ganz ohne Einwilligungsbanner."
+    },
+    "themes": {
+      "title": "Designs für deinen Stil",
+      "body": "Vom Landgasthof bis zur Cocktailbar: Themes mit deinem Logo, deinen Farben und Bildern – ohne eine Zeile Code."
+    },
+    "team": {
+      "title": "Team & Rollen",
+      "body": "Der Service setzt Gerichte auf „ausverkauft“, die Küche sieht Bestellungen, Inhaber behalten alles im Blick. Eigene Rollen inklusive."
+    },
+    "gdpr": {
+      "title": "DSGVO & Hosting in Deutschland",
+      "body": "Server in Deutschland, Auftragsverarbeitungsvertrag inklusive, keine Tracking-Cookies und keine Gästedaten bei KI-Anbietern."
+    }
+  },
+  "quality": {
+    "eyebrow": "Qualität, die du prüfen kannst",
+    "title": "KI, die sich in die Karten schauen lässt.",
+    "subtitle": "Kein Blindflug in Sprachen, die du nicht sprichst: VeroMenu zeigt dir, was die KI gemacht hat – und du entscheidest, was deine Gäste sehen.",
+    "translationTitle": "Übersetzung mit Rückübersetzung",
+    "translationBody": "Ein zweites KI-Modell prüft jede Übersetzung auf Bedeutung, Fachbegriffe und Ton. Die Rückübersetzung ins Deutsche macht Fehler sichtbar – auch auf Arabisch oder Chinesisch.",
+    "sourceLabel": "Original",
+    "targetLabel": "Englisch",
+    "backLabel": "Rückübersetzung",
+    "scoreLabel": "Prüfung",
+    "approved": "Freigegeben",
+    "allergenTitle": "Allergene: Vorschlag ist nicht Freigabe",
+    "allergenBody": "Die KI liefert Vorschläge, die Verantwortung bleibt bei dir – und genau so ist VeroMenu gebaut.",
+    "step1Title": "KI schlägt vor",
+    "step1Body": "Allergene und Zusatzstoffe aus Zutaten und Beschreibung, unklare Fälle landen in der Prüfliste.",
+    "step2Title": "Du bestätigst",
+    "step2Body": "Mit einem Klick pro Gericht – mit Name und Zeitstempel dokumentiert.",
+    "step3Title": "Gäste sehen nur Geprüftes",
+    "step3Body": "Ändert sich das Rezept, wird die Angabe automatisch wieder zur Prüfung vorgelegt."
+  },
+  "how": {
+    "eyebrow": "So funktioniert’s",
+    "title": "In drei Schritten zur mehrsprachigen Karte",
+    "step1Title": "Karte hochladen",
+    "step1Body": "Foto, PDF oder von Hand: Die KI legt Kategorien, Gerichte und Preise für dich an.",
+    "step2Title": "Prüfen & freigeben",
+    "step2Body": "Übersetzungen anhand der Rückübersetzung kontrollieren, Allergene bestätigen – du hast das letzte Wort.",
+    "step3Title": "QR-Codes aufstellen",
+    "step3Body": "Drucken, auf die Tische stellen, fertig. Änderungen sind sofort live – ganz ohne Neudruck."
+  },
+  "pricing": {
+    "eyebrow": "Preise",
+    "title": "Faire Preise, monatlich kündbar",
+    "subtitle": "Starte kostenlos und wechsle den Tarif, wenn dein Betrieb wächst. Alle Preise inklusive 19 % MwSt.",
+    "perMonth": "/ Monat",
+    "vatIncl": "inkl. MwSt.",
+    "popular": "Beliebt",
+    "includes": "Enthalten:",
+    "freeName": "Free",
+    "freeTagline": "Zum Ausprobieren und für kleine Karten",
+    "freeCta": "Kostenlos starten",
+    "starterName": "Starter",
+    "starterTagline": "Für Restaurants mit Tischen und internationalen Gästen",
+    "starterCta": "Mit Starter loslegen",
+    "proName": "Pro",
+    "proTagline": "Für Betriebe, in denen Gäste am Tisch bestellen",
+    "proCta": "Mit Pro loslegen",
+    "limitMenus": "{count, plural, one {# Speisekarte} other {# Speisekarten}}",
+    "limitItems": "Bis zu {count} Gerichte",
+    "limitLocales": "{count} Sprachen inkl. Deutsch",
+    "limitTables": "{count} Tisch-QR-Codes",
+    "limitNoTables": "Ein QR-Code für den ganzen Betrieb",
+    "limitUsers": "{count, plural, one {# Nutzer} other {# Nutzer im Team}}",
+    "limitAiCredits": "{count} KI-Credits pro Monat",
+    "baseline": "Allergene, Statistiken & DSGVO in allen Tarifen",
+    "featureOrdering": "Bestellungen am Tisch",
+    "featureTables": "QR-Codes pro Tisch",
+    "featureAiAgent": "KI-Assistent per Sprache",
+    "featureAiImages": "KI-Bilder für Gerichte",
+    "featureAiImport": "Import aus Foto & PDF",
+    "featureCustomBranding": "Ohne „Powered by VeroMenu“",
+    "featureStaffRoles": "Eigene Team-Rollen",
+    "creditsNote": "1 KI-Credit entspricht etwa einer Übersetzung, ein Karten-Import kostet rund 10 Credits.",
+    "billingNote": "Monatlich kündbar. Für Unternehmen gibt es eine Rechnung mit ausgewiesener Umsatzsteuer."
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Häufige Fragen",
+    "subtitle": "Deine Frage ist nicht dabei? Schreib uns – wir antworten in der Regel am selben Werktag.",
+    "q1": "Brauchen meine Gäste eine App?",
+    "a1": "Nein. Gäste scannen den QR-Code mit der Kamera, und die Speisekarte öffnet sich im Browser – automatisch in der Sprache ihres Smartphones, sofern du sie freigeschaltet hast.",
+    "q2": "Wie zuverlässig sind die KI-Übersetzungen?",
+    "a2": "Jede Übersetzung wird von einem zweiten KI-Modell geprüft und bewertet. Dazu bekommst du eine Rückübersetzung ins Deutsche, damit du die Bedeutung auch in Sprachen kontrollieren kannst, die du nicht sprichst. Regionale Begriffe wie „Currywurst“ schützt du im Glossar – und du entscheidest, was live geht.",
+    "q3": "Wer ist für die Allergenangaben verantwortlich?",
+    "a3": "Rechtlich bleibt es dein Betrieb – daran ändert keine Software etwas. VeroMenu unterstützt dich: Die KI schlägt Allergene vor, unklare Fälle landen in der Prüfliste, und Gäste sehen ausschließlich Angaben, die du bestätigt hast. Ändert sich ein Rezept, wird die Angabe automatisch wieder zur Prüfung vorgelegt.",
+    "q4": "Brauche ich einen Cookie-Banner?",
+    "a4": "Für die Gäste-Speisekarte nicht. Wir setzen dort keine Cookies und zählen Aufrufe anonym über einen täglich wechselnden, nicht umkehrbaren Hash – ohne Profile und ohne Tracking.",
+    "q5": "Kann ich meine bestehende Speisekarte übernehmen?",
+    "a5": "Ja. Lade ein Foto oder PDF hoch – die KI erkennt Kategorien, Gerichte, Preise und Größen. Du siehst eine Vorschau und übernimmst nur, was stimmt.",
+    "q6": "Wo werden meine Daten gespeichert?",
+    "a6": "Auf Servern in Deutschland. Für KI-Funktionen werden ausschließlich Inhalte deiner Speisekarte übertragen – niemals Daten deiner Gäste. Einen Auftragsverarbeitungsvertrag (AVV) bekommst du inklusive.",
+    "q7": "Kann ich jederzeit kündigen?",
+    "a7": "Ja, alle bezahlten Tarife sind monatlich kündbar. Der Free-Tarif bleibt dauerhaft kostenlos.",
+    "q8": "Können Gäste auch direkt am Tisch bestellen?",
+    "a8": "Ja, im Pro-Tarif. Gäste bestellen über den QR-Code ihres Tisches, die Bestellung erscheint sofort auf dem Bestell-Board – du nimmst sie manuell oder automatisch an."
+  },
+  "cta": {
+    "title": "Bereit für Gäste aus aller Welt?",
+    "subtitle": "Starte kostenlos – deine erste mehrsprachige Karte ist in wenigen Minuten online.",
+    "button": "Kostenlos starten",
+    "secondary": "Kontakt aufnehmen",
+    "note": "Keine Kreditkarte nötig · Monatlich kündbar"
+  },
+  "featuresPage": {
+    "metaTitle": "Funktionen",
+    "metaDescription": "KI-Übersetzung mit Rückübersetzung, Allergen-Assistent nach LMIV, Import aus Foto oder PDF, Sprachassistent, Tisch-QR-Codes, Bestellungen und cookiefreie Statistiken.",
+    "title": "Alles für deine digitale Speisekarte",
+    "subtitle": "Von der ersten Übersetzung bis zur Bestellung am Tisch – mit Prüfschritten überall dort, wo es darauf ankommt."
+  },
+  "pricingPage": {
+    "metaTitle": "Preise",
+    "metaDescription": "VeroMenu Tarife: Free, Starter und Pro. Monatlich kündbar, alle Preise inklusive MwSt.",
+    "title": "Ein Tarif für jede Küche",
+    "subtitle": "Kostenlos starten, jederzeit wechseln. Keine Einrichtungsgebühr, keine versteckten Kosten."
+  },
+  "contactPage": {
+    "metaTitle": "Kontakt",
+    "metaDescription": "Fragen zu VeroMenu, Tarifen oder einer Vorführung? So erreichst du uns.",
+    "title": "Sprich mit uns",
+    "subtitle": "Fragen zu Tarifen, Datenschutz oder einer Vorführung für deinen Betrieb? Wir melden uns in der Regel am selben Werktag.",
+    "emailTitle": "E-Mail",
+    "phoneTitle": "Telefon",
+    "hoursTitle": "Erreichbarkeit",
+    "hours": "Montag bis Freitag, 9–17 Uhr",
+    "demoTitle": "Vorführung für deinen Betrieb",
+    "demoBody": "Wir zeigen dir in 20 Minuten, wie deine eigene Karte in VeroMenu aussieht – gern mit deiner aktuellen Speisekarte als Beispiel.",
+    "demoCta": "Termin per E-Mail anfragen",
+    "demoSubject": "Vorführung VeroMenu",
+    "selfServeTitle": "Lieber direkt selbst ausprobieren?",
+    "selfServeBody": "Der Free-Tarif ist dauerhaft kostenlos – ohne Kreditkarte.",
+    "notConfigured": "Kontaktdaten noch nicht hinterlegt"
+  }
+}

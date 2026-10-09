@@ -1,0 +1,73 @@
+# VeroMenu production stack: app + PostgreSQL 17 (+ Caddy for automatic HTTPS).
+#
+#   cp .env.example .env   # fill in values, see docs/DEPLOYMENT.md
+#   mkdir -p data/uploads && sudo chown -R 1000:1000 data
+#   docker compose --profile https up -d --build     # with Caddy / TLS on :80/:443
+#   docker compose up -d --build                     # app only on 127.0.0.1:3000 (own reverse proxy)
+#
+# Local development uses docker-compose.dev.yml instead.
+name: veromenu
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-veromenu}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-veromenu}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    shm_size: 256mb
+
+  app:
+    build:
+      context: .
+      args:
+        NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY:-}
+    image: veromenu:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Overrides the DATABASE_URL in .env (which points at the dev database).
+      # Use a URL-safe POSTGRES_PASSWORD (e.g. `openssl rand -hex 24`).
+      DATABASE_URL: postgres://${POSTGRES_USER:-veromenu}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-veromenu}
+      NODE_ENV: production
+      STORAGE_DRIVER: local
+      STORAGE_LOCAL_DIR: /app/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+    ports:
+      # Only reachable from the host itself; Caddy (or your own proxy) handles public traffic.
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
+    stop_grace_period: 30s
+
+  caddy:
+    image: caddy:2-alpine
+    profiles: ["https"]
+    restart: unless-stopped
+    depends_on:
+      - app
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

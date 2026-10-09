@@ -1,0 +1,228 @@
+{
+  "metaTitle": "VeroMenu – Restoranlar için çok dilli QR menü",
+  "metaDescription": "Dakikalar içinde QR menü: 16 dile kadar kontrol edilmiş yapay zekâ çevirileri, AB mevzuatına uygun alerjen bilgileri, masadan sipariş ve çerez bildirimi gerektirmeyen istatistikler. Almanya’da barındırma.",
+  "nav": {
+    "label": "Ana menü",
+    "features": "Özellikler",
+    "pricing": "Fiyatlar",
+    "faq": "SSS",
+    "contact": "İletişim",
+    "login": "Giriş yap",
+    "cta": "Ücretsiz başla",
+    "menu": "Menüyü aç"
+  },
+  "footer": {
+    "tagline": "Restoranlar, kafeler ve büfeler için çok dilli QR menü – kontrol edilmiş çeviriler ve güvenilir alerjen bilgileriyle.",
+    "product": "Ürün",
+    "legal": "Yasal",
+    "company": "Şirket",
+    "features": "Özellikler",
+    "pricing": "Fiyatlar",
+    "register": "Kayıt ol",
+    "login": "Giriş yap",
+    "imprint": "Künye",
+    "privacy": "Gizlilik politikası",
+    "terms": "Kullanım koşulları",
+    "dpa": "Veri işleme sözleşmesi",
+    "contact": "İletişim",
+    "faq": "Sık sorulan sorular",
+    "trustHosting": "Almanya’da barındırma",
+    "trustGdpr": "GDPR uyumlu, veri işleme sözleşmesi dahil",
+    "trustCookies": "İzleme çerezi yok",
+    "copyright": "© {year} VeroMenu. Tüm hakları saklıdır.",
+    "madeIn": "Hamburg’da özenle geliştirildi."
+  },
+  "hero": {
+    "eyebrow": "Almanya’daki restoranlar için QR menü",
+    "titleLead": "Menün –",
+    "titleAccent": "her dilde,",
+    "titleTail": "dakikalar içinde yayında.",
+    "subtitle": "VeroMenu menünü 16 dile kadar destekleyen bir QR menüye dönüştürür. Her yapay zekâ çevirisi ikinci kez kontrol edilir ve senin için geri çevrilir, alerjenler AB mevzuatına uygun şekilde işaretlenir – ve sen onaylamadan hiçbir şey yayına girmez.",
+    "ctaPrimary": "Ücretsiz başla",
+    "ctaSecondary": "Özellikleri keşfet",
+    "point1": "Kredi kartı gerekmez",
+    "point2": "Menünün bir fotoğrafı yeterli",
+    "point3": "Sunucular Almanya’da"
+  },
+  "mockup": {
+    "label": "Akıllı telefonda örnek bir misafir menüsü",
+    "switchHint": "Dili değiştir",
+    "translationTitle": "Çeviri kontrol edildi",
+    "translationBody": "Kalite 4,8/5 · geri çeviri tutarlı",
+    "allergenTitle": "Alerjenler onaylandı",
+    "allergenBody": "Maria K. tarafından · bugün, 10:42",
+    "orderTitle": "Yeni sipariş · Masa 7",
+    "orderBody": "2× Flammkuchen, 1× elmalı soda"
+  },
+  "trust": {
+    "label": "Güvenebileceğin temeller",
+    "lmiv": "AB’ye uygun alerjen bilgisi (LMIV)",
+    "gdpr": "GDPR uyumlu",
+    "languages": "16 misafir dili",
+    "cookieless": "Çerez bildirimi yok",
+    "hosting": "Sunucular Almanya’da"
+  },
+  "features": {
+    "eyebrow": "Özellikler",
+    "title": "İyi bir menünün ihtiyacı olan her şey – seni yavaşlatan hiçbir şey yok.",
+    "subtitle": "Daha az yazı işi, masada daha az soru, alerjenlerde daha fazla güven. Mutfağın ve servisin günlük temposu için tasarlandı.",
+    "translate": {
+      "title": "İkinci kontrollü yapay zekâ çevirisi",
+      "body": "İkinci bir model her çeviriyi puanlar, geri çeviri de anlamın doğru olup olmadığını gösterir. “Maultaschen” gibi terimleri sözlükte koruyabilirsin."
+    },
+    "allergens": {
+      "title": "Onay adımlı alerjen asistanı",
+      "body": "Yapay zekâ, malzemelerinden 14 temel alerjeni ve katkı maddelerini önerir. Misafirler yalnızca senin onayladıklarını görür – AB gıda etiketleme mevzuatına uygun."
+    },
+    "import": {
+      "title": "Menünü fotoğraftan veya PDF’ten aktar",
+      "body": "Fotoğrafını çek, yükle, bitti: kategoriler, yemekler, fiyatlar ve porsiyonlar tanınır. Hiçbir şey aktarılmadan önce önizlemeyi kontrol edersin."
+    },
+    "assistant": {
+      "title": "Sesle çalışan yapay zekâ asistanı",
+      "body": "“Günün menüsünü 9,90 € yap ve balkabağı çorbasını vegan olarak işaretle.” Her değişiklik önce önizleme olarak görünür – ancak sen onaylarsan uygulanır."
+    },
+    "tables": {
+      "title": "Masa başına QR ve sipariş",
+      "body": "Her masa için baskıya hazır QR kodları. Pro pakette misafirler doğrudan sipariş verir – mutfak siparişi anında sipariş panosunda görür."
+    },
+    "stats": {
+      "title": "Çerez bildirimi olmadan istatistik",
+      "body": "Görüntülenmeler, popüler yemekler ve misafirlerinin dilleri – çerezsiz ve onay bildirimi gerektirmeden sayılır."
+    },
+    "themes": {
+      "title": "Tarzına uygun tasarımlar",
+      "body": "Köy lokantasından kokteyl barına: logon, renklerin ve fotoğraflarınla temalar – tek satır kod yazmadan."
+    },
+    "team": {
+      "title": "Ekip ve roller",
+      "body": "Servis ekibi yemekleri “tükendi” olarak işaretler, mutfak siparişleri görür, işletme sahibi her şeyi takip eder. Özel roller dahil."
+    },
+    "gdpr": {
+      "title": "GDPR ve Almanya’da barındırma",
+      "body": "Sunucular Almanya’da, veri işleme sözleşmesi dahil, izleme çerezi yok ve yapay zekâ sağlayıcılarına misafir verisi gönderilmez."
+    }
+  },
+  "quality": {
+    "eyebrow": "Kontrol edebileceğin kalite",
+    "title": "Ne yaptığını gösteren yapay zekâ.",
+    "subtitle": "Bilmediğin dillerde körlemesine ilerlemek yok: VeroMenu yapay zekânın ne yaptığını gösterir – misafirlerinin ne göreceğine sen karar verirsin.",
+    "translationTitle": "Geri çeviriyle çeviri",
+    "translationBody": "İkinci bir yapay zekâ modeli her çeviriyi anlam, mutfak terimleri ve üslup açısından kontrol eder. Geri çeviri, Arapça ya da Çince’de bile hataları görünür kılar.",
+    "sourceLabel": "Orijinal",
+    "targetLabel": "İngilizce",
+    "backLabel": "Geri çeviri",
+    "scoreLabel": "Kontrol",
+    "approved": "Onaylandı",
+    "allergenTitle": "Alerjenler: öneri, onay demek değildir",
+    "allergenBody": "Yapay zekâ önerir, sorumluluk sende kalır – VeroMenu tam olarak buna göre tasarlandı.",
+    "step1Title": "Yapay zekâ önerir",
+    "step1Body": "Malzemelerden ve açıklamalardan alerjenler ve katkı maddeleri; belirsiz durumlar kontrol listesine düşer.",
+    "step2Title": "Sen onaylarsın",
+    "step2Body": "Yemek başına tek tıkla – isim ve zaman damgasıyla belgelenir.",
+    "step3Title": "Misafirler yalnızca onaylananı görür",
+    "step3Body": "Tarif değişirse bilgi otomatik olarak yeniden kontrole gönderilir."
+  },
+  "how": {
+    "eyebrow": "Nasıl çalışır?",
+    "title": "Üç adımda çok dilli menü",
+    "step1Title": "Menünü yükle",
+    "step1Body": "Fotoğraf, PDF ya da elle: yapay zekâ kategorileri, yemekleri ve fiyatları senin için oluşturur.",
+    "step2Title": "Kontrol et ve onayla",
+    "step2Body": "Çevirileri geri çeviri sayesinde kontrol et, alerjenleri onayla – son söz her zaman senin.",
+    "step3Title": "QR kodlarını yerleştir",
+    "step3Body": "Yazdır, masalara koy, bitti. Değişiklikler anında yayında – yeniden baskıya gerek yok."
+  },
+  "pricing": {
+    "eyebrow": "Fiyatlar",
+    "title": "Adil fiyatlar, aylık iptal",
+    "subtitle": "Ücretsiz başla, işletmen büyüdükçe paketini değiştir. Tüm fiyatlara %19 KDV dahildir.",
+    "perMonth": "/ ay",
+    "vatIncl": "KDV dahil",
+    "popular": "Popüler",
+    "includes": "Dahil olanlar:",
+    "freeName": "Free",
+    "freeTagline": "Denemek ve küçük menüler için",
+    "freeCta": "Ücretsiz başla",
+    "starterName": "Starter",
+    "starterTagline": "Masalı ve uluslararası misafirli restoranlar için",
+    "starterCta": "Starter ile başla",
+    "proName": "Pro",
+    "proTagline": "Misafirlerin masadan sipariş verdiği işletmeler için",
+    "proCta": "Pro ile başla",
+    "limitMenus": "{count, plural, one {# menü} other {# menü}}",
+    "limitItems": "{count} yemeğe kadar",
+    "limitLocales": "Almanca dahil {count} dil",
+    "limitTables": "{count} masa QR kodu",
+    "limitNoTables": "Tüm işletme için tek QR kodu",
+    "limitUsers": "{count, plural, one {# kullanıcı} other {# ekip üyesi}}",
+    "limitAiCredits": "Aylık {count} yapay zekâ kredisi",
+    "baseline": "Alerjenler, istatistikler ve GDPR tüm paketlerde",
+    "featureOrdering": "Masadan sipariş",
+    "featureTables": "Masa başına QR kodu",
+    "featureAiAgent": "Sesle çalışan yapay zekâ asistanı",
+    "featureAiImages": "Yemekler için yapay zekâ görselleri",
+    "featureAiImport": "Fotoğraf ve PDF’ten aktarma",
+    "featureCustomBranding": "“Powered by VeroMenu” ibaresi olmadan",
+    "featureStaffRoles": "Özel ekip rolleri",
+    "creditsNote": "1 yapay zekâ kredisi yaklaşık bir çeviriye karşılık gelir; bir menü aktarımı yaklaşık 10 kredidir.",
+    "billingNote": "Aylık iptal edilebilir. İşletmeler KDV’si ayrıca gösterilen fatura alır."
+  },
+  "faq": {
+    "eyebrow": "SSS",
+    "title": "Sık sorulan sorular",
+    "subtitle": "Sorunu bulamadın mı? Bize yaz – genellikle aynı iş günü içinde yanıt veriyoruz.",
+    "q1": "Misafirlerimin bir uygulamaya ihtiyacı var mı?",
+    "a1": "Hayır. Misafirler QR kodunu kamerayla tarar ve menü tarayıcıda açılır – senin etkinleştirdiğin diller arasındaysa otomatik olarak telefonlarının dilinde.",
+    "q2": "Yapay zekâ çevirileri ne kadar güvenilir?",
+    "a2": "Her çeviri ikinci bir yapay zekâ modeli tarafından kontrol edilip puanlanır. Ayrıca kendi diline bir geri çeviri alırsın; böylece bilmediğin dillerde bile anlamı kontrol edebilirsin. “Currywurst” gibi yöresel terimleri sözlükte koruyabilirsin – neyin yayına gireceğine sen karar verirsin.",
+    "q3": "Alerjen bilgilerinden kim sorumlu?",
+    "a3": "Hukuken işletmen sorumludur – hiçbir yazılım bunu değiştirmez. VeroMenu sana destek olur: yapay zekâ alerjenleri önerir, belirsiz durumlar kontrol listesine düşer ve misafirler yalnızca senin onayladığın bilgileri görür. Bir tarif değişirse bilgi otomatik olarak yeniden kontrole gönderilir.",
+    "q4": "Çerez bildirimine ihtiyacım var mı?",
+    "a4": "Misafir menüsü için hayır. Orada çerez kullanmıyoruz; görüntülenmeleri her gün değişen, geri döndürülemeyen bir hash ile anonim olarak sayıyoruz – profil yok, takip yok.",
+    "q5": "Mevcut menümü aktarabilir miyim?",
+    "a5": "Evet. Bir fotoğraf ya da PDF yükle – yapay zekâ kategorileri, yemekleri, fiyatları ve porsiyonları tanır. Önizlemeyi görürsün ve yalnızca doğru olanı aktarırsın.",
+    "q6": "Verilerim nerede saklanıyor?",
+    "a6": "Almanya’daki sunucularda. Yapay zekâ özellikleri için yalnızca menü içeriğin aktarılır – misafirlerinin verileri asla. Veri işleme sözleşmesi (AVV) dahildir.",
+    "q7": "İstediğim zaman iptal edebilir miyim?",
+    "a7": "Evet, tüm ücretli paketler aylık olarak iptal edilebilir. Free paket süresiz olarak ücretsiz kalır.",
+    "q8": "Misafirler doğrudan masadan sipariş verebilir mi?",
+    "a8": "Evet, Pro pakette. Misafirler masalarındaki QR kodu üzerinden sipariş verir, sipariş anında sipariş panosunda görünür – manuel ya da otomatik olarak kabul edersin."
+  },
+  "cta": {
+    "title": "Dünyanın dört bir yanından gelen misafirlere hazır mısın?",
+    "subtitle": "Ücretsiz başla – ilk çok dilli menün birkaç dakika içinde yayında.",
+    "button": "Ücretsiz başla",
+    "secondary": "İletişime geç",
+    "note": "Kredi kartı gerekmez · Aylık iptal"
+  },
+  "featuresPage": {
+    "metaTitle": "Özellikler",
+    "metaDescription": "Geri çeviriyle yapay zekâ çevirisi, AB’ye uygun alerjen asistanı, fotoğraf veya PDF’ten aktarma, sesli asistan, masa QR kodları, sipariş ve çerezsiz istatistikler.",
+    "title": "Dijital menün için ihtiyacın olan her şey",
+    "subtitle": "İlk çeviriden masadan siparişe kadar – önemli olan her noktada kontrol adımlarıyla."
+  },
+  "pricingPage": {
+    "metaTitle": "Fiyatlar",
+    "metaDescription": "VeroMenu paketleri: Free, Starter ve Pro. Aylık iptal, tüm fiyatlara KDV dahil.",
+    "title": "Her mutfağa uygun bir paket",
+    "subtitle": "Ücretsiz başla, istediğin zaman değiştir. Kurulum ücreti yok, gizli maliyet yok."
+  },
+  "contactPage": {
+    "metaTitle": "İletişim",
+    "metaDescription": "VeroMenu, paketler veya tanıtım hakkında sorun mu var? Bize buradan ulaşabilirsin.",
+    "title": "Bizimle konuş",
+    "subtitle": "Paketler, veri koruma ya da işletmen için bir tanıtım hakkında sorun mu var? Genellikle aynı iş günü içinde dönüş yapıyoruz.",
+    "emailTitle": "E-posta",
+    "phoneTitle": "Telefon",
+    "hoursTitle": "Ulaşılabilirlik",
+    "hours": "Pazartesi–Cuma, 09:00–17:00 (Almanya saati)",
+    "demoTitle": "İşletmen için tanıtım",
+    "demoBody": "20 dakikada kendi menünün VeroMenu’de nasıl görüneceğini gösteriyoruz – tercihen mevcut menünü örnek alarak.",
+    "demoCta": "E-postayla randevu iste",
+    "demoSubject": "VeroMenu tanıtımı",
+    "selfServeTitle": "Kendin denemeyi mi tercih edersin?",
+    "selfServeBody": "Free paket süresiz ücretsiz – kredi kartı gerekmez.",
+    "notConfigured": "İletişim bilgileri henüz girilmedi"
+  }
+}

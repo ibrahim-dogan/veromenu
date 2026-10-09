@@ -1,0 +1,51 @@
+{
+  "eyebrow": "Yasal",
+  "updated": "Son güncelleme: {date}",
+  "bannerTitle": "Şablon – yayına almadan önce bir hukukçuya kontrol ettir",
+  "bannerBody": "Bu metin özenle hazırlanmış bir şablondur, ancak hukuki danışmanlığın yerini tutmaz. Yayına almadan önce bir avukata kontrol ettir ve işletmene göre uyarla.",
+  "summaryTitle": "Türkçe özet",
+  "bindingNotice": "Yalnızca aşağıdaki Almanca metin hukuken bağlayıcıdır. Bu özet bilgi amaçlıdır.",
+  "germanTextFollows": "Hukuken bağlayıcı Almanca metin:",
+  "toc": "İçindekiler",
+  "backToTop": "Yukarı dön",
+  "questions": "Bu belgeyle ilgili sorun mu var?",
+  "contactLink": "Bize yaz",
+  "placeholder": "{name} eksik – .env dosyasında tanımla",
+  "impressum": {
+    "title": "Künye",
+    "metaDescription": "Alman Dijital Hizmetler Yasası (DDG) 5. madde uyarınca VeroMenu hizmet sağlayıcı bilgileri.",
+    "s1": "Bu sayfada VeroMenu’yu işleten şirketin adı, adresi ve iletişim bilgileri yer alır.",
+    "s2": "Ayrıca KDV numarası, ticaret sicili kaydı ve içerikten sorumlu kişi belirtilir.",
+    "s3": "VeroMenu yalnızca işletmelere sunulur; tüketici tahkim süreçlerine katılmıyoruz.",
+    "s4": "Her restoran kendi menüsünden ve kendi künyesinden sorumludur."
+  },
+  "datenschutz": {
+    "title": "Gizlilik politikası",
+    "metaDescription": "VeroMenu kişisel verileri nasıl işler: Almanya’da barındırma, izleme çerezi yok, çerezsiz istatistik.",
+    "s1": "Sunucularımız Almanya’dadır ve yalnızca zorunlu çerezler kullanırız – takip yok, çerez bildirimi yok.",
+    "s2": "Menü istatistikleri çerez kullanmadan, her gün değişen ve geri döndürülemeyen bir hash ile tutulur.",
+    "s3": "Misafir siparişleri, bu verilerden sorumlu olan restoran adına işlenir.",
+    "s4": "Yapay zekâ özellikleri için OpenRouter’a (ABD) yalnızca menü içeriği gönderilir – misafir verisi asla gönderilmez.",
+    "s5": "Üçüncü ülkelere aktarımlar AB-ABD Veri Gizliliği Çerçevesi’ne veya Standart Sözleşme Maddelerine dayanır.",
+    "s6": "Bilgi alma, silme, itiraz etme ve denetim makamına şikâyette bulunma hakların vardır."
+  },
+  "agb": {
+    "title": "Genel işlem koşulları",
+    "metaDescription": "VeroMenu’nun restoranlar tarafından kullanımına ilişkin genel işlem koşulları (yalnızca işletmeler için).",
+    "s1": "Bu koşullar yalnızca işletmeler, özellikle restoranlar için geçerlidir – tüketiciler için değil.",
+    "s2": "Paketler Free, Starter ve Pro’dur; ücretli paketler aylık olarak iptal edilebilir.",
+    "s3": "Yapay zekâ sonuçları birer öneridir ve yayımlamadan önce kontrol etmen gerekir.",
+    "s4": "Alerjen ve katkı maddesi bilgileri yalnızca restoranın sorumluluğundadır.",
+    "s5": "Yıllık ortalama %98,5 erişilebilirlik taahhüt ediyoruz; hafif ihmalde sorumluluk sınırlıdır.",
+    "s6": "Alman hukuku geçerlidir; sözleşme sona erdikten sonra verilerin 30 gün içinde silinir."
+  },
+  "avv": {
+    "title": "Veri işleme sözleşmesi (AVV)",
+    "metaDescription": "GDPR 28. madde uyarınca veri işleme sözleşmesinin alt işleyenler dahil özeti.",
+    "s1": "Veri sorumlusu restorandır; VeroMenu misafir ve ekip verilerini onun adına işler.",
+    "s2": "Bu, başta siparişleri, takma adlandırılmış istatistik verilerini ve ekip hesaplarını kapsar.",
+    "s3": "Verileri Almanya’da barındırma, şifreleme ve rol tabanlı yetkilerle koruyoruz.",
+    "s4": "Alt işleyenler barındırma, e-posta gönderimi ve – yalnızca menü içeriği için – OpenRouter’dır.",
+    "s5": "Veri ihlallerini 48 saat içinde bildiririz ve sözleşme bitiminden sonra 30 gün içinde her şeyi sileriz."
+  }
+}

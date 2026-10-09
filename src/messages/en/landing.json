@@ -1,0 +1,228 @@
+{
+  "metaTitle": "VeroMenu – Multilingual QR menus for restaurants",
+  "metaDescription": "A QR menu in minutes: reviewed AI translations in up to 16 languages, EU-compliant allergen labelling, table ordering and analytics without a cookie banner. Hosted in Germany.",
+  "nav": {
+    "label": "Main navigation",
+    "features": "Features",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "login": "Log in",
+    "cta": "Start for free",
+    "menu": "Open menu"
+  },
+  "footer": {
+    "tagline": "The multilingual QR menu for restaurants, cafés and takeaways – with reviewed translations and reliable allergen information.",
+    "product": "Product",
+    "legal": "Legal",
+    "company": "Company",
+    "features": "Features",
+    "pricing": "Pricing",
+    "register": "Sign up",
+    "login": "Log in",
+    "imprint": "Legal notice",
+    "privacy": "Privacy policy",
+    "terms": "Terms",
+    "dpa": "Data processing agreement",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "trustHosting": "Hosted in Germany",
+    "trustGdpr": "GDPR-compliant, DPA included",
+    "trustCookies": "No tracking cookies",
+    "copyright": "© {year} VeroMenu. All rights reserved.",
+    "madeIn": "Carefully built in Hamburg."
+  },
+  "hero": {
+    "eyebrow": "The QR menu built for restaurants in Germany",
+    "titleLead": "Your menu –",
+    "titleAccent": "in every language,",
+    "titleTail": "online in minutes.",
+    "subtitle": "VeroMenu turns your menu into a QR menu in up to 16 languages. Every AI translation is double-checked and translated back into your language, allergens are labelled to EU standards – and nothing goes live until you approve it.",
+    "ctaPrimary": "Start for free",
+    "ctaSecondary": "Explore features",
+    "point1": "No credit card",
+    "point2": "A photo of your menu is enough",
+    "point3": "Servers in Germany"
+  },
+  "mockup": {
+    "label": "Example of a guest menu on a smartphone",
+    "switchHint": "Switch language",
+    "translationTitle": "Translation reviewed",
+    "translationBody": "Quality 4.8/5 · back-translation matches",
+    "allergenTitle": "Allergens confirmed",
+    "allergenBody": "by Maria K. · today, 10:42",
+    "orderTitle": "New order · Table 7",
+    "orderBody": "2× tarte flambée, 1× apple spritzer"
+  },
+  "trust": {
+    "label": "What you can rely on",
+    "lmiv": "EU-compliant allergens (LMIV)",
+    "gdpr": "GDPR-compliant",
+    "languages": "16 guest languages",
+    "cookieless": "No cookie banner",
+    "hosting": "Servers in Germany"
+  },
+  "features": {
+    "eyebrow": "Features",
+    "title": "Everything a great menu needs – and nothing that slows you down.",
+    "subtitle": "Less typing, fewer questions at the table, more certainty on allergens. Built for the daily reality of kitchen and floor staff.",
+    "translate": {
+      "title": "AI translation with a second check",
+      "body": "A second model rates every translation, and a back-translation shows you whether the meaning holds. Protect terms like “Maultaschen” in your glossary."
+    },
+    "allergens": {
+      "title": "Allergen assistant with a review step",
+      "body": "AI suggests the 14 major allergens and additives from your ingredients. Guests only see what you have confirmed – compliant with EU food labelling law."
+    },
+    "import": {
+      "title": "Import your menu from a photo or PDF",
+      "body": "Snap, upload, done: categories, dishes, prices and sizes are recognised. You review a preview before anything is applied."
+    },
+    "assistant": {
+      "title": "Voice-controlled AI assistant",
+      "body": "“Set the lunch special to €9.90 and mark the pumpkin soup as vegan.” Every change is shown as a preview first – it is applied only once you say OK."
+    },
+    "tables": {
+      "title": "QR per table & ordering",
+      "body": "Print-ready QR codes for every table. On the Pro plan guests order directly – the kitchen sees it instantly on the order board."
+    },
+    "stats": {
+      "title": "Analytics without a cookie banner",
+      "body": "Views, popular dishes and your guests’ languages – counted without cookies and without any consent banner."
+    },
+    "themes": {
+      "title": "Designs that match your style",
+      "body": "From country inn to cocktail bar: themes with your logo, colours and photos – without writing a single line of code."
+    },
+    "team": {
+      "title": "Team & roles",
+      "body": "Floor staff mark dishes as sold out, the kitchen sees orders, owners keep an eye on everything. Custom roles included."
+    },
+    "gdpr": {
+      "title": "GDPR & hosting in Germany",
+      "body": "Servers in Germany, data processing agreement included, no tracking cookies and no guest data sent to AI providers."
+    }
+  },
+  "quality": {
+    "eyebrow": "Quality you can verify",
+    "title": "AI that shows its work.",
+    "subtitle": "No flying blind in languages you don’t speak: VeroMenu shows you what the AI did – and you decide what your guests see.",
+    "translationTitle": "Translation with back-translation",
+    "translationBody": "A second AI model checks every translation for meaning, culinary terms and tone. The back-translation makes mistakes visible – even in Arabic or Chinese.",
+    "sourceLabel": "Original",
+    "targetLabel": "English",
+    "backLabel": "Back-translation",
+    "scoreLabel": "Review",
+    "approved": "Approved",
+    "allergenTitle": "Allergens: a suggestion is not an approval",
+    "allergenBody": "AI makes suggestions, the responsibility stays with you – and that is exactly how VeroMenu is built.",
+    "step1Title": "AI suggests",
+    "step1Body": "Allergens and additives from ingredients and descriptions; unclear cases go to the review list.",
+    "step2Title": "You confirm",
+    "step2Body": "One click per dish – documented with name and timestamp.",
+    "step3Title": "Guests only see verified data",
+    "step3Body": "If the recipe changes, the information is automatically sent back for review."
+  },
+  "how": {
+    "eyebrow": "How it works",
+    "title": "A multilingual menu in three steps",
+    "step1Title": "Upload your menu",
+    "step1Body": "Photo, PDF or by hand: AI creates categories, dishes and prices for you.",
+    "step2Title": "Review & approve",
+    "step2Body": "Check translations via the back-translation, confirm allergens – you have the final say.",
+    "step3Title": "Put out the QR codes",
+    "step3Body": "Print, place them on the tables, done. Changes go live instantly – no reprinting."
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "title": "Fair prices, cancel monthly",
+    "subtitle": "Start for free and switch plans as your business grows. All prices include 19% German VAT.",
+    "perMonth": "/ month",
+    "vatIncl": "incl. VAT",
+    "popular": "Popular",
+    "includes": "Includes:",
+    "freeName": "Free",
+    "freeTagline": "To try things out and for small menus",
+    "freeCta": "Start for free",
+    "starterName": "Starter",
+    "starterTagline": "For restaurants with tables and international guests",
+    "starterCta": "Get started with Starter",
+    "proName": "Pro",
+    "proTagline": "For venues where guests order at the table",
+    "proCta": "Get started with Pro",
+    "limitMenus": "{count, plural, one {# menu} other {# menus}}",
+    "limitItems": "Up to {count} dishes",
+    "limitLocales": "{count} languages incl. German",
+    "limitTables": "{count} table QR codes",
+    "limitNoTables": "One QR code for the whole venue",
+    "limitUsers": "{count, plural, one {# user} other {# team members}}",
+    "limitAiCredits": "{count} AI credits per month",
+    "baseline": "Allergens, analytics & GDPR on every plan",
+    "featureOrdering": "Table ordering",
+    "featureTables": "QR codes per table",
+    "featureAiAgent": "Voice-controlled AI assistant",
+    "featureAiImages": "AI images for dishes",
+    "featureAiImport": "Import from photo & PDF",
+    "featureCustomBranding": "No “Powered by VeroMenu”",
+    "featureStaffRoles": "Custom team roles",
+    "creditsNote": "1 AI credit is roughly one translation; a menu import costs about 10 credits.",
+    "billingNote": "Cancel monthly. Businesses receive an invoice with VAT shown separately."
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Frequently asked questions",
+    "subtitle": "Can’t find your question? Write to us – we usually reply on the same business day.",
+    "q1": "Do my guests need an app?",
+    "a1": "No. Guests scan the QR code with their camera and the menu opens in the browser – automatically in their phone’s language, as long as you have enabled it.",
+    "q2": "How reliable are the AI translations?",
+    "a2": "Every translation is checked and rated by a second AI model. You also get a back-translation into your language, so you can verify the meaning even in languages you don’t speak. Protect regional terms like “Currywurst” in the glossary – and you decide what goes live.",
+    "q3": "Who is responsible for allergen information?",
+    "a3": "Legally, your business is – no software changes that. VeroMenu supports you: AI suggests allergens, unclear cases go to the review list, and guests only ever see information you have confirmed. If a recipe changes, the information is automatically sent back for review.",
+    "q4": "Do I need a cookie banner?",
+    "a4": "Not for the guest menu. We set no cookies there and count views anonymously using a daily-rotating, irreversible hash – no profiles, no tracking.",
+    "q5": "Can I bring over my existing menu?",
+    "a5": "Yes. Upload a photo or PDF – AI recognises categories, dishes, prices and sizes. You see a preview and only apply what’s correct.",
+    "q6": "Where is my data stored?",
+    "a6": "On servers in Germany. For AI features, only your menu content is transmitted – never your guests’ data. A data processing agreement (DPA) is included.",
+    "q7": "Can I cancel at any time?",
+    "a7": "Yes, all paid plans can be cancelled monthly. The Free plan stays free forever.",
+    "q8": "Can guests order directly at the table?",
+    "a8": "Yes, on the Pro plan. Guests order via their table’s QR code and the order appears instantly on the order board – accept it manually or automatically."
+  },
+  "cta": {
+    "title": "Ready for guests from all over the world?",
+    "subtitle": "Start for free – your first multilingual menu is online in a few minutes.",
+    "button": "Start for free",
+    "secondary": "Get in touch",
+    "note": "No credit card required · Cancel monthly"
+  },
+  "featuresPage": {
+    "metaTitle": "Features",
+    "metaDescription": "AI translation with back-translation, EU-compliant allergen assistant, import from photo or PDF, voice assistant, table QR codes, ordering and cookie-free analytics.",
+    "title": "Everything for your digital menu",
+    "subtitle": "From the first translation to ordering at the table – with review steps wherever it matters."
+  },
+  "pricingPage": {
+    "metaTitle": "Pricing",
+    "metaDescription": "VeroMenu plans: Free, Starter and Pro. Cancel monthly, all prices include VAT.",
+    "title": "A plan for every kitchen",
+    "subtitle": "Start for free, switch any time. No setup fee, no hidden costs."
+  },
+  "contactPage": {
+    "metaTitle": "Contact",
+    "metaDescription": "Questions about VeroMenu, plans or a demo? Here is how to reach us.",
+    "title": "Talk to us",
+    "subtitle": "Questions about plans, data protection or a demo for your venue? We usually get back to you on the same business day.",
+    "emailTitle": "Email",
+    "phoneTitle": "Phone",
+    "hoursTitle": "Availability",
+    "hours": "Monday to Friday, 9 am – 5 pm (CET)",
+    "demoTitle": "A demo for your venue",
+    "demoBody": "In 20 minutes we’ll show you what your own menu looks like in VeroMenu – ideally using your current menu as the example.",
+    "demoCta": "Request a slot by email",
+    "demoSubject": "VeroMenu demo",
+    "selfServeTitle": "Prefer to try it yourself?",
+    "selfServeBody": "The Free plan is free forever – no credit card needed.",
+    "notConfigured": "Contact details not configured yet"
+  }
+}

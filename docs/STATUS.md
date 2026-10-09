@@ -39,3 +39,14 @@ Verified end-to-end in the browser: guest menu → cart → order → status pag
 7. System role names are stored in the creator's language (could be shown via i18n by role key).
 8. Orders are rate-limited per IP (guests on the same restaurant WiFi share it) – watch in production.
 9. Undoing an AI delete recreates items without their translations; abandoned AI image drafts need a cleanup job.
+
+## Production (since 2026-10-09)
+
+- Live at **https://veromenu.de** (veromenu.com / .org / .store and www.* redirect there).
+- Server `myserver` (Ubuntu 24.04, 2 vCPU, 1.8 GB RAM): Docker Compose stack in `/opt/veromenu` (app + Postgres 17, uploads in `/opt/veromenu/data`), existing nginx + Let's Encrypt in front (`/etc/nginx/sites-available/veromenu`, proxy to 127.0.0.1:3000, SSE location for the order board).
+- Secrets live only in `/opt/veromenu/.env` on the server (APP_SECRET, POSTGRES_PASSWORD, ADMIN_PASSWORD, OPENROUTER_API_KEY).
+- Platform admin: `admin@veromenu.de` (password in the server `.env`, change it after first login).
+- Deploy updates: `./scripts/deploy.sh` (builds amd64 locally, streams the image over SSH, restarts; migrations run on start).
+- The old Laravel app was removed; backups: `/root/backups/` on the server and `~/Documents/private_coding/veromenu-server-backup/` locally. php8.3-fpm and redis-server were stopped/disabled (packages still installed).
+- No SMTP configured yet → verification / invitation / reset mails only appear in `docker compose logs app`. Set `SMTP_URL` in the server `.env`.
+- Known UX issue: on slow devices, text typed into auth forms before hydration is reset (controlled inputs) – switch those forms to uncontrolled inputs / FormData.

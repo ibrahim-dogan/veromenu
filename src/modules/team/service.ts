@@ -145,7 +145,7 @@ export async function createInvitation(ctx: RestaurantContext, input: { email: s
     .innerJoin(users, eq(users.id, memberships.userId))
     .where(and(eq(memberships.restaurantId, rid), eq(users.email, input.email)))
     .limit(1);
-  if (existingMember) throw new AppError("validation", "alreadyMember");
+  if (existingMember) throw new AppError("alreadyMember");
 
   return db.transaction(async (tx) => {
     await tx.execute(dsql`select pg_advisory_xact_lock(hashtext(${"team:" + rid}))`);

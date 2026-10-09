@@ -31,9 +31,12 @@ export function OrderStatus({ publicId, locale, messages }: { publicId: string; 
     let timer: ReturnType<typeof setTimeout> | undefined;
     let stopped = false;
     let done = false;
+    let first = true;
     async function poll() {
       if (stopped) return;
-      if (document.visibilityState === "visible") {
+      // Always load once; afterwards pause polling while the tab is in the background.
+      if (first || document.visibilityState === "visible") {
+        first = false;
         try {
           const res = await fetch(`/api/public/orders/${encodeURIComponent(publicId)}`, { cache: "no-store" });
           if (res.status === 404) {

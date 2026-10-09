@@ -57,13 +57,13 @@ export async function slugAvailability(restaurantId: string, slug: string) {
 export async function changeSlug(restaurantId: string, slug: string) {
   const a = await slugAvailability(restaurantId, slug);
   if (!a.valid) throw new AppError("validation", "slugInvalid");
-  if (!a.available) throw new AppError("validation", "slugTaken");
+  if (!a.available) throw new AppError("slugTaken");
   try {
     const [r] = await db.update(restaurants).set({ slug, updatedAt: new Date() }).where(eq(restaurants.id, restaurantId)).returning();
     return r;
   } catch (e) {
     // unique index race
-    if (String((e as { code?: string })?.code ?? (e as { cause?: { code?: string } })?.cause?.code) === "23505") throw new AppError("validation", "slugTaken");
+    if (String((e as { code?: string })?.code ?? (e as { cause?: { code?: string } })?.cause?.code) === "23505") throw new AppError("slugTaken");
     throw e;
   }
 }

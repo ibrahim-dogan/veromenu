@@ -14,5 +14,7 @@
   "aiFailed": "The AI request failed.",
   "aiCreditsExhausted": "Your AI credits for this month are used up.",
   "accountDisabled": "This account is disabled.",
-  "lastOwner": "The last owner cannot be removed."
+  "lastOwner": "The last owner cannot be removed.",
+  "slugTaken": "This address is already taken.",
+  "alreadyMember": "This person is already on the team."
 }

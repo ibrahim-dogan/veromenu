@@ -1,5 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import { env } from "@/core/env";
+import { isRtl } from "@/core/i18n/locales";
+import { getGuestRestaurantRow } from "@/modules/guest/load";
+import { resolveGuestLocale } from "@/modules/guest/locale";
 import "./guest.css";
 
 // env() is read lazily (per request), never at module load → builds work without runtime secrets.
@@ -19,13 +23,23 @@ export const viewport: Viewport = {
 
 /**
  * Root layout of the public guest menu (own world: no app chrome, no next-intl client runtime).
- * `lang`/`dir` depend on the `?lang=` search param which layouts cannot read: the theme root element
- * carries the server-correct lang/dir, and the page sets them on <html> with a tiny inline script
- * before first paint.
+ * `lang`/`dir` are resolved server-side from the URL forwarded by src/proxy.ts (x-vm-url).
  */
-export default function GuestLayout({ children }: LayoutProps<"/m">) {
+export default async function GuestLayout({ children }: LayoutProps<"/m">) {
+  const h = await headers();
+  const url = new URL(h.get("x-vm-url") ?? "/", "http://x");
+  const slug = url.pathname.split("/")[2] ?? "";
+  const r = slug ? await getGuestRestaurantRow(slug) : null;
+  const lang = r
+    ? resolveGuestLocale({
+        enabled: r.enabledLocales,
+        defaultLocale: r.defaultLocale,
+        lang: url.searchParams.get("lang"),
+        acceptLanguage: h.get("accept-language"),
+      })
+    : "de";
   return (
-    <html lang="de" suppressHydrationWarning>
+    <html lang={lang} dir={isRtl(lang) ? "rtl" : "ltr"} suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );

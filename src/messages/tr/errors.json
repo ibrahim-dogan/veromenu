@@ -14,5 +14,7 @@
   "aiFailed": "Yapay zekâ isteği başarısız oldu.",
   "aiCreditsExhausted": "Bu ayki yapay zekâ kredilerin bitti.",
   "accountDisabled": "Bu hesap devre dışı.",
-  "lastOwner": "Son sahip kaldırılamaz."
+  "lastOwner": "Son sahip kaldırılamaz.",
+  "slugTaken": "Bu adres zaten kullanılıyor.",
+  "alreadyMember": "Bu kişi zaten ekipte."
 }

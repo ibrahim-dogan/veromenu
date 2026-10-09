@@ -163,13 +163,11 @@ function UploadCard({ restaurantId }: { restaurantId: string }) {
 }
 
 function FileThumb({ file, done, onRemove }: { file: File; done: boolean; onRemove?: () => void }) {
-  const [url, setUrl] = useState<string | null>(null);
-  useEffect(() => {
-    if (!file.type.startsWith("image/") || file.type === "image/heic") return;
-    const u = URL.createObjectURL(file);
-    setUrl(u);
-    return () => URL.revokeObjectURL(u);
-  }, [file]);
+  const url = useMemo(
+    () => (file.type.startsWith("image/") && file.type !== "image/heic" ? URL.createObjectURL(file) : null),
+    [file],
+  );
+  useEffect(() => () => void (url && URL.revokeObjectURL(url)), [url]);
   return (
     <li className="relative overflow-hidden rounded-lg border border-stone-200 bg-white">
       <div className="flex aspect-[4/3] items-center justify-center bg-stone-100">

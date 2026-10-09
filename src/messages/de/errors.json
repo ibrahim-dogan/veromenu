@@ -14,5 +14,7 @@
   "aiFailed": "Die KI-Anfrage ist fehlgeschlagen.",
   "aiCreditsExhausted": "Deine KI-Credits für diesen Monat sind aufgebraucht.",
   "accountDisabled": "Dieses Konto ist deaktiviert.",
-  "lastOwner": "Der letzte Inhaber kann nicht entfernt werden."
+  "lastOwner": "Der letzte Inhaber kann nicht entfernt werden.",
+  "slugTaken": "Diese Adresse ist bereits vergeben.",
+  "alreadyMember": "Diese Person ist bereits im Team."
 }

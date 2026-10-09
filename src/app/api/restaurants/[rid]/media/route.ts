@@ -18,7 +18,7 @@ async function ctxWithAny(rid: string, perms: Permission[]) {
 /** GET /api/restaurants/[rid]/media?type=image|pdf|any&kind=upload|ai_generated → { items: MediaDto[] } */
 export async function GET(req: Request, { params }: RouteContext<"/api/restaurants/[rid]/media">) {
   const { rid } = await params;
-  const r = await ctxWithAny(rid, ["menu.view", "menu.edit", "media.manage"]);
+  const r = await ctxWithAny(rid, ["menu.view", "menu.edit", "media.manage", "settings.manage"]);
   if ("error" in r) return r.error;
   const url = new URL(req.url);
   const typeParam = url.searchParams.get("type");

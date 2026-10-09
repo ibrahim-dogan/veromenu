@@ -1,9 +1,8 @@
 import type { ReactNode } from "react";
 
-/** Sets <html lang/dir> before first paint (the guest root layout cannot read ?lang=). */
-export function HtmlLang({ lang, dir }: { lang: string; dir: "ltr" | "rtl" }) {
-  const js = `document.documentElement.lang=${JSON.stringify(lang)};document.documentElement.dir=${JSON.stringify(dir)};`;
-  return <script dangerouslySetInnerHTML={{ __html: js }} />;
+/** Kept for API compatibility: <html lang/dir> is now set server-side by src/app/m/layout.tsx. */
+export function HtmlLang(_props: { lang: string; dir: "ltr" | "rtl" }) {
+  return null;
 }
 
 /** Neutral full-screen message (unknown menu, temporarily unavailable …). */

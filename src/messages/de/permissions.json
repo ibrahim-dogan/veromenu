@@ -1,0 +1,45 @@
+{
+  "menu": {
+    "view": "Speisekarte ansehen",
+    "edit": "Speisekarte bearbeiten",
+    "availability": "Ausverkauft markieren"
+  },
+  "translations": {
+    "manage": "Übersetzungen verwalten"
+  },
+  "allergens": {
+    "review": "Allergene prüfen & freigeben"
+  },
+  "media": {
+    "manage": "Bilder verwalten"
+  },
+  "tables": {
+    "manage": "Tische & QR-Codes verwalten"
+  },
+  "orders": {
+    "view": "Bestellungen ansehen",
+    "manage": "Bestellungen bearbeiten"
+  },
+  "stats": {
+    "view": "Statistiken ansehen"
+  },
+  "settings": {
+    "manage": "Restaurant-Einstellungen"
+  },
+  "theme": {
+    "manage": "Design & Theme"
+  },
+  "team": {
+    "manage": "Team & Rollen verwalten"
+  },
+  "ai": {
+    "use": "KI-Funktionen nutzen"
+  },
+  "group": {
+    "menu": "Speisekarte",
+    "quality": "Qualität",
+    "operations": "Betrieb",
+    "insights": "Auswertung",
+    "administration": "Verwaltung"
+  }
+}

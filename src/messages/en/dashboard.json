@@ -1,0 +1,9 @@
+{
+  "pickTitle": "Your restaurants",
+  "pickEmpty": "You don't have a restaurant yet.",
+  "createTitle": "Create restaurant",
+  "createCta": "Create restaurant",
+  "adminMode": "Admin mode: you are viewing this restaurant with full permissions.",
+  "plan": "Plan",
+  "role": "Role"
+}

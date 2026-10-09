@@ -1,0 +1,9 @@
+{
+  "pickTitle": "Deine Restaurants",
+  "pickEmpty": "Du hast noch kein Restaurant.",
+  "createTitle": "Restaurant anlegen",
+  "createCta": "Restaurant erstellen",
+  "adminMode": "Admin-Modus: Du siehst dieses Restaurant mit vollen Rechten.",
+  "plan": "Tarif",
+  "role": "Rolle"
+}

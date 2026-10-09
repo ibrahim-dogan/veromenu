@@ -1,0 +1,45 @@
+{
+  "menu": {
+    "view": "View menu",
+    "edit": "Edit menu",
+    "availability": "Mark items sold out"
+  },
+  "translations": {
+    "manage": "Manage translations"
+  },
+  "allergens": {
+    "review": "Review & approve allergens"
+  },
+  "media": {
+    "manage": "Manage images"
+  },
+  "tables": {
+    "manage": "Manage tables & QR codes"
+  },
+  "orders": {
+    "view": "View orders",
+    "manage": "Handle orders"
+  },
+  "stats": {
+    "view": "View statistics"
+  },
+  "settings": {
+    "manage": "Restaurant settings"
+  },
+  "theme": {
+    "manage": "Design & theme"
+  },
+  "team": {
+    "manage": "Manage team & roles"
+  },
+  "ai": {
+    "use": "Use AI features"
+  },
+  "group": {
+    "menu": "Menu",
+    "quality": "Quality",
+    "operations": "Operations",
+    "insights": "Insights",
+    "administration": "Administration"
+  }
+}

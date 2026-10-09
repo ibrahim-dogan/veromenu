@@ -1,0 +1,18 @@
+{
+  "unexpected": "Unexpected error. Please try again.",
+  "forbidden": "You don't have permission to do that.",
+  "validation": "Please check your input.",
+  "notFound": "Not found.",
+  "invalidCredentials": "Email or password is incorrect.",
+  "emailTaken": "This email is already registered.",
+  "weakPassword": "The password must be at least 8 characters.",
+  "tokenInvalid": "The link is invalid or has expired.",
+  "rateLimited": "Too many attempts. Please wait a moment.",
+  "planLimit": "Your plan's limit has been reached.",
+  "featureNotInPlan": "This feature is not included in your plan.",
+  "aiNotConfigured": "AI is not configured yet.",
+  "aiFailed": "The AI request failed.",
+  "aiCreditsExhausted": "Your AI credits for this month are used up.",
+  "accountDisabled": "This account is disabled.",
+  "lastOwner": "The last owner cannot be removed."
+}

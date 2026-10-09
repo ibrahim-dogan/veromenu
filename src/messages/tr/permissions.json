@@ -1,0 +1,45 @@
+{
+  "menu": {
+    "view": "Menüyü görüntüle",
+    "edit": "Menüyü düzenle",
+    "availability": "Tükendi olarak işaretle"
+  },
+  "translations": {
+    "manage": "Çevirileri yönet"
+  },
+  "allergens": {
+    "review": "Alerjenleri kontrol et & onayla"
+  },
+  "media": {
+    "manage": "Görselleri yönet"
+  },
+  "tables": {
+    "manage": "Masaları & QR kodları yönet"
+  },
+  "orders": {
+    "view": "Siparişleri görüntüle",
+    "manage": "Siparişleri yönet"
+  },
+  "stats": {
+    "view": "İstatistikleri görüntüle"
+  },
+  "settings": {
+    "manage": "Restoran ayarları"
+  },
+  "theme": {
+    "manage": "Tasarım & tema"
+  },
+  "team": {
+    "manage": "Ekibi & rolleri yönet"
+  },
+  "ai": {
+    "use": "Yapay zekâ özelliklerini kullan"
+  },
+  "group": {
+    "menu": "Menü",
+    "quality": "Kalite",
+    "operations": "Operasyon",
+    "insights": "Analiz",
+    "administration": "Yönetim"
+  }
+}

@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+/* App (dashboard/admin/landing) design tokens. Guest-menu themes define their own CSS variables. */
+@theme {
+  --color-brand-50: #f1f7f3;
+  --color-brand-100: #dcebe1;
+  --color-brand-200: #b9d7c4;
+  --color-brand-300: #8dbb9f;
+  --color-brand-400: #5f9a78;
+  --color-brand-500: #3f7d5c;
+  --color-brand-600: #2f6449;
+  --color-brand-700: #27513c;
+  --color-brand-800: #214132;
+  --color-brand-900: #1b362a;
+  --color-accent-400: #f0b65a;
+  --color-accent-500: #e9a23b;
+  --color-accent-600: #cc8420;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: #fafaf7;
+  color: #1c1917;
+}
+
+@layer components {
+  .focus-ring {
+    @apply outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2;
+  }
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.45);
+  backdrop-filter: blur(2px);
+}

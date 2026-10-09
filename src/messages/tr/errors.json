@@ -1,0 +1,18 @@
+{
+  "unexpected": "Beklenmeyen bir hata oluştu. Lütfen tekrar dene.",
+  "forbidden": "Bunun için yetkin yok.",
+  "validation": "Lütfen girdiklerini kontrol et.",
+  "notFound": "Bulunamadı.",
+  "invalidCredentials": "E-posta veya şifre hatalı.",
+  "emailTaken": "Bu e-posta zaten kayıtlı.",
+  "weakPassword": "Şifre en az 8 karakter olmalı.",
+  "tokenInvalid": "Bağlantı geçersiz veya süresi dolmuş.",
+  "rateLimited": "Çok fazla deneme. Lütfen biraz bekle.",
+  "planLimit": "Paketinin limitine ulaşıldı.",
+  "featureNotInPlan": "Bu özellik paketinde yok.",
+  "aiNotConfigured": "Yapay zekâ henüz yapılandırılmadı.",
+  "aiFailed": "Yapay zekâ isteği başarısız oldu.",
+  "aiCreditsExhausted": "Bu ayki yapay zekâ kredilerin bitti.",
+  "accountDisabled": "Bu hesap devre dışı.",
+  "lastOwner": "Son sahip kaldırılamaz."
+}

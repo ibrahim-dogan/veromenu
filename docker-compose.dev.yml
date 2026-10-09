@@ -1,0 +1,15 @@
+# Local development: only Postgres. Run the app with `pnpm dev`.
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: veromenu
+      POSTGRES_PASSWORD: veromenu
+      POSTGRES_DB: veromenu
+    ports:
+      - "5433:5432"
+    volumes:
+      - vm_dev_pg:/var/lib/postgresql/data
+volumes:
+  vm_dev_pg:

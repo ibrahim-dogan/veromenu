@@ -1,0 +1,9 @@
+{
+  "pickTitle": "Restoranların",
+  "pickEmpty": "Henüz bir restoranın yok.",
+  "createTitle": "Restoran oluştur",
+  "createCta": "Restoran oluştur",
+  "adminMode": "Admin modu: Bu restoranı tam yetkiyle görüntülüyorsun.",
+  "plan": "Paket",
+  "role": "Rol"
+}

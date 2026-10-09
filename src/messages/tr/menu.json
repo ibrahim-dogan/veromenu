@@ -106,7 +106,7 @@
     "unknown": "Henüz girilmedi. Misafirler „Alerjen bilgisi personelden alınabilir“ notunu görür.",
     "ai_suggested": "Yapay zekâ bir öneri sundu. Lütfen kontrol edip onayla – misafirler bilgileri ancak o zaman görür.",
     "needs_review": "Tarif değiştirildi. Lütfen bilgileri tekrar kontrol edip onayla.",
-    "confirmed": ""
+    "confirmed": "Onaylandı – misafirler bu alerjenleri ve katkı maddelerini görür."
   },
   "confirmedLabel": "Onaylandı",
   "confirmedNone": "Onaylandı: beyanı zorunlu alerjen veya katkı maddesi yok.",

@@ -1,0 +1,14 @@
+{
+  "byAuthor": "by {author}",
+  "version": "Version {version}",
+  "fontHint": "Headings + body text",
+  "fonts": {
+    "elegant": "Elegant",
+    "editorial": "Editorial",
+    "modern": "Modern",
+    "clean": "Clean",
+    "friendly": "Friendly",
+    "chalk": "Chalk",
+    "neon": "Neon"
+  }
+}

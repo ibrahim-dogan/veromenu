@@ -106,7 +106,7 @@
     "unknown": "Noch nicht erfasst. Gäste sehen den Hinweis „Allergen-Informationen beim Personal erhältlich“.",
     "ai_suggested": "Die KI hat einen Vorschlag gemacht. Bitte prüfen und bestätigen – erst dann sehen Gäste die Angaben.",
     "needs_review": "Rezept wurde geändert. Bitte die Angaben erneut prüfen und bestätigen.",
-    "confirmed": ""
+    "confirmed": "Bestätigt – Gäste sehen diese Allergene und Zusatzstoffe."
   },
   "confirmedLabel": "Bestätigt",
   "confirmedNone": "Bestätigt: keine kennzeichnungspflichtigen Allergene oder Zusatzstoffe.",

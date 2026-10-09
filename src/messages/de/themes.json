@@ -1,0 +1,14 @@
+{
+  "byAuthor": "von {author}",
+  "version": "Version {version}",
+  "fontHint": "Überschrift + Fließtext",
+  "fonts": {
+    "elegant": "Elegant",
+    "editorial": "Editorial",
+    "modern": "Modern",
+    "clean": "Schlicht",
+    "friendly": "Freundlich",
+    "chalk": "Kreide",
+    "neon": "Neon"
+  }
+}

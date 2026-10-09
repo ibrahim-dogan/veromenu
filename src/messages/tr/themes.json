@@ -1,0 +1,14 @@
+{
+  "byAuthor": "{author} tarafından",
+  "version": "Sürüm {version}",
+  "fontHint": "Başlık + metin",
+  "fonts": {
+    "elegant": "Zarif",
+    "editorial": "Editoryal",
+    "modern": "Modern",
+    "clean": "Sade",
+    "friendly": "Samimi",
+    "chalk": "Tebeşir",
+    "neon": "Neon"
+  }
+}

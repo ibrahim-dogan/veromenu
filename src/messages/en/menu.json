@@ -106,7 +106,7 @@
     "unknown": "Not recorded yet. Guests see “Allergen information available from staff”.",
     "ai_suggested": "The AI made a suggestion. Please check and confirm – only then will guests see it.",
     "needs_review": "The recipe was changed. Please check and confirm the information again.",
-    "confirmed": ""
+    "confirmed": "Confirmed – guests see these allergens and additives."
   },
   "confirmedLabel": "Confirmed",
   "confirmedNone": "Confirmed: no declarable allergens or additives.",

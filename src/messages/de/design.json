@@ -1,0 +1,19 @@
+{
+  "title": "Design",
+  "description": "Wähle ein Theme für deine digitale Speisekarte und passe Farben, Schriften und Layout an. Die Vorschau zeigt Änderungen sofort.",
+  "gallery": "Themes",
+  "galleryHint": "Jedes Theme lässt sich mit eigenen Farben und Schriften anpassen.",
+  "active": "Aktiv",
+  "settings": "Einstellungen · {theme}",
+  "settingsHint": "Änderungen werden erst nach dem Speichern für Gäste sichtbar.",
+  "reset": "Auf Standard zurücksetzen",
+  "unsaved": "Ungespeicherte Änderungen",
+  "discard": "Verwerfen",
+  "save": "Speichern",
+  "saved": "Design gespeichert",
+  "preview": "Live-Vorschau",
+  "previewHint": "So sehen deine Gäste die Speisekarte.",
+  "openPreview": "Vorschau in neuem Tab öffnen",
+  "devicePhone": "Smartphone-Ansicht",
+  "deviceDesktop": "Desktop-Ansicht"
+}

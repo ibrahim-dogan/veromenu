@@ -1,0 +1,19 @@
+{
+  "title": "Design",
+  "description": "Choose a theme for your digital menu and adjust colours, fonts and layout. The preview updates instantly.",
+  "gallery": "Themes",
+  "galleryHint": "Every theme can be customised with your own colours and fonts.",
+  "active": "Active",
+  "settings": "Settings · {theme}",
+  "settingsHint": "Changes become visible to guests once you save.",
+  "reset": "Reset to defaults",
+  "unsaved": "Unsaved changes",
+  "discard": "Discard",
+  "save": "Save",
+  "saved": "Design saved",
+  "preview": "Live preview",
+  "previewHint": "This is how your guests see the menu.",
+  "openPreview": "Open preview in a new tab",
+  "devicePhone": "Phone view",
+  "deviceDesktop": "Desktop view"
+}

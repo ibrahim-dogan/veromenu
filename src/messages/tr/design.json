@@ -1,0 +1,19 @@
+{
+  "title": "Tasarım",
+  "description": "Dijital menün için bir tema seç; renkleri, yazı tiplerini ve düzeni ayarla. Önizleme değişiklikleri anında gösterir.",
+  "gallery": "Temalar",
+  "galleryHint": "Her tema kendi renklerin ve yazı tiplerinle özelleştirilebilir.",
+  "active": "Etkin",
+  "settings": "Ayarlar · {theme}",
+  "settingsHint": "Değişiklikler kaydettikten sonra misafirlere görünür.",
+  "reset": "Varsayılanlara sıfırla",
+  "unsaved": "Kaydedilmemiş değişiklikler",
+  "discard": "Vazgeç",
+  "save": "Kaydet",
+  "saved": "Tasarım kaydedildi",
+  "preview": "Canlı önizleme",
+  "previewHint": "Misafirlerin menüyü böyle görür.",
+  "openPreview": "Önizlemeyi yeni sekmede aç",
+  "devicePhone": "Telefon görünümü",
+  "deviceDesktop": "Masaüstü görünümü"
+}

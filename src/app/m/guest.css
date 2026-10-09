@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+/*
+ * Guest menu base styles. Themes set the --g-* variables on their root element (see src/themes);
+ * the utilities below (bg-g-bg, text-g-primary, font-g-display …) read them.
+ */
+@theme inline {
+  --color-g-bg: var(--g-bg);
+  --color-g-surface: var(--g-surface);
+  --color-g-text: var(--g-text);
+  --color-g-muted: var(--g-muted);
+  --color-g-border: var(--g-border);
+  --color-g-primary: var(--g-primary);
+  --color-g-on-primary: var(--g-on-primary);
+  --color-g-accent: var(--g-accent);
+  --color-g-on-accent: var(--g-on-accent);
+  --font-g-display: var(--g-font-display);
+  --font-g-body: var(--g-font-body);
+}
+
+:root {
+  --g-bg: #fbf8f2;
+  --g-surface: #ffffff;
+  --g-text: #1c1917;
+  --g-muted: #6b645c;
+  --g-border: #e7e1d7;
+  --g-primary: #7a2e2e;
+  --g-on-primary: #ffffff;
+  --g-accent: #b08d57;
+  --g-on-accent: #111111;
+  --g-radius: 10px;
+  --g-font-display: ui-serif, Georgia, serif;
+  --g-font-body: ui-sans-serif, system-ui, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:focus-within {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  background: #fbf8f2;
+}
+.vm-root {
+  text-rendering: optimizeLegibility;
+}
+.vm-root :focus-visible {
+  outline: 2px solid var(--g-primary);
+  outline-offset: 2px;
+}
+
+/* Hide horizontal scrollbars of the category chips */
+.vm-noscrollbar {
+  scrollbar-width: none;
+}
+.vm-noscrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* "Allergens unknown – ask staff" marker, shown by the filter on rows without confirmed info */
+.vm-unknown {
+  display: none;
+}
+[data-vm-unknown] .vm-unknown {
+  display: inline-flex;
+}
+
+/* Quick-add button feedback (runtime sets data-vm-added for a moment) */
+.vm-add .vm-add-check {
+  display: none;
+}
+.vm-add[data-vm-added] .vm-add-check {
+  display: inline;
+}
+.vm-add[data-vm-added] .vm-add-plus {
+  display: none;
+}
+
+/* Bottom sheet */
+.vm-sheet::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vm-sheet[open] {
+    animation: vm-sheet-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  @keyframes vm-sheet-in {
+    from {
+      transform: translateY(24px);
+      opacity: 0.4;
+    }
+  }
+}
+
+/* Classic: warm paper */
+.vm-paper {
+  background-image:
+    radial-gradient(1200px 600px at 10% -10%, rgb(255 255 255 / 0.55), transparent 60%),
+    radial-gradient(900px 500px at 110% 20%, rgb(176 141 87 / 0.1), transparent 60%);
+  background-attachment: fixed;
+}
+
+/* Bistro: chalkboard smudges + neon glow */
+.vm-chalk {
+  background-image:
+    radial-gradient(800px 400px at 20% 0%, rgb(255 255 255 / 0.06), transparent 70%),
+    radial-gradient(600px 500px at 100% 60%, rgb(255 255 255 / 0.035), transparent 70%);
+  background-attachment: fixed;
+}
+.vm-neon {
+  text-shadow:
+    0 0 4px color-mix(in srgb, var(--g-accent) 70%, transparent),
+    0 0 14px color-mix(in srgb, var(--g-accent) 55%, transparent),
+    0 0 28px color-mix(in srgb, var(--g-accent) 35%, transparent);
+}

@@ -19,8 +19,8 @@ export type NavItem = {
 export const DASHBOARD_NAV: NavItem[] = [
   { key: "overview", href: "", icon: "LayoutDashboard", group: "main" },
   { key: "menu", href: "menu", icon: "BookOpen", permission: "menu.view", group: "main" },
-  { key: "assistant", href: "assistant", icon: "Sparkles", permission: "ai.use", group: "main" },
-  { key: "import", href: "import", icon: "FileUp", permission: "ai.use", group: "main" },
+  { key: "assistant", href: "assistant", icon: "Sparkles", permission: "ai.use", feature: "ai_agent", group: "main" },
+  { key: "import", href: "import", icon: "FileUp", permission: "ai.use", feature: "ai_import", group: "main" },
   { key: "media", href: "media", icon: "Images", permission: "media.manage", group: "main" },
   { key: "review", href: "review", icon: "ShieldCheck", permission: "allergens.review", group: "quality" },
   { key: "translations", href: "translations", icon: "Languages", permission: "translations.manage", group: "quality" },

@@ -1,0 +1,30 @@
+{
+  "button": "YZ görseli",
+  "title": "Yapay zekâ ile görsel oluştur",
+  "cancel": "İptal",
+  "generate": "Görsel oluştur",
+  "regenerate": "Yeniden oluştur",
+  "accept": "Kullan",
+  "applied": "Görsel uygulandı",
+  "planTitle": "Paketinde bulunmuyor",
+  "planHint": "Yapay zekâ görselleri Starter paketinden itibaren kullanılabilir.",
+  "permissionTitle": "Yetki yok",
+  "permissionHint": "Yapay zekâ görselleri için „Yapay zekâ kullan“ ve „Görselleri yönet“ yetkileri gerekir.",
+  "subjectLabel": "Ne görünsün?",
+  "subjectHint": "Yemeği servis edildiği gibi anlat – ör. garnitür, tabak, süsleme.",
+  "styleLabel": "Stil",
+  "styles": {
+    "bright": "Aydınlık ve doğal",
+    "rustic": "Rustik ahşap masa",
+    "dark": "Koyu ve şık",
+    "minimal": "Minimal beyaz"
+  },
+  "referenceLabel": "Referans fotoğraf (isteğe bağlı)",
+  "useCurrent": "Mevcut görseli referans olarak kullan",
+  "referenceHint": "Yemeğinin gerçek bir fotoğrafıyla sonuç, tabağına çok daha fazla benzer.",
+  "previewAlt": "Yapay zekâ görselinin önizlemesi",
+  "generating": "Görsel oluşturuluyor … yaklaşık 10–30 saniye",
+  "aiLabel": "Yapay zekâ ile oluşturulmuş temsili görsel",
+  "failed": "Görsel oluşturulamadı. Lütfen tekrar dene, gerekirse farklı bir açıklamayla.",
+  "transparencyNote": "Misafirlerin bu görselde „Yapay zekâ ile oluşturulmuş temsili görsel“ notunu görür (AB Yapay Zekâ Yönetmeliği şeffaflık yükümlülüğü)."
+}

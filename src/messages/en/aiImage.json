@@ -1,0 +1,30 @@
+{
+  "button": "AI image",
+  "title": "Create image with AI",
+  "cancel": "Cancel",
+  "generate": "Create image",
+  "regenerate": "Create again",
+  "accept": "Use image",
+  "applied": "Image applied",
+  "planTitle": "Not included in your plan",
+  "planHint": "AI images are available from the Starter plan.",
+  "permissionTitle": "No permission",
+  "permissionHint": "AI images require the “Use AI” and “Manage images” permissions.",
+  "subjectLabel": "What should be shown?",
+  "subjectHint": "Describe the dish as it's served – e.g. sides, plate, garnish.",
+  "styleLabel": "Style",
+  "styles": {
+    "bright": "Bright & natural",
+    "rustic": "Rustic wooden table",
+    "dark": "Dark & elegant",
+    "minimal": "Minimal white"
+  },
+  "referenceLabel": "Reference photo (optional)",
+  "useCurrent": "Use current image as reference",
+  "referenceHint": "With a real photo of your dish the result looks much closer to your plate.",
+  "previewAlt": "Preview of the AI image",
+  "generating": "Creating image … about 10–30 seconds",
+  "aiLabel": "AI-generated illustration",
+  "failed": "The image couldn't be created. Please try again, maybe with a different description.",
+  "transparencyNote": "Guests will see the note “AI-generated illustration” on this image (transparency obligation under the EU AI Act)."
+}

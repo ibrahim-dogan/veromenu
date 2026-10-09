@@ -17,12 +17,19 @@ export function useAction<I, O>(
 ) {
   const t = useTranslations("errors");
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const [refreshing, startTransition] = useTransition();
+  const [running, setRunning] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
   async function run(input: I): Promise<ActionResult<O>> {
     setFieldErrors({});
-    const res = await fn(input);
+    setRunning(true);
+    let res: ActionResult<O>;
+    try {
+      res = await fn(input);
+    } finally {
+      setRunning(false);
+    }
     if (res.ok) {
       if (opts.success) toast.success(opts.success);
       opts.onSuccess?.(res.data);
@@ -34,5 +41,5 @@ export function useAction<I, O>(
     }
     return res;
   }
-  return { run, pending, fieldErrors };
+  return { run, pending: running || refreshing, fieldErrors };
 }

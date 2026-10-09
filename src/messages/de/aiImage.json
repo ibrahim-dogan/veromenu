@@ -1,0 +1,30 @@
+{
+  "button": "KI-Bild",
+  "title": "Bild mit KI erstellen",
+  "cancel": "Abbrechen",
+  "generate": "Bild erstellen",
+  "regenerate": "Neu erstellen",
+  "accept": "Übernehmen",
+  "applied": "Bild übernommen",
+  "planTitle": "In deinem Tarif nicht enthalten",
+  "planHint": "KI-Bilder gibt es ab dem Starter-Tarif.",
+  "permissionTitle": "Keine Berechtigung",
+  "permissionHint": "Für KI-Bilder brauchst du die Rechte „KI nutzen“ und „Bilder verwalten“.",
+  "subjectLabel": "Was soll zu sehen sein?",
+  "subjectHint": "Beschreib das Gericht so, wie es serviert wird – z. B. Beilagen, Teller, Garnitur.",
+  "styleLabel": "Stil",
+  "styles": {
+    "bright": "Hell & natürlich",
+    "rustic": "Rustikal Holztisch",
+    "dark": "Dunkel & edel",
+    "minimal": "Minimal weiß"
+  },
+  "referenceLabel": "Referenzfoto (optional)",
+  "useCurrent": "Aktuelles Bild als Referenz verwenden",
+  "referenceHint": "Mit einem echten Foto deines Gerichts sieht das Ergebnis deinem Teller deutlich ähnlicher.",
+  "previewAlt": "Vorschau des KI-Bildes",
+  "generating": "Bild wird erstellt … ca. 10–30 Sekunden",
+  "aiLabel": "KI-generiertes Symbolbild",
+  "failed": "Das Bild konnte nicht erstellt werden. Versuch es noch einmal, evtl. mit einer anderen Beschreibung.",
+  "transparencyNote": "Deine Gäste sehen bei diesem Bild den Hinweis „KI-generiertes Symbolbild“ (Transparenzpflicht nach EU-KI-Verordnung)."
+}

@@ -1,0 +1,33 @@
+{
+  "title": "Kontroller",
+  "description": "Yapay zekânın emin olmadığı her şey buraya düşer. Bilgiler ancak senin kontrolünden sonra onaylanmış sayılır.",
+  "tab": {
+    "allergens": "Alerjenler",
+    "translations": "Çeviriler",
+    "other": "Diğer"
+  },
+  "kind": {
+    "menu_import": "Menü içe aktarma",
+    "other": "Diğer"
+  },
+  "dismiss": "Yoksay",
+  "dismissHint": "Görevi değişiklik yapmadan kapat",
+  "dismissed": "Görev yoksayıldı",
+  "resolved": "Tamamlandı",
+  "markResolved": "Tamamlandı olarak işaretle",
+  "openImport": "İçe aktarmaya git",
+  "conflict": "Dikkat: YZ {list} tespit ediyor, bu mevcut onayda yok.",
+  "source": "Orijinal",
+  "translation": "Çeviri",
+  "backTranslation": "Geri çeviri",
+  "backTranslationEdited": "Metin değişti – geri çeviri artık geçerli değil.",
+  "acceptAsIs": "Bu hâliyle onayla",
+  "saveEdited": "Düzeltmeyi kaydet ve onayla",
+  "accepted": "Çeviri onaylandı",
+  "outdated": "Güncel değil",
+  "emptyAllergens": "Açık alerjen kontrolü yok",
+  "emptyAllergensHint": "Belirsiz YZ önerileri burada otomatik olarak görünür.",
+  "emptyTranslations": "Açık çeviri kontrolü yok",
+  "emptyTranslationsHint": "Düşük puanlı veya sorunlu çeviriler burada görünür.",
+  "emptyOther": "Başka açık görev yok"
+}

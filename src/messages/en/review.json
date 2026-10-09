@@ -1,0 +1,33 @@
+{
+  "title": "Reviews",
+  "description": "Everything the AI is unsure about lands here. Information only counts as confirmed after your review.",
+  "tab": {
+    "allergens": "Allergens",
+    "translations": "Translations",
+    "other": "Other"
+  },
+  "kind": {
+    "menu_import": "Menu import",
+    "other": "Other"
+  },
+  "dismiss": "Dismiss",
+  "dismissHint": "Close the task without changes",
+  "dismissed": "Task dismissed",
+  "resolved": "Done",
+  "markResolved": "Mark done",
+  "openImport": "Open import",
+  "conflict": "Attention: the AI detects {list}, which is missing from the current confirmation.",
+  "source": "Original",
+  "translation": "Translation",
+  "backTranslation": "Back-translation",
+  "backTranslationEdited": "Text changed – the back-translation no longer applies.",
+  "acceptAsIs": "Approve as is",
+  "saveEdited": "Save correction & approve",
+  "accepted": "Translation approved",
+  "outdated": "Outdated",
+  "emptyAllergens": "No open allergen reviews",
+  "emptyAllergensHint": "Uncertain AI suggestions appear here automatically.",
+  "emptyTranslations": "No open translation reviews",
+  "emptyTranslationsHint": "Translations with a low score or issues appear here.",
+  "emptyOther": "No other open tasks"
+}

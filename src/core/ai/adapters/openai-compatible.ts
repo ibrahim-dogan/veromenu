@@ -5,8 +5,16 @@ type OAResponse = {
   choices?: { message?: { content?: string | null; images?: { image_url?: { url?: string } }[] } }[];
   usage?: { prompt_tokens?: number; completion_tokens?: number; cost?: number };
   data?: { b64_json?: string }[];
-  error?: { message?: string };
+  error?: { message?: string; code?: number | string; metadata?: { raw?: unknown; provider_name?: string } };
 };
+
+/** OpenRouter wraps upstream failures as "Provider returned error" – append the upstream detail for debugging. */
+function errorText(e: NonNullable<OAResponse["error"]>) {
+  const raw = e.metadata?.raw;
+  const detail = raw === undefined ? "" : typeof raw === "string" ? raw : JSON.stringify(raw);
+  const provider = e.metadata?.provider_name ? ` [${e.metadata.provider_name}]` : "";
+  return `${e.message ?? "error"}${provider}${detail ? `: ${detail.slice(0, 300)}` : ""}`;
+}
 
 function headers(p: ProviderConfig) {
   return {
@@ -30,7 +38,7 @@ async function post(p: ProviderConfig, path: string, body: unknown, timeoutMs = 
   } catch {
     throw new AiError(`${p.name}: invalid response (${res.status}): ${text.slice(0, 200)}`, res.status);
   }
-  if (!res.ok || json.error) throw new AiError(`${p.name}: ${json.error?.message ?? res.statusText}`, res.status);
+  if (!res.ok || json.error) throw new AiError(`${p.name}: ${json.error ? errorText(json.error) : res.statusText}`, res.status);
   return json;
 }
 

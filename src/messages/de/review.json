@@ -1,0 +1,33 @@
+{
+  "title": "Prüfungen",
+  "description": "Hier landet alles, bei dem die KI unsicher ist. Erst nach deiner Prüfung gelten Angaben als bestätigt.",
+  "tab": {
+    "allergens": "Allergene",
+    "translations": "Übersetzungen",
+    "other": "Sonstiges"
+  },
+  "kind": {
+    "menu_import": "Karten-Import",
+    "other": "Sonstiges"
+  },
+  "dismiss": "Verwerfen",
+  "dismissHint": "Aufgabe ohne Änderung schließen",
+  "dismissed": "Aufgabe verworfen",
+  "resolved": "Erledigt",
+  "markResolved": "Erledigt",
+  "openImport": "Zum Import",
+  "conflict": "Achtung: Die KI erkennt {list}, das fehlt in der bisherigen Bestätigung.",
+  "source": "Original",
+  "translation": "Übersetzung",
+  "backTranslation": "Rückübersetzung",
+  "backTranslationEdited": "Text geändert – die Rückübersetzung gilt nicht mehr.",
+  "acceptAsIs": "So freigeben",
+  "saveEdited": "Korrektur speichern & freigeben",
+  "accepted": "Übersetzung freigegeben",
+  "outdated": "Veraltet",
+  "emptyAllergens": "Keine offenen Allergen-Prüfungen",
+  "emptyAllergensHint": "Unsichere KI-Vorschläge erscheinen hier automatisch.",
+  "emptyTranslations": "Keine offenen Übersetzungs-Prüfungen",
+  "emptyTranslationsHint": "Übersetzungen mit niedriger Note oder Auffälligkeiten erscheinen hier.",
+  "emptyOther": "Keine sonstigen offenen Aufgaben"
+}

@@ -24,6 +24,10 @@ export function SandboxFrame({
 }) {
   const ref = useRef<HTMLIFrameElement>(null);
   const cb = useRef(onBridge);
+  const acked = useRef(false);
+  useEffect(() => {
+    acked.current = false;
+  }, [html]);
   useEffect(() => {
     cb.current = onBridge;
   });
@@ -33,6 +37,11 @@ export function SandboxFrame({
       if (!ref.current || e.source !== ref.current.contentWindow) return;
       const d = e.data as BridgeMessage | null;
       if (!d || typeof d !== "object" || typeof d.type !== "string" || !d.type.startsWith("vm:")) return;
+      // Acknowledge once like the guest host does, so the bridge stops repeating vm:ready.
+      if (d.type === "vm:ready" && !acked.current) {
+        acked.current = true;
+        ref.current.contentWindow?.postMessage({ type: "vm:cart", count: 0, totalFormatted: "" }, "*");
+      }
       cb.current?.(d);
     }
     window.addEventListener("message", onMessage);
@@ -46,7 +55,6 @@ export function SandboxFrame({
       srcDoc={html}
       sandbox="allow-scripts"
       referrerPolicy="no-referrer"
-      loading="lazy"
       tabIndex={interactive ? undefined : -1}
       aria-hidden={interactive ? undefined : true}
       className={className}

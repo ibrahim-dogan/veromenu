@@ -137,5 +137,6 @@
   "info": "Informacje",
   "aiImageNotice": "Zdjęcia oznaczone jako wygenerowane przez AI mają charakter poglądowy i mogą różnić się od podanego dania.",
   "menuFrameTitle": "Menu {name}",
-  "themeErrorText": "Nie można teraz wyświetlić menu. Zapytaj naszą obsługę."
+  "themeErrorText": "Nie można teraz wyświetlić menu. Zapytaj naszą obsługę.",
+  "aiBadge": "AI"
 }

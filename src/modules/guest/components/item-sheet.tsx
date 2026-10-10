@@ -79,7 +79,11 @@ function OpenItemSheet({ it, onClose }: { it: ClientItem; onClose: () => void })
         <div className="relative aspect-[4/3] w-full bg-black/5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={it.img} alt="" className="h-full w-full object-cover" decoding="async" />
-          {it.ai && <span className="absolute start-3 bottom-3 rounded-md bg-black/60 px-2 py-1 text-[11px] font-medium text-white backdrop-blur">{t("aiImage")}</span>}
+          {it.ai && (
+            <span title={t("aiImage")} aria-label={t("aiImage")} className="absolute start-2 bottom-2 rounded bg-black/50 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-white">
+              ✦ {t("aiBadge")}
+            </span>
+          )}
         </div>
       )}
       <div className="space-y-4 px-5 pt-5 pb-6">

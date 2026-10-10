@@ -137,5 +137,6 @@
   "info": "Informations",
   "aiImageNotice": "Les images signalées comme générées par IA sont des illustrations et peuvent différer du plat servi.",
   "menuFrameTitle": "Carte de {name}",
-  "themeErrorText": "La carte ne peut pas être affichée pour le moment. Veuillez demander à notre personnel."
+  "themeErrorText": "La carte ne peut pas être affichée pour le moment. Veuillez demander à notre personnel.",
+  "aiBadge": "IA"
 }

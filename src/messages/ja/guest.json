@@ -137,5 +137,6 @@
   "info": "インフォメーション",
   "aiImageNotice": "AI生成と表示された画像はイメージであり、実際に提供される料理とは異なる場合があります。",
   "menuFrameTitle": "{name} のメニュー",
-  "themeErrorText": "現在メニューを表示できません。スタッフにお尋ねください。"
+  "themeErrorText": "現在メニューを表示できません。スタッフにお尋ねください。",
+  "aiBadge": "AI"
 }

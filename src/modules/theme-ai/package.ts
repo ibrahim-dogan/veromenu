@@ -273,6 +273,8 @@ export function qualityChecks(pkg: ThemePackage): { errors: string[]; warnings: 
   if (!has(/\.allergens\b/)) errors.push("Allergens are never shown – render item.allergens (letters) and a legend (LMIV requirement).");
   if (!has(/allergens_confirmed/)) errors.push("item.allergens_confirmed is never checked – unconfirmed items must show the 'allergenUnknown' hint instead of letters.");
   if (!has(/data-vm-item/)) errors.push("No element has data-vm-item – guests can't open item details.");
+  if (has(/href="#c(at)?-/) && !has(/data-vm-catnav/)) errors.push('The category navigation <nav> must carry data-vm-catnav (engine handles sticky + active category).');
+  if (/scrollIntoView|IntersectionObserver/.test(pkg.files["assets/theme.js"] ?? "")) warnings.push("theme.js re-implements scroll handling – the engine's data-vm-catnav already does this.");
   if (!has(/\.available\b/)) errors.push("Sold-out state missing – check item.available and show 'soldOut'.");
   const text = hardcodedText(pkg);
   if (text.length) errors.push(`Hard-coded UI text found: ${text.map((t) => `"${t}"`).join(", ")} – every visible word must come from data or {{ 'key' | t }} (add own keys to locales/de.json, en.json, tr.json).`);

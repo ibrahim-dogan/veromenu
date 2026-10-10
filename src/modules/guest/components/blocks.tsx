@@ -160,7 +160,16 @@ export function UnknownAllergenNote({ item, t, className }: { item: GuestItem; t
 }
 
 export function AiLabel({ t, className }: { t: GuestT; className?: string }) {
-  return <span className={cn("pointer-events-none absolute start-1.5 bottom-1.5 rounded bg-black/60 px-1.5 py-0.5 text-[9px] leading-tight font-medium text-white", className)}>{t("aiImage")}</span>;
+  // Small badge (AI Act / UWG transparency); full wording in tooltip, aria-label and the info sheet.
+  return (
+    <span
+      title={t("aiImage")}
+      aria-label={t("aiImage")}
+      className={cn("pointer-events-none absolute start-1 bottom-1 rounded-[3px] bg-black/50 px-1 py-px text-[9px] leading-tight font-semibold tracking-wide text-white", className)}
+    >
+      ✦ {t("aiBadge")}
+    </span>
+  );
 }
 
 /** Image with fixed aspect box (no layout shift), lazy + async decoding, AI label (EU AI Act). */

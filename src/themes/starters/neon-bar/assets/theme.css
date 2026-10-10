@@ -93,7 +93,7 @@ main { max-width: 44rem; margin: 0 auto; padding: 0 1.25rem; }
 .is-soldout h4 { text-decoration: line-through; }
 .photo { position: relative; flex: none; margin: 0; width: 4.75rem; height: 4.75rem; }
 .photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
-.ai-label { position: absolute; inset-inline: 3px; bottom: 3px; padding: 1px 4px; border-radius: 4px; background: rgb(0 0 0 / 0.72); color: #fff; font: 500 0.55rem/1.25 system-ui, sans-serif; }
+.ai-label { position: absolute; inset-inline-start: 4px; bottom: 4px; padding: 1px 4px; border-radius: 3px; background: rgb(0 0 0 / 0.5); color: #fff; font: 600 9px/1.2 system-ui, sans-serif; letter-spacing: 0.02em; pointer-events: none; }
 
 /* ---------- footer */
 .site-footer { max-width: 44rem; margin: 3rem auto 0; padding: 2rem 1.25rem 3rem; border-top: 1px solid var(--line); display: grid; gap: 1.5rem; font-size: 0.9rem; color: var(--muted); }

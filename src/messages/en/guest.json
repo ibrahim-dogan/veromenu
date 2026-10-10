@@ -135,7 +135,8 @@
     "alcohol": "Contains alcohol"
   },
   "info": "Information",
-  "aiImageNotice": "Images marked as AI-generated are illustrative and may differ from the dish served.",
+  "aiImageNotice": "Images marked “AI” are AI-generated illustrations and may differ from the dish served.",
   "menuFrameTitle": "Menu of {name}",
-  "themeErrorText": "The menu can't be displayed right now. Please ask our staff."
+  "themeErrorText": "The menu can't be displayed right now. Please ask our staff.",
+  "aiBadge": "AI"
 }

@@ -102,7 +102,7 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.25rem; }
 .is-soldout h4, .is-soldout .price, .is-soldout .photo { opacity: 0.55; }
 .photo { position: relative; flex: none; margin: 0; width: 5rem; height: 5rem; }
 .photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 2px 8px rgb(60 30 10 / 0.18); }
-.ai-label { position: absolute; inset-inline: -0.25rem; bottom: -0.35rem; padding: 0.05rem 0.25rem; border-radius: 4px; background: rgb(0 0 0 / 0.65); color: #fff; font: 500 0.56rem/1.25 system-ui, sans-serif; text-align: center; }
+.ai-label { position: absolute; inset-inline-start: 4px; bottom: 4px; padding: 1px 4px; border-radius: 3px; background: rgb(0 0 0 / 0.5); color: #fff; font: 600 9px/1.2 system-ui, sans-serif; letter-spacing: 0.02em; pointer-events: none; }
 .add { flex: none; display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--basil); color: #fff; font-size: 1.35rem; line-height: 1; box-shadow: 0 2px 0 color-mix(in srgb, var(--basil) 60%, #000); transition: transform 0.12s; }
 .add:active, .add[data-vm-added] { transform: scale(0.9); background: var(--tomato); }
 .buon { margin: 3rem 0 0; text-align: center; font: 600 2.2rem var(--hand); color: var(--tomato); transform: rotate(-2deg); }

@@ -54,7 +54,9 @@ function TaskRow({
       ),
   });
   const { ensure } = catalog;
-  useEffect(() => ensure(providerId || null), [providerId]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    void ensure(providerId || null);
+  }, [providerId]); // eslint-disable-line react-hooks/exhaustive-deps
   const cat = providerId ? catalog.state[providerId] : undefined;
   const provider = providers.find((p) => p.id === providerId);
   const temp = temperature.trim() === "" ? null : Number(temperature.replace(",", "."));

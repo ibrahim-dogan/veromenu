@@ -172,6 +172,7 @@ export async function renderThemeDocument(opts: RenderThemeOptions): Promise<Ren
     locale: view.locale,
     ai: aiImageUrls(view),
     aiLabel: lookupMessage(opts.guestMessages, "aiImage") ?? "KI-generiertes Symbolbild",
+    aiBadge: lookupMessage(opts.guestMessages, "aiBadge") ?? "KI",
   };
   const js = typeof files["assets/theme.js"] === "string" && files["assets/theme.js"].trim() ? files["assets/theme.js"] : "";
   const tail = [

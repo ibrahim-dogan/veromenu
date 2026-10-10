@@ -1,7 +1,7 @@
 {
   "apiVersion": 1,
   "name": "Street Food",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "VeroMenu",
   "description": {
     "de": "Laut, bunt und kräftig: dicke Rahmen, Sticker-Preise und ein großer Bestellbutton.",
@@ -9,17 +9,114 @@
     "tr": "Gürültülü, renkli ve iri: kalın çerçeveler, etiket fiyatlar ve büyük sipariş düğmesi."
   },
   "fonts": [],
-  "controls": { "languageSwitcher": "host", "cartButton": "theme" },
+  "controls": {
+    "languageSwitcher": "host",
+    "cartButton": "theme"
+  },
   "settings": [
-    { "id": "color_background", "type": "color", "label": { "de": "Hintergrund", "en": "Background", "tr": "Arka plan" }, "default": "#ffd23f" },
-    { "id": "color_surface", "type": "color", "label": { "de": "Karten", "en": "Cards", "tr": "Kartlar" }, "default": "#ffffff" },
-    { "id": "color_text", "type": "color", "label": { "de": "Text & Rahmen", "en": "Text & outlines", "tr": "Metin ve çerçeve" }, "default": "#111111" },
-    { "id": "color_primary", "type": "color", "label": { "de": "Knallfarbe", "en": "Pop colour", "tr": "Canlı renk" }, "default": "#ff4d2e" },
-    { "id": "color_accent", "type": "color", "label": { "de": "Zweitfarbe", "en": "Second colour", "tr": "İkinci renk" }, "default": "#1b998b" },
-    { "id": "heading_font", "type": "font", "label": { "de": "Schrift Überschriften", "en": "Heading font", "tr": "Başlık yazı tipi" }, "default": "bebas-neue" },
-    { "id": "body_font", "type": "font", "label": { "de": "Schrift Fließtext", "en": "Body font", "tr": "Metin yazı tipi" }, "default": "poppins" },
-    { "id": "border_width", "type": "range", "label": { "de": "Rahmenstärke", "en": "Outline width", "tr": "Çerçeve kalınlığı" }, "default": 3, "min": 2, "max": 5, "step": 1, "unit": "px" },
-    { "id": "tilt", "type": "checkbox", "label": { "de": "Schräge Sticker", "en": "Tilted stickers", "tr": "Eğik etiketler" }, "default": true },
-    { "id": "show_images", "type": "checkbox", "label": { "de": "Bilder anzeigen", "en": "Show images", "tr": "Görselleri göster" }, "default": true }
+    {
+      "id": "color_background",
+      "type": "color",
+      "label": {
+        "de": "Hintergrund",
+        "en": "Background",
+        "tr": "Arka plan"
+      },
+      "default": "#ffd23f"
+    },
+    {
+      "id": "color_surface",
+      "type": "color",
+      "label": {
+        "de": "Karten",
+        "en": "Cards",
+        "tr": "Kartlar"
+      },
+      "default": "#ffffff"
+    },
+    {
+      "id": "color_text",
+      "type": "color",
+      "label": {
+        "de": "Text & Rahmen",
+        "en": "Text & outlines",
+        "tr": "Metin ve çerçeve"
+      },
+      "default": "#111111"
+    },
+    {
+      "id": "color_primary",
+      "type": "color",
+      "label": {
+        "de": "Knallfarbe",
+        "en": "Pop colour",
+        "tr": "Canlı renk"
+      },
+      "default": "#ff4d2e"
+    },
+    {
+      "id": "color_accent",
+      "type": "color",
+      "label": {
+        "de": "Zweitfarbe",
+        "en": "Second colour",
+        "tr": "İkinci renk"
+      },
+      "default": "#1b998b"
+    },
+    {
+      "id": "heading_font",
+      "type": "font",
+      "label": {
+        "de": "Schrift Überschriften",
+        "en": "Heading font",
+        "tr": "Başlık yazı tipi"
+      },
+      "default": "bebas-neue"
+    },
+    {
+      "id": "body_font",
+      "type": "font",
+      "label": {
+        "de": "Schrift Fließtext",
+        "en": "Body font",
+        "tr": "Metin yazı tipi"
+      },
+      "default": "poppins"
+    },
+    {
+      "id": "border_width",
+      "type": "range",
+      "label": {
+        "de": "Rahmenstärke",
+        "en": "Outline width",
+        "tr": "Çerçeve kalınlığı"
+      },
+      "default": 3,
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "id": "tilt",
+      "type": "checkbox",
+      "label": {
+        "de": "Schräge Sticker",
+        "en": "Tilted stickers",
+        "tr": "Eğik etiketler"
+      },
+      "default": true
+    },
+    {
+      "id": "show_images",
+      "type": "checkbox",
+      "label": {
+        "de": "Bilder anzeigen",
+        "en": "Show images",
+        "tr": "Görselleri göster"
+      },
+      "default": true
+    }
   ]
 }

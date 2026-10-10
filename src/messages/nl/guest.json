@@ -137,5 +137,6 @@
   "info": "Informatie",
   "aiImageNotice": "Afbeeldingen die als AI-gegenereerd zijn gemarkeerd, zijn ter illustratie en kunnen afwijken van het geserveerde gerecht.",
   "menuFrameTitle": "Menukaart van {name}",
-  "themeErrorText": "De menukaart kan momenteel niet worden weergegeven. Vraag het ons personeel."
+  "themeErrorText": "De menukaart kan momenteel niet worden weergegeven. Vraag het ons personeel.",
+  "aiBadge": "AI"
 }

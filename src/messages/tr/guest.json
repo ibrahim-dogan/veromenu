@@ -135,7 +135,8 @@
     "alcohol": "Alkol içerir"
   },
   "info": "Bilgiler",
-  "aiImageNotice": "Yapay zekâ ile üretildiği belirtilen görseller temsilidir ve servis edilen yemekten farklı olabilir.",
+  "aiImageNotice": "“YZ” ile işaretli görseller yapay zekâ ile üretilmiş temsili görsellerdir ve servis edilen yemekten farklı olabilir.",
   "menuFrameTitle": "{name} menüsü",
-  "themeErrorText": "Menü şu anda görüntülenemiyor. Lütfen personelimize sor."
+  "themeErrorText": "Menü şu anda görüntülenemiyor. Lütfen personelimize sor.",
+  "aiBadge": "YZ"
 }

@@ -137,5 +137,6 @@
   "info": "Information",
   "aiImageNotice": "Billeder markeret som AI-genererede er illustrationer og kan afvige fra den serverede ret.",
   "menuFrameTitle": "Menukort fra {name}",
-  "themeErrorText": "Menukortet kan ikke vises lige nu. Spørg venligst vores personale."
+  "themeErrorText": "Menukortet kan ikke vises lige nu. Spørg venligst vores personale.",
+  "aiBadge": "AI"
 }

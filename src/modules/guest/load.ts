@@ -253,9 +253,11 @@ const loadCached = cache(
       const ctx = await getRestaurantContext(r.id).catch(() => null);
       if (ctx?.can("theme.manage")) {
         preview = true;
+        const id = previewTheme || r.themeId;
         theme = {
-          id: previewTheme || r.themeId,
-          config: previewConfig ? ((JSON.parse(previewConfig) as Record<string, unknown> | null) ?? {}) : r.themeConfig,
+          id,
+          // A theme other than the active one previews with its own defaults – the saved config belongs to the active theme.
+          config: previewConfig ? ((JSON.parse(previewConfig) as Record<string, unknown> | null) ?? {}) : id === r.themeId ? r.themeConfig : {},
         };
       }
     }

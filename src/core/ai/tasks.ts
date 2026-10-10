@@ -27,6 +27,7 @@ export const TASK_DEFAULTS: Record<AiTask, { model: string; fallbackModel?: stri
   transcribe: { model: "google/gemini-3.5-flash-lite", fallbackModel: "qwen/qwen3.8-omni-flash", temperature: 0, capability: "audio-input" },
   // PDF / photo of a printed menu or brand material → structured design brief (palette, fonts, layout).
   theme_analyze: { model: "google/gemini-3.8-flash", fallbackModel: "anthropic/claude-haiku-5.5", temperature: 0.2, capability: "vision+pdf" },
-  // Writes theme code (Liquid/CSS/JS) – needs a strong coding model.
-  theme_generate: { model: "anthropic/claude-sonnet-5.5", fallbackModel: "google/gemini-3.8-flash", temperature: 0.4, capability: "text" },
+  // Writes theme code (Liquid/CSS/JS). Chosen by a bake-off (2026-10-10, same prompt, 4 cheap coders):
+  // gpt-6-luna: valid first try, 37 s, ~0.004 $, cleanest result; haiku-5.5 as fallback (other model family).
+  theme_generate: { model: "openai/gpt-6-luna", fallbackModel: "anthropic/claude-haiku-5.5", temperature: 0.4, capability: "text" },
 };

@@ -97,6 +97,7 @@ Work without any JS – the platform bridge handles clicks and Enter/Space:
 | `data-vm-lang="{{ l.code }}"` | switches language |
 | `data-vm-cart` | opens the cart; `data-vm-cart-count` / `data-vm-cart-total` elements get live text |
 | `data-vm-info` | opens legal info (imprint, allergens, prices) |
+| `data-vm-catnav` | on the category `<nav>`: sticky + active highlight + auto-scroll (engine) |
 | `data-vm-ai-label` | marks your own AI-image label |
 
 Put hooks on `<button type="button">`. `<html data-cart-count="N">` updates live (`html[data-cart-count="0"] .cartbar{display:none}`). After a successful add, the element gets `data-vm-added` for ~1 s.
@@ -109,7 +110,7 @@ Put hooks on `<button type="button">`. `<html data-cart-count="N">` updates live
 - Keep the **top-end corner free**: host controls (ⓘ, language) sit there; its width is `var(--vm-host-top-end)` → e.g. `padding-inline-end: calc(var(--vm-host-top-end) + .5rem)` on header rows and sticky navs.
 - With `cartButton: "host"` the platform cart bar covers the bottom while the cart is not empty (a spacer is added automatically).
 - Semantic HTML (`header, nav, main, section, h1–h4, ul`), visible `:focus-visible`, contrast ≥ 4.5:1, `prefers-reduced-motion`.
-- Category navigation: `<a href="#c-{{ category.id }}">` + `id="c-{{ category.id }}"` on sections, `scroll-margin-top` for sticky headers.
+- Category navigation: put **`data-vm-catnav`** on the `<nav>`, links `<a href="#c-{{ category.id }}">`, sections `id="c-{{ category.id }}"`. The engine makes it sticky, highlights the visible category (`aria-current="true"` + `data-vm-active` on the link – style these!), scrolls the bar horizontally to the active link and smooth-scrolls below the bar on click. Write **no own scrollspy JS** and never put `overflow: hidden` on ancestors of the nav. Opt-outs: `data-vm-catnav="static"` (not sticky), `"off"`.
 
 ## Security model (enforced, not optional)
 

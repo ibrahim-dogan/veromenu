@@ -28,7 +28,9 @@ export function AiChat({
   const t = useTranslations("themeStudio.ai");
   const [text, setText] = useState("");
   const end = useRef<HTMLDivElement>(null);
-  useEffect(() => end.current?.scrollIntoView({ block: "end" }), [messages.length, busy]);
+  useEffect(() => {
+    end.current?.scrollIntoView({ block: "end" });
+  }, [messages.length, busy]);
 
   const send = () => {
     const v = text.trim();

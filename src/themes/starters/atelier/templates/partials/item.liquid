@@ -2,7 +2,7 @@
   {%- if settings.show_images and item.image_url -%}
   <figure class="thumb">
     <img src="{{ item.image_url }}" alt="" loading="lazy" decoding="async" width="120" height="120">
-    {%- if item.image_is_ai -%}<figcaption class="ai-label" data-vm-ai-label>{{ 'aiImage' | t }}</figcaption>{%- endif -%}
+    {%- if item.image_is_ai -%}<span class="ai-label" data-vm-ai-label title="{{ 'aiImage' | t }}" aria-label="{{ 'aiImage' | t }}">&#10022; {{ 'aiBadge' | t }}</span>{%- endif -%}
   </figure>
   {%- endif -%}
   <div class="item-body">

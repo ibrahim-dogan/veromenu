@@ -102,8 +102,11 @@ export const BRIDGE_SCRIPT = String.raw`(function () {
       var label = document.createElement("span");
       label.className = "vm-ai-label";
       label.setAttribute("data-vm-ai-label", "auto");
-      label.textContent = str(D.aiLabel || "KI-generiertes Symbolbild", 60);
-      label.setAttribute("style", "position:absolute!important;inset-inline-start:6px!important;bottom:6px!important;display:block!important;visibility:visible!important;opacity:1!important;z-index:2147483647!important;max-width:calc(100% - 12px)!important;padding:2px 6px!important;border-radius:4px!important;background:rgba(0,0,0,.65)!important;color:#fff!important;font:500 10px/1.3 system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important;pointer-events:none!important;transform:none!important;clip:auto!important;clip-path:none!important");
+      // Small, unobtrusive badge; the full disclosure is the tooltip/aria-label and the host info sheet.
+      label.textContent = "\u2726 " + str(D.aiBadge || "KI", 8);
+      label.setAttribute("title", str(D.aiLabel || "KI-generiertes Symbolbild", 80));
+      label.setAttribute("aria-label", str(D.aiLabel || "KI-generiertes Symbolbild", 80));
+      label.setAttribute("style", "position:absolute!important;inset-inline-start:4px!important;bottom:4px!important;display:inline-block!important;visibility:visible!important;opacity:1!important;z-index:2147483647!important;padding:1px 4px!important;border-radius:3px!important;background:rgba(0,0,0,.5)!important;color:#fff!important;font:600 9px/1.2 system-ui,sans-serif!important;letter-spacing:.02em!important;text-transform:none!important;pointer-events:none!important;transform:none!important;clip:auto!important;clip-path:none!important;width:auto!important;max-width:none!important");
       img.insertAdjacentElement("afterend", label);
     }
   }
@@ -137,8 +140,108 @@ export const BRIDGE_SCRIPT = String.raw`(function () {
   }
   function schedule() { if (!timer) timer = setTimeout(report, 150); }
 
+  // ---------------------------------------------------------------- category navigation (scrollspy)
+  // Engine-provided so every theme (incl. AI-written ones) gets a sticky bar that follows the menu:
+  // active link → aria-current="true" + data-vm-active, bar scrolls horizontally to it, smooth jump on click.
+  // Theme opt-outs: data-vm-catnav="static" (not sticky), data-vm-catnav="off" (no behaviour at all).
+  function setupCatnav() {
+    function targetOf(a) {
+      var h = a.getAttribute("href") || "";
+      if (h.length < 2 || h.charAt(0) !== "#") return null;
+      try { return document.getElementById(decodeURIComponent(h.slice(1))); } catch (e) { return null; }
+    }
+    function collect(el) {
+      var out = [], ls = el.querySelectorAll("a[href^='#']");
+      for (var i = 0; i < ls.length; i++) { var t = targetOf(ls[i]); if (t && t !== el && !el.contains(t)) out.push({ a: ls[i], t: t }); }
+      return out;
+    }
+    var nav = document.querySelector("[data-vm-catnav]");
+    var pairs = nav ? collect(nav) : [];
+    if (!nav) {
+      var cands = document.querySelectorAll("[data-catnav], nav, [role='navigation']");
+      for (var c = 0; c < cands.length; c++) { var p = collect(cands[c]); if (p.length >= 2) { nav = cands[c]; pairs = p; break; } }
+    }
+    if (!nav || pairs.length < 2 || nav.getAttribute("data-vm-catnav") === "off") return;
+    nav.setAttribute("data-vm-catnav-active", "");
+
+    // sticky self-heal
+    try {
+      if (nav.getAttribute("data-vm-catnav") !== "static") {
+        var cs = getComputedStyle(nav);
+        if (cs.position === "static" || cs.position === "relative") {
+          nav.style.position = "sticky";
+          if (cs.top === "auto") nav.style.top = "0px";
+          if (cs.zIndex === "auto") nav.style.zIndex = "30";
+        }
+        // overflow:hidden on an ancestor silently disables sticky → clip keeps the look without breaking it
+        for (var an = nav.parentElement; an && an !== document.body && an !== document.documentElement; an = an.parentElement) {
+          var acs = getComputedStyle(an);
+          if (acs.overflowX === "hidden" || acs.overflowY === "hidden") an.style.overflow = "clip";
+        }
+      }
+    } catch (e) {}
+
+    function navH() { var r = nav.getBoundingClientRect(); return getComputedStyle(nav).position === "sticky" || getComputedStyle(nav).position === "fixed" ? r.height : 0; }
+    function scrollerOf(a) {
+      for (var el = a.parentElement; el; el = el.parentElement) {
+        if (el.scrollWidth > el.clientWidth + 2) { var o = getComputedStyle(el).overflowX; if (o === "auto" || o === "scroll") return el; }
+        if (el === nav) break;
+      }
+      return null;
+    }
+    var seen = {}, current = -1, ticking = false;
+    function setActive(i, fromClick) {
+      if (i === current) return;
+      current = i;
+      for (var k = 0; k < pairs.length; k++) {
+        if (k === i) { pairs[k].a.setAttribute("aria-current", "true"); pairs[k].a.setAttribute("data-vm-active", ""); }
+        else { pairs[k].a.removeAttribute("aria-current"); pairs[k].a.removeAttribute("data-vm-active"); }
+      }
+      var a = pairs[i].a, sc = scrollerOf(a);
+      if (sc) {
+        var ar = a.getBoundingClientRect(), sr = sc.getBoundingClientRect();
+        var delta = ar.left + ar.width / 2 - (sr.left + sr.width / 2);
+        try { sc.scrollBy({ left: delta, behavior: fromClick ? "auto" : "smooth" }); } catch (e) { sc.scrollLeft += delta; }
+      }
+      var id = pairs[i].t.getAttribute("data-category") || pairs[i].t.id.replace(/^c-/, "");
+      if (id && !seen[id]) { seen[id] = 1; api.track("category_view", id); }
+    }
+    function compute() {
+      ticking = false;
+      var line = navH() + Math.min(120, window.innerHeight * 0.25), idx = 0;
+      for (var k = 0; k < pairs.length; k++) if (pairs[k].t.getBoundingClientRect().top <= line) idx = k;
+      // at the very bottom the last section wins even if it is short
+      if (window.scrollY > 0 && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) idx = pairs.length - 1;
+      setActive(idx, false);
+    }
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(compute); } }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("scroll", onScroll, { passive: true, capture: true }); // themes with an inner scroller
+    window.addEventListener("resize", onScroll);
+    nav.addEventListener("click", function (e) {
+      var a = e.target && e.target.closest ? e.target.closest("a[href^='#']") : null;
+      if (!a) return;
+      for (var k = 0; k < pairs.length; k++) if (pairs[k].a === a) {
+        e.preventDefault();
+        e.stopPropagation();
+        var t = pairs[k].t;
+        t.style.scrollMarginTop = Math.ceil(navH() + 8) + "px";
+        var reduce = false;
+        try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (err) {}
+        try { t.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" }); } catch (err) { t.scrollIntoView(); }
+        setActive(k, true);
+        return;
+      }
+    }, true);
+    compute();
+    // layout settles after fonts/images → recompute once more
+    window.addEventListener("load", onScroll);
+    setTimeout(onScroll, 600);
+  }
+
   function init() {
     a11y(document);
+    try { setupCatnav(); } catch (e) {}
     labelAi(document);
     report();
     if (lastH === 0) post({ type: "vm:ready", height: 0 });
@@ -168,4 +271,6 @@ export const BASE_CSS = `:where(html){-webkit-text-size-adjust:100%;text-size-ad
 :where([data-vm-item],[data-vm-add],[data-vm-cart],[data-vm-info],[data-vm-lang]){cursor:pointer}
 :where(:focus-visible){outline:2px solid currentColor;outline-offset:2px}
 :where(img){max-width:100%}
-#vm-host-spacer{display:block;height:0;pointer-events:none}`;
+#vm-host-spacer{display:block;height:0;pointer-events:none}
+:where([data-vm-catnav]:not([data-vm-catnav=static]):not([data-vm-catnav=off])){position:sticky;top:0;z-index:30}
+:where([data-vm-catnav-active] [aria-current=true]){font-weight:700}`;

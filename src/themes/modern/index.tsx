@@ -99,7 +99,11 @@ function Modern({ data, config, t }: ThemeProps) {
           <div className="relative aspect-[16/10] max-h-[46vh] w-full overflow-hidden bg-black sm:aspect-[21/9]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={r.cover!.md} srcSet={`${r.cover!.sm} 480w, ${r.cover!.md} 1200w`} sizes="100vw" alt="" fetchPriority="high" className="absolute inset-0 h-full w-full object-cover opacity-90" />
-            {r.cover!.isAi && <span className="absolute end-3 bottom-3 rounded bg-black/60 px-1.5 py-0.5 text-[10px] text-white">{t("aiImage")}</span>}
+            {r.cover!.isAi && (
+              <span title={t("aiImage")} aria-label={t("aiImage")} className="absolute end-2 bottom-2 rounded-[3px] bg-black/50 px-1 py-px text-[9px] font-semibold text-white">
+                ✦ {t("aiBadge")}
+              </span>
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/30" />
             <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-2 p-3">
               <OrderingNotice data={data} t={t} className="bg-white/90 text-stone-900 backdrop-blur" />

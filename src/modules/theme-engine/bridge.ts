@@ -88,6 +88,23 @@ export const BRIDGE_SCRIPT = String.raw`(function () {
     var s = img.getAttribute("src") || "";
     return !!(AI[s] || AI[img.currentSrc || ""] || AI[img.src || ""]);
   }
+  // One consistent, discreet AI badge for every theme (EU AI Act / UWG transparency). Theme-provided
+  // [data-vm-ai-label] elements are normalised too, so no theme can render a large strip.
+  var AI_BADGE_STYLE = "position:absolute!important;inset:auto auto 4px 4px!important;inset-inline-start:4px!important;inset-inline-end:auto!important;bottom:4px!important;top:auto!important;display:inline-block!important;visibility:visible!important;opacity:1!important;z-index:2147483647!important;width:auto!important;height:auto!important;max-width:none!important;margin:0!important;padding:1px 4px!important;border:0!important;border-radius:3px!important;background:rgba(0,0,0,.5)!important;color:#fff!important;font:600 9px/1.2 system-ui,sans-serif!important;letter-spacing:.02em!important;text-align:start!important;text-transform:none!important;white-space:nowrap!important;pointer-events:none!important;transform:none!important;clip:auto!important;clip-path:none!important;box-shadow:none!important";
+  function styleAiBadge(el) {
+    if (el.getAttribute("data-vm-ai-normalised") === "1") return;
+    el.setAttribute("data-vm-ai-normalised", "1");
+    el.textContent = "✦ " + str(D.aiBadge || "KI", 8);
+    el.setAttribute("title", str(D.aiLabel || "KI-generiertes Symbolbild", 80));
+    el.setAttribute("aria-label", str(D.aiLabel || "KI-generiertes Symbolbild", 80));
+    el.setAttribute("style", AI_BADGE_STYLE);
+    var host = el.parentElement;
+    try { if (host && getComputedStyle(host).position === "static") host.style.position = "relative"; } catch (e) {}
+  }
+  function normaliseAiLabels(scope) {
+    var own = scope.querySelectorAll ? scope.querySelectorAll("[data-vm-ai-label]") : [];
+    for (var i = 0; i < own.length; i++) styleAiBadge(own[i]);
+  }
   function labelAi(scope) {
     var imgs = scope.querySelectorAll ? scope.querySelectorAll("img") : [];
     for (var i = 0; i < imgs.length; i++) {
@@ -102,12 +119,8 @@ export const BRIDGE_SCRIPT = String.raw`(function () {
       var label = document.createElement("span");
       label.className = "vm-ai-label";
       label.setAttribute("data-vm-ai-label", "auto");
-      // Small, unobtrusive badge; the full disclosure is the tooltip/aria-label and the host info sheet.
-      label.textContent = "\u2726 " + str(D.aiBadge || "KI", 8);
-      label.setAttribute("title", str(D.aiLabel || "KI-generiertes Symbolbild", 80));
-      label.setAttribute("aria-label", str(D.aiLabel || "KI-generiertes Symbolbild", 80));
-      label.setAttribute("style", "position:absolute!important;inset-inline-start:4px!important;bottom:4px!important;display:inline-block!important;visibility:visible!important;opacity:1!important;z-index:2147483647!important;padding:1px 4px!important;border-radius:3px!important;background:rgba(0,0,0,.5)!important;color:#fff!important;font:600 9px/1.2 system-ui,sans-serif!important;letter-spacing:.02em!important;text-transform:none!important;pointer-events:none!important;transform:none!important;clip:auto!important;clip-path:none!important;width:auto!important;max-width:none!important");
       img.insertAdjacentElement("afterend", label);
+      styleAiBadge(label);
     }
   }
 
@@ -269,6 +282,7 @@ export const BRIDGE_SCRIPT = String.raw`(function () {
     try { setupCatnav(); } catch (e) {}
     try { setupScrollReport(); } catch (e) {}
     labelAi(document);
+    normaliseAiLabels(document);
     report();
     if (lastH === 0) post({ type: "vm:ready", height: 0 });
     // the host may still be hydrating → repeat vm:ready until it answers with vm:cart (max ~10 s)
@@ -282,11 +296,11 @@ export const BRIDGE_SCRIPT = String.raw`(function () {
       new MutationObserver(function (records) {
         for (var i = 0; i < records.length; i++) {
           var nodes = records[i].addedNodes;
-          for (var j = 0; j < nodes.length; j++) if (nodes[j].nodeType === 1) { a11y(nodes[j]); labelAi(nodes[j].parentNode || nodes[j]); }
+          for (var j = 0; j < nodes.length; j++) if (nodes[j].nodeType === 1) { a11y(nodes[j]); labelAi(nodes[j].parentNode || nodes[j]); normaliseAiLabels(nodes[j].parentNode || nodes[j]); }
         }
       }).observe(document.body, { childList: true, subtree: true });
     } catch (e) {}
-    window.addEventListener("load", function () { labelAi(document); schedule(); });
+    window.addEventListener("load", function () { labelAi(document); normaliseAiLabels(document); schedule(); });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();`;

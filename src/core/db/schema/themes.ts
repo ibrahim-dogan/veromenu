@@ -12,6 +12,8 @@ export const themes = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     restaurantId: uuid("restaurant_id").references(() => restaurants.id, { onDelete: "cascade" }),
+    /** "menu" = guest menu theme, "print" = QR print design (table tents, posters). */
+    kind: text("kind").notNull().default("menu"),
     name: text("name").notNull(),
     description: text("description"),
     /** How it was created: starter | ai_prompt | ai_file | manual | import | duplicate | library */

@@ -30,6 +30,8 @@ export type RestaurantSettings = {
     requireTable: boolean;
     allowNotes: boolean;
   };
+  /** QR print designs: chosen print theme + its customizer values (which elements are visible, texts …). */
+  print?: { themeId?: string | null; config?: Record<string, unknown> };
   translations?: {
     /** Show only reviewed/approved translations to guests (else fall back to source). */
     guestsSeeOnlyApproved: boolean;

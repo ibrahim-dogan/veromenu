@@ -3,20 +3,21 @@ import sharp from "sharp";
 import { and, count, eq, inArray } from "drizzle-orm";
 import { Liquid } from "liquidjs";
 import { db } from "@/core/db";
-import { items, media, restaurants } from "@/core/db/schema";
+import { items, media, restaurants, tables } from "@/core/db/schema";
 import { aiChat, aiJson, type ChatMessage, type ContentPart } from "@/core/ai";
 import { AppError } from "@/core/http/errors";
 import { env } from "@/core/env";
 import { getMessages } from "@/core/i18n/messages";
 import { readMediaBuffer } from "@/core/storage/media";
 import { planHas } from "@/modules/billing/plans";
-import { renderThemeDocument, sampleThemeView, validatePackage } from "@/modules/theme-engine";
-import type { ThemeManifest, ThemePackage, ThemeView } from "@/modules/theme-engine/types";
+import { renderThemeDocument, resolveSettings, sampleThemeView, validatePackage } from "@/modules/theme-engine";
+import { QR_COLOR_SETTINGS, qrSvgMarkup, renderPrintDocument, samplePrintViews } from "@/modules/theme-engine/print";
+import type { PrintFormat, PrintSpec, ThemeKind, ThemeManifest, ThemePackage, ThemeView } from "@/modules/theme-engine/types";
 import { createTheme, getThemeWithPackage } from "@/modules/theme-engine/service";
 import { analyzeSystemPrompt, designBriefSchema, languageName, normalizeBrief, type DesignBrief } from "./brief";
-import { assemblePackage, packageBytes, qualityChecks } from "./package";
+import { assemblePackage, defaultSheet, packageBytes, PRINT_CARD_MM, printQualityChecks, qualityChecks } from "./package";
 import { filesToBlocks, parseThemeOutput, type ParsedThemeOutput } from "./parse";
-import { buildEditSystemPrompt, buildGenerateSystemPrompt } from "./prompts";
+import { buildEditSystemPrompt, buildGenerateSystemPrompt, buildPrintEditSystemPrompt, buildPrintGenerateSystemPrompt } from "./prompts";
 
 /**
  * Theme AI: design brief from files (`theme_analyze`), theme generation and chat edits (`theme_generate`).
@@ -123,13 +124,13 @@ export async function mediaToParts(restaurantId: string, mediaIds: string[], opt
 
 // ------------------------------------------------------------------ analyze
 
-export async function analyzeDesignFiles(opts: { restaurantId: string; userId: string; mediaIds: string[]; notes?: string; locale: string; files?: FileParts }) {
+export async function analyzeDesignFiles(opts: { restaurantId: string; userId: string; mediaIds: string[]; notes?: string; locale: string; files?: FileParts; kind?: ThemeKind }) {
   const files = opts.files ?? (await mediaToParts(opts.restaurantId, opts.mediaIds, { allowPdf: true }));
   const { data, model } = await aiJson(
     "theme_analyze",
     {
       messages: [
-        { role: "system", content: analyzeSystemPrompt(opts.locale) },
+        { role: "system", content: analyzeSystemPrompt(opts.locale, opts.kind ?? "menu") },
         {
           role: "user",
           content: [
@@ -206,6 +207,7 @@ function variantView(v: ThemeView): ThemeView {
 }
 
 export async function checkPackage(pkg: ThemePackage, assembleErrors: string[] = []): Promise<PackageCheck & { rendered: boolean }> {
+  if (pkg.manifest?.kind === "print") return checkPrintPackage(pkg, assembleErrors);
   const errors = [...assembleErrors];
   const warnings: string[] = [];
   try {
@@ -237,6 +239,86 @@ export async function checkPackage(pkg: ThemePackage, assembleErrors: string[] =
         for (const e of r.errors.slice(0, 10)) errors.push(`render (${label}): ${e}`);
         if (r.ok === false) errors.push(`render (${label}): the theme could not be rendered`);
         else if (!r.html || r.html.length < 200) errors.push(`render (${label}): output is empty`);
+      }
+      rendered = true;
+    } catch (e) {
+      if (!notImplemented(e)) errors.push(`render: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }
+  return { errors: [...new Set(errors)], warnings: [...new Set(warnings)], rendered };
+}
+
+/** Engine validation (kind-aware) → errors/warnings; falls back to a local Liquid parse while the engine stub is in place. */
+function engineValidation(pkg: ThemePackage, errors: string[], warnings: string[]) {
+  try {
+    const v = validatePackage(pkg);
+    for (const e of v.errors) errors.push(`${e.file ?? ""}${e.line ? `:${e.line}` : ""}${e.file ? " – " : ""}${e.message}`);
+    for (const w of v.warnings) {
+      const msg = `${w.file ? `${w.file}: ` : ""}${w.message}`;
+      (PROMOTED_WARNINGS.test(w.message) ? errors : warnings).push(msg);
+    }
+  } catch (e) {
+    if (!notImplemented(e)) throw e;
+    errors.push(...localValidate(pkg));
+  }
+}
+
+const EXTERNAL_IN_HTML = /\b(?:src|href|srcset|poster)\s*=\s*["'](?:https?:)?\/\/|url\(\s*["']?(?:https?:)?\/\//i;
+
+
+/** Print variants: defaults · everything optional switched on (Wi-Fi filled) · everything optional off. */
+function printSettingVariants(manifest: ThemeManifest): [string, Record<string, unknown>][] {
+  const fields = manifest.settings ?? [];
+  const all: Record<string, unknown> = {};
+  const none: Record<string, unknown> = {};
+  for (const f of fields) {
+    if (f.type === "checkbox" && f.id.startsWith("show_")) {
+      all[f.id] = true;
+      none[f.id] = false;
+    }
+    if (f.type === "text" && /wifi|wlan/.test(f.id)) all[f.id] = /pass|pw|key/.test(f.id) ? "linde2026" : "Zur-Linde-Gaeste";
+    else if (f.type === "text" && !f.default) all[f.id] = "Lorem ipsum dolor";
+  }
+  return [
+    ["defaults", resolveSettings(manifest, {})],
+    ["all optional elements on", resolveSettings(manifest, all)],
+    ["all optional elements off", resolveSettings(manifest, none)],
+  ];
+}
+
+/** Renders a print package with sample cards (generic + tables) in three setting variants and checks the output. */
+export async function checkPrintPackage(pkg: ThemePackage, assembleErrors: string[] = []): Promise<PackageCheck & { rendered: boolean }> {
+  const errors = [...assembleErrors];
+  const warnings: string[] = [];
+  engineValidation(pkg, errors, warnings);
+  const q = printQualityChecks(pkg);
+  errors.push(...q.errors);
+  warnings.push(...q.warnings);
+
+  let rendered = false;
+  if (!errors.length) {
+    try {
+      const views = samplePrintViews();
+      const msgs = guestMessages("de");
+      for (const [label, settings] of printSettingVariants(pkg.manifest)) {
+        const r = await renderPrintDocument({
+          pkg,
+          views: views.map((v) => ({ ...v, settings })),
+          assetBaseUrl: env().APP_URL,
+          guestMessages: msgs,
+          mode: "preview",
+        });
+        for (const e of r.errors.slice(0, 10)) errors.push(`render (${label}): ${e}`);
+        if (r.ok === false) errors.push(`render (${label}): the design could not be rendered`);
+        else if (!r.html || r.html.length < 200) errors.push(`render (${label}): output is empty`);
+        else {
+          // The engine renders the QR from table.url with the design's QR colours – the exact markup must appear.
+          const colors = { dark: settings[QR_COLOR_SETTINGS.dark], light: settings[QR_COLOR_SETTINGS.light] };
+          const missing = views.filter((v) => v.table.url && !r.html.includes(qrSvgMarkup(v.table.url, colors)));
+          if (missing.length) errors.push(`render (${label}): the QR code is missing on ${missing.length} of ${views.length} cards – always output {{ table.qr_svg }} (also on the generic card and on both tent faces).`);
+          // own origin (fonts, media) is fine – everything else would be blocked by the CSP
+          if (EXTERNAL_IN_HTML.test(r.html.split(env().APP_URL.replace(/\/+$/, "")).join(""))) errors.push(`render (${label}): the output references external URLs – remove them (no network in print documents).`);
+        }
       }
       rendered = true;
     } catch (e) {
@@ -286,7 +368,10 @@ async function buildWithRepair(opts: {
   fallbackName: string;
   maxTokens: number;
   mode: "generate" | "edit";
+  kind?: ThemeKind;
+  print?: Partial<PrintSpec>;
 }): Promise<BuildResult> {
+  const shape = opts.kind === "print" ? { kind: "print" as const, print: opts.print } : {};
   const first = await callModel(opts.restaurantId, opts.userId, opts.messages, opts.maxTokens, opts.mode === "edit" ? "theme_edit" : undefined);
   if (!Object.keys(first.parsed.files).length && !first.parsed.manifest && !first.parsed.deleted.length) {
     if (opts.mode === "edit" && first.parsed.summary) {
@@ -295,7 +380,7 @@ async function buildWithRepair(opts: {
     }
     throw new AppError("aiFailed", `model returned no files (${first.raw.length} chars: ${first.raw.slice(0, 160).replace(/\s+/g, " ")})`);
   }
-  let a = assemblePackage({ files: first.parsed.files, manifest: first.parsed.manifest, deleted: first.parsed.deleted, base: opts.base, fallbackName: opts.fallbackName });
+  let a = assemblePackage({ files: first.parsed.files, manifest: first.parsed.manifest, deleted: first.parsed.deleted, base: opts.base, fallbackName: opts.fallbackName, ...shape });
   let check = await checkPackage(a.pkg, [...a.errors, ...parseProblems(first.parsed)]);
   let summary = first.parsed.summary;
   let model = first.model;
@@ -317,6 +402,7 @@ async function buildWithRepair(opts: {
       deleted: second.parsed.deleted,
       base: a.pkg,
       fallbackName: opts.fallbackName,
+      ...shape,
     });
     const check2 = await checkPackage(b.pkg, [...b.errors, ...(second.parsed.manifestError ? [`manifest: ${second.parsed.manifestError}`] : [])]);
     a = { pkg: b.pkg, warnings: [...a.warnings, ...b.warnings], errors: b.errors };
@@ -329,6 +415,8 @@ async function buildWithRepair(opts: {
 
 /** Errors that make a package unusable (vs. product-quality gaps we can still save with a warning). */
 const isFatal = (e: string) => !/^(Allergens are never shown|item\.allergens_confirmed|No element has data-vm-item|Sold-out state|Hard-coded UI text)/.test(e);
+/** Print: a missing QR code, scripts or broken rendering are fatal; product-quality gaps are saved with a warning. */
+const isFatalPrint = (e: string) => !/^(Hard-coded text|Add show_\* checkbox|The table number is never shown)/.test(e);
 
 // ------------------------------------------------------------------ generate
 
@@ -400,6 +488,111 @@ export async function generateTheme(opts: {
   };
 }
 
+// ------------------------------------------------------------------ print designs
+
+const FORMAT_LABEL: Record<PrintFormat, string> = {
+  a6: "A6 portrait table card (105 × 148 mm)",
+  "a6-landscape": "A6 landscape table card (148 × 105 mm)",
+  a5: "A5 portrait card / small poster (148 × 210 mm)",
+  "a5-landscape": "A5 landscape card (210 × 148 mm)",
+  a4: "A4 portrait poster (210 × 297 mm) – e.g. for the shop window or the entrance",
+  "a4-landscape": "A4 landscape poster (297 × 210 mm)",
+  "tent-a6": "standing table tent (A5 sheet folded; two A6 LANDSCAPE faces of 148 × 105 mm: card.face front/back)",
+};
+
+type PrintContext = RestaurantThemeContext & { tableCount: number; hasWebsite: boolean };
+
+async function loadPrintContext(restaurantId: string): Promise<PrintContext> {
+  const base = await loadRestaurantThemeContext(restaurantId);
+  const [r] = await db.select({ settings: restaurants.settings }).from(restaurants).where(eq(restaurants.id, restaurantId)).limit(1);
+  const [t] = await db.select({ n: count() }).from(tables).where(and(eq(tables.restaurantId, restaurantId), eq(tables.isActive, true)));
+  return { ...base, tableCount: Number(t?.n ?? 0), hasWebsite: !!r?.settings.website };
+}
+
+function printContextBlock(c: PrintContext, format: PrintFormat | undefined) {
+  const card = format ? PRINT_CARD_MM[format] : null;
+  return [
+    `Restaurant: ${c.name}${c.cuisine ? ` (${c.cuisine})` : ""}`,
+    format && card ? `Format: ${FORMAT_LABEL[format]} → manifest.print.format "${format}", card trim ${card.w} × ${card.h} mm` : "",
+    `Tables: ${c.tableCount} (one card per table + one generic restaurant card without table number)`,
+    `Guest languages of the digital menu: ${c.locales.join(", ")} (the languages line lists them)`,
+    `Logo uploaded: ${c.hasLogo ? "yes (restaurant.logo_url – show_logo default true)" : "no – use the restaurant name as a wordmark (keep show_logo for later uploads)"}`,
+    `Contact data: address/phone ${c.hasWebsite ? "+ website " : ""}available via restaurant.* (show_* toggles, default off except where it fits the concept)`,
+    `Online ordering at the table: ${c.orderingEnabled ? "enabled – offer show_ordering_hint (default true)" : "disabled (keep the ordering hint conditional on ordering.enabled, default false)"}`,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+export async function generatePrintTheme(opts: {
+  restaurantId: string;
+  userId: string;
+  locale: string;
+  format: PrintFormat;
+  prompt?: string;
+  brief?: DesignBrief | null;
+  notes?: string;
+  referenceImages?: ContentPart[];
+  origin: "ai_prompt" | "ai_file";
+}): Promise<GenerateResult> {
+  const ctx = await loadPrintContext(opts.restaurantId);
+  const system = await buildPrintGenerateSystemPrompt(opts.format);
+  const lang = languageName(opts.locale);
+  const sections = [
+    `Create a complete new PRINT design (kind "print") for QR table cards: ${FORMAT_LABEL[opts.format]}.`,
+    "RESTAURANT CONTEXT\n" + printContextBlock(ctx, opts.format),
+    opts.brief
+      ? `DESIGN BRIEF (extracted from the owner's printed material – recreate this look faithfully as a QR table card; ignore list/price layout details that don't apply):\n${JSON.stringify(opts.brief, null, 1)}`
+      : "",
+    opts.prompt?.trim() ? `OWNER'S DESCRIPTION (may be in any language; it is the primary design direction):\n"""${opts.prompt.trim()}"""` : "",
+    opts.notes?.trim() ? `OWNER'S NOTES:\n"""${opts.notes.trim()}"""` : "",
+    opts.referenceImages?.length
+      ? `${opts.referenceImages.length} reference image(s) attached – take colours, typography, ornaments and composition cues from them. Never copy a QR code from them (the engine renders the real one).`
+      : "",
+    `Set manifest.print to { "format": "${opts.format}", "sheet": "${defaultSheet(opts.format)}", "safeMm": 5 }.`,
+    `Name the design (manifest.name) evocatively (max 4 words). Default values of text settings are German (printed for German guests); setting labels in de, en and tr.`,
+    `LANGUAGE OF THE <summary>: ${lang} – the owner reads it in the dashboard (${lang}, NOT German unless ${lang} is German). 2–4 short sentences describing the look and which elements they can switch on/off.`,
+  ].filter(Boolean);
+  const userContent: ContentPart[] = [{ type: "text", text: sections.join("\n\n") }, ...(opts.referenceImages ?? []).slice(0, 4)];
+
+  const result = await buildWithRepair({
+    restaurantId: opts.restaurantId,
+    userId: opts.userId,
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: userContent },
+    ],
+    base: null,
+    fallbackName: `${ctx.name} Tischkarte`,
+    maxTokens: GENERATE_MAX_TOKENS,
+    mode: "generate",
+    kind: "print",
+    print: { format: opts.format, sheet: defaultSheet(opts.format) },
+  });
+  const fatal = result.errors.filter(isFatalPrint);
+  if (fatal.length) throw new AppError("aiFailed", `print design invalid after repair: ${fatal.slice(0, 5).join(" | ")}`);
+
+  const saved = await createTheme({
+    restaurantId: opts.restaurantId,
+    name: result.pkg.manifest.name,
+    description: result.pkg.manifest.description?.[opts.locale] ?? result.pkg.manifest.description?.de ?? null,
+    pkg: result.pkg,
+    origin: opts.origin,
+    kind: "print",
+    userId: opts.userId,
+    note: result.summary.slice(0, 500) || undefined,
+  });
+  return {
+    themeId: saved.themeId,
+    versionId: saved.versionId,
+    summary: result.summary,
+    warnings: [...result.warnings, ...result.errors],
+    model: result.model,
+    repaired: result.repaired,
+    bytes: packageBytes(result.pkg),
+  };
+}
+
 // ------------------------------------------------------------------ edit
 
 export type EditProposal = {
@@ -415,7 +608,7 @@ function editContext(pkg: ThemePackage): { text: string; partial: boolean } {
   const total = packageBytes(pkg);
   const manifest = `<manifest>\n${JSON.stringify(pkg.manifest, null, 1)}\n</manifest>`;
   if (total <= EDIT_FULL_CONTEXT_BYTES) return { text: `${manifest}\n\n${filesToBlocks(pkg.files)}`, partial: false };
-  const main = Object.fromEntries(Object.entries(pkg.files).filter(([p]) => p === "templates/menu.liquid" || p === "assets/theme.css"));
+  const main = Object.fromEntries(Object.entries(pkg.files).filter(([p]) => p === "templates/menu.liquid" || p === "templates/print.liquid" || p === "assets/theme.css"));
   const others = Object.keys(pkg.files).filter((p) => !(p in main));
   return {
     text: `${manifest}\n\n${filesToBlocks(main)}\n\nOther files (not shown, keep them unless the instruction requires otherwise): ${others.join(", ")}`,
@@ -425,13 +618,14 @@ function editContext(pkg: ThemePackage): { text: string; partial: boolean } {
 
 export async function proposeEdit(opts: { restaurantId: string; userId: string; themeId: string; versionId: string; instruction: string; locale: string }): Promise<EditProposal> {
   const { pkg: base } = await getThemeWithPackage(opts.restaurantId, opts.themeId, opts.versionId);
-  const ctx = await loadRestaurantThemeContext(opts.restaurantId);
-  const system = await buildEditSystemPrompt();
+  const isPrint = base.manifest.kind === "print";
+  const ctxText = isPrint ? printContextBlock(await loadPrintContext(opts.restaurantId), base.manifest.print?.format) : contextBlock(await loadRestaurantThemeContext(opts.restaurantId));
+  const system = isPrint ? await buildPrintEditSystemPrompt() : await buildEditSystemPrompt();
   const current = editContext(base);
   const lang = languageName(opts.locale);
   const user = [
-    "RESTAURANT CONTEXT\n" + contextBlock(ctx),
-    `CURRENT THEME PACKAGE${current.partial ? " (large – main files only)" : ""}:\n${current.text}`,
+    "RESTAURANT CONTEXT\n" + ctxText,
+    `CURRENT ${isPrint ? "PRINT DESIGN" : "THEME"} PACKAGE${current.partial ? " (large – main files only)" : ""}:\n${current.text}`,
     `OWNER'S CHANGE REQUEST (any language):\n"""${opts.instruction.trim()}"""`,
     `Write the <summary> in ${lang}: 1–3 short sentences describing what you changed.`,
   ].join("\n\n");
@@ -447,8 +641,9 @@ export async function proposeEdit(opts: { restaurantId: string; userId: string; 
     fallbackName: base.manifest.name,
     maxTokens: EDIT_MAX_TOKENS,
     mode: "edit",
+    ...(isPrint ? { kind: "print" as const } : {}),
   });
-  const fatal = result.errors.filter(isFatal);
+  const fatal = result.errors.filter(isPrint ? isFatalPrint : isFatal);
   if (fatal.length) throw new AppError("aiFailed", `edit invalid after repair: ${fatal.slice(0, 5).join(" | ")}`);
 
   const changedFiles: Record<string, string> = {};
@@ -466,4 +661,4 @@ export async function proposeEdit(opts: { restaurantId: string; userId: string; 
 }
 
 /** Exposed for scripts/tests. */
-export const __test = { contextBlock, variantView, guestMessages, isFatal };
+export const __test = { contextBlock, variantView, guestMessages, isFatal, isFatalPrint, printContextBlock, printSettingVariants };

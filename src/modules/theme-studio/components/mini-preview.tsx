@@ -2,11 +2,14 @@
 import { useEffect, useRef, useState } from "react";
 import { ImageOff } from "lucide-react";
 import { cn } from "@/core/utils";
+import { PrintFrame } from "./print-frame";
 import { SandboxFrame } from "./sandbox-frame";
 
-type Loader = () => Promise<{ ok: true; data: { html: string } } | { ok: false; error: string }>;
+/** Print designs return their page size (px) and are shown in a script-less frame. */
+type Rendered = { html: string; kind?: "menu" | "print"; width?: number; height?: number };
+type Loader = () => Promise<{ ok: true; data: Rendered } | { ok: false; error: string }>;
 
-const cache = new Map<string, Promise<string | null>>();
+const cache = new Map<string, Promise<Rendered | null>>();
 // Server actions are queued per client – keep at most a few renders in flight.
 let inflight = 0;
 const queue: (() => void)[] = [];
@@ -30,7 +33,9 @@ export function invalidateMiniPreview(prefix: string) {
 export function MiniPreview({ cacheKey, load, title, className, width = 390, height = 780 }: { cacheKey: string; load: Loader; title: string; className?: string; width?: number; height?: number }) {
   const box = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
-  const [html, setHtml] = useState<string | null | undefined>(undefined);
+  const [doc, setDoc] = useState<Rendered | null | undefined>(undefined);
+  const w = doc?.width ?? width;
+  const h = doc?.height ?? height;
   const [scale, setScale] = useState(0.5);
   const loadRef = useRef(load);
   useEffect(() => {
@@ -42,13 +47,13 @@ export function MiniPreview({ cacheKey, load, title, className, width = 390, hei
     if (!el) return;
     const io = new IntersectionObserver((entries) => entries.some((e) => e.isIntersecting) && setVisible(true), { rootMargin: "200px" });
     io.observe(el);
-    const ro = new ResizeObserver(() => setScale(el.clientWidth / width));
+    const ro = new ResizeObserver(() => setScale(el.clientWidth / w));
     ro.observe(el);
     return () => {
       io.disconnect();
       ro.disconnect();
     };
-  }, [width]);
+  }, [w]);
 
   useEffect(() => {
     if (!visible) return;
@@ -56,21 +61,23 @@ export function MiniPreview({ cacheKey, load, title, className, width = 390, hei
     let p = cache.get(cacheKey);
     if (!p) {
       p = limited(() => loadRef.current())
-        .then((r) => (r.ok ? r.data.html : null))
+        .then((r) => (r.ok ? r.data : null))
         .catch(() => null);
       cache.set(cacheKey, p);
     }
-    p.then((h) => alive && setHtml(h));
+    p.then((d) => alive && setDoc(d));
     return () => {
       alive = false;
     };
   }, [visible, cacheKey]);
 
   return (
-    <div ref={box} className={cn("relative overflow-hidden bg-stone-100", className)} style={{ aspectRatio: `${width} / ${height}` }}>
-      {html ? (
-        <SandboxFrame html={html} title={title} interactive={false} style={{ width, height, transform: `scale(${scale})`, transformOrigin: "top left", position: "absolute", inset: 0 }} />
-      ) : html === null ? (
+    <div ref={box} className={cn("relative overflow-hidden bg-stone-100", className)} style={{ aspectRatio: `${w} / ${h}` }}>
+      {doc?.kind === "print" ? (
+        <PrintFrame html={doc.html} title={title} style={{ width: w, height: h, transform: `scale(${scale})`, transformOrigin: "top left", position: "absolute", inset: 0, pointerEvents: "none" }} />
+      ) : doc ? (
+        <SandboxFrame html={doc.html} title={title} interactive={false} style={{ width: w, height: h, transform: `scale(${scale})`, transformOrigin: "top left", position: "absolute", inset: 0 }} />
+      ) : doc === null ? (
         <div className="absolute inset-0 grid place-items-center text-stone-400">
           <ImageOff size={22} aria-hidden />
         </div>

@@ -45,7 +45,11 @@
     "active": "Aktif",
     "draft": "Taslak",
     "unpublished": "Yayınlanmamış değişiklikler",
-    "published": "Yayında"
+    "published": "Yayında",
+    "print_active": "Baskıda kullanılıyor",
+    "print_draft": "Taslak",
+    "print_unpublished": "Değişiklikler uygulanmadı",
+    "print_published": "Uygulandı"
   },
   "upgrade": {
     "badge": "Starter paketinden itibaren",
@@ -105,7 +109,8 @@
     "created": "Tema oluşturuldu",
     "cancel": "İptal",
     "imported": "Tema içe aktarıldı",
-    "importTooLarge": "Dosya çok büyük (en fazla 6 MB)."
+    "importTooLarge": "Dosya çok büyük (en fazla 6 MB).",
+    "importIsPrint": "Bu dosya bir baskı tasarımı (QR masa kartı). „Masalar ve QR kodları“ bölümünden içe aktar."
   },
   "progress": {
     "title_files": "Yapay zekâ dosyalarından temanı tasarlıyor",
@@ -117,7 +122,16 @@
     "step_layout": "Yerleşim tasarlanıyor",
     "step_code": "Şablonlar ve CSS yazılıyor",
     "step_check": "Tema kontrol ediliyor",
-    "elapsed": "{seconds} sn"
+    "elapsed": "{seconds} sn",
+    "title_printFiles": "Yapay zekâ baskı tasarımını gönderdiğin materyale göre hazırlıyor",
+    "title_printPrompt": "Yapay zekâ baskı tasarımını hazırlıyor",
+    "hintBackground": "Bu genelde 30–90 saniye sürer. Bu pencereyi kapatabilirsin – tasarım hazır olunca haber veririz.",
+    "background": "Arka planda devam etsin",
+    "printStep_analyze": "İsteklerini anlıyor",
+    "printStep_palette": "Renk ve yazı tiplerini seçiyor",
+    "printStep_layout": "Kartı, QR kodu ve masa numarasını yerleştiriyor",
+    "printStep_code": "Baskı şablonunu yazıyor",
+    "printStep_check": "Örnek kartlarla test ediyor"
   },
   "voice": {
     "label": "Konuş",
@@ -178,7 +192,17 @@
     "fontCategory_serif": "Tırnaklı",
     "fontCategory_sans": "Tırnaksız",
     "fontCategory_display": "Gösterişli",
-    "fontCategory_script": "El yazısı"
+    "fontCategory_script": "El yazısı",
+    "printHintActive": "Bu, şu anki baskı tasarımın. „Baskı için kaydet“ değerleri tüm QR kartlarına uygular.",
+    "printHintInactive": "Kartta hangi öğelerin görüneceğini burada belirlersin. Değerler „Baskı tasarımı olarak kullan“ diyene kadar yalnızca önizlemede geçerlidir.",
+    "saveForPrint": "Baskı için kaydet",
+    "printFormat": "Format ve baskı",
+    "format": "Format",
+    "sheet": "Baskı sayfası",
+    "sheet_a4": "Kesim işaretli A4 sayfalarda",
+    "sheet_card": "Sayfa başına bir kart",
+    "sheetOnlyCard": "Bu format her zaman tek tek basılır.",
+    "formatHint": "Formatı değiştirirsen CSS'teki boyutları da uyarla – ya da bunu yapay zekâdan iste."
   },
   "preview": {
     "title": "Canlı önizleme",
@@ -208,7 +232,13 @@
     "suggestion_allergens": "Alerjenleri fiyatın yanında küçük kısaltmalar olarak göster",
     "placeholder": "Yapay zekâ neyi değiştirsin? (Göndermek için ⌘ + Enter)",
     "send": "Gönder",
-    "thinking": "Yapay zekâ teman üzerinde çalışıyor …"
+    "thinking": "Yapay zekâ teman üzerinde çalışıyor …",
+    "printIntro": "Masa kartında neyi değiştirmemi istediğini yaz ya da söyle. Değişiklikleri önce önizlemede görürsün.",
+    "suggestion_print_bigger_qr": "QR kodu daha büyük, masa numarası daha belirgin olsun",
+    "suggestion_print_wifi": "Wi-Fi bilgilerini kartın altında göster",
+    "suggestion_print_poster": "Vitrin için A4 afişe dönüştür",
+    "suggestion_print_minimal": "Daha sade ve daha fazla boşlukla",
+    "suggestion_print_tent_back": "Arka yüzde diller ve sipariş notu olsun"
   },
   "diff": {
     "title": "Yapay zekânın önerisini incele",
@@ -298,7 +328,17 @@
     "publishActivates": "Şu anki aktif tasarımın yerini alacak – istediğin zaman geri dönebilirsin.",
     "publishConfirm": "Şimdi yayınla",
     "published": "Yayınlandı – misafirler artık bu tasarımı görüyor",
-    "cancel": "İptal"
+    "cancel": "İptal",
+    "backPrint": "Masalar ve QR kodlarına dön",
+    "kindPrint": "Baskı tasarımı",
+    "usePrint": "Baskı tasarımı olarak kullan",
+    "usePrintUpdate": "Baskı tasarımını güncelle",
+    "usePrintTitle": "Baskı tasarımı olarak kullanılsın mı?",
+    "usePrintDescription": "QR masa kartların bundan sonra bu tasarımla basılacak.",
+    "usePrintSettings": "Mevcut ayarlar (görünen öğeler, metinler, renkler) baskı için kullanılır.",
+    "usePrintReplaces": "Önceki baskı tasarımın değiştirilir – misafirlerin gördüğü menü aynı kalır.",
+    "usePrintConfirm": "Şimdi kullan",
+    "printSelected": "Kaydedildi – QR kartların artık bu tasarımı kullanıyor"
   },
   "admin": {
     "title": "Tema kütüphanesi",
@@ -334,6 +374,38 @@
     "descriptionLabel": "Açıklama",
     "save": "Kaydet",
     "saved": "Kaydedildi",
-    "cancel": "İptal"
+    "cancel": "İptal",
+    "kindFilter": "Tasarım türü",
+    "kindAll": "Tümü",
+    "kindMenu": "Menü",
+    "kindPrint": "Baskı"
+  },
+  "formats": {
+    "a6": "A6 masa kartı",
+    "a6-landscape": "A6 yatay",
+    "tent-a6": "Masa üstü kart (A6)",
+    "a5": "A5",
+    "a5-landscape": "A5 yatay",
+    "a4": "A4 afiş",
+    "a4-landscape": "A4 yatay"
+  },
+  "printPreview": {
+    "title": "Baskı önizlemesi",
+    "formatTitle": "Baskı tasarımının formatı",
+    "sheet": "Baskı sayfası",
+    "sheet_a4": "A4 sayfa",
+    "sheet_card": "Tek kartlar",
+    "sheetHint_a4": "Kesim işaretli, A4 sayfa başına birden fazla kart (ofis yazıcısı)",
+    "sheetHint_card": "Sayfa başına bir kart (matbaa)",
+    "data": "Önizleme verileri",
+    "dataReal": "Masalarım",
+    "dataSample": "Örnek kartlar",
+    "rendering": "Önizleme hazırlanıyor",
+    "zoomOut": "Uzaklaştır",
+    "zoomIn": "Yakınlaştır",
+    "fit": "Genişliğe sığdır",
+    "reload": "Önizlemeyi yenile",
+    "summary": "{cards, plural, one {# kart} other {# kart}} · {pages, plural, one {# sayfa} other {# sayfa}} · sayfa başına {perPage}",
+    "truncated": "Önizleme {total} karttan {shown} tanesini gösteriyor"
   }
 }

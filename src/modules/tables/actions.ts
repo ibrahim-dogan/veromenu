@@ -3,6 +3,9 @@ import { z } from "zod";
 import { action } from "@/core/http/action";
 import { assertRestaurantPermission } from "@/core/auth/guards";
 import { audit } from "@/core/audit";
+import { AppError } from "@/core/http/errors";
+import { deleteTheme, duplicateTheme, getPrintDesign, publishTheme, saveThemeVersion, selectPrintDesign } from "@/modules/theme-engine/service";
+import { resolveSettings } from "@/modules/theme-engine/settings";
 import {
   bulkCreateTables,
   createTable,
@@ -67,5 +70,57 @@ export const regenerateTableTokenAction = action(
     const row = await regenerateTableToken(restaurantId, tableId);
     await audit({ restaurantId, userId: ctx.user.id, action: "tables.regenerate_token", entityType: "table", entityId: tableId, data: { label: row.label } });
     return null;
+  },
+);
+
+// ---------------------------------------------------------------- QR print designs (theme packages of kind "print")
+
+const themeId = z.uuid();
+const printConfig = z.record(z.string().regex(/^[a-z][a-z0-9_]{0,39}$/), z.union([z.string().max(500), z.number(), z.boolean(), z.null()])).refine((c) => Object.keys(c).length <= 80);
+
+/** Selects a print design (own or library) and stores its customizer values → settings.print = { themeId, config }. */
+export const selectPrintDesignAction = action(
+  z.object({ restaurantId: rid, themeId, config: printConfig.optional() }),
+  async ({ restaurantId, themeId, config }) => {
+    const ctx = await assertRestaurantPermission(restaurantId, "tables.manage");
+    const sel = await selectPrintDesign({ restaurantId, themeId, config, userId: ctx.user.id });
+    return { themeId: sel.themeId };
+  },
+);
+
+/** Copies a print design into an own design (Theme Studio plan; createTheme enforces it). */
+export const duplicatePrintDesignAction = action(z.object({ restaurantId: rid, themeId }), async ({ restaurantId, themeId }) => {
+  const ctx = await assertRestaurantPermission(restaurantId, "tables.manage");
+  await getPrintDesign(restaurantId, themeId); // print kind only
+  return duplicateTheme({ restaurantId, themeId, userId: ctx.user.id });
+});
+
+/** Deletes an own print design (refused while it is the selected one). */
+export const deletePrintDesignAction = action(z.object({ restaurantId: rid, themeId }), async ({ restaurantId, themeId }) => {
+  await assertRestaurantPermission(restaurantId, "tables.manage");
+  const d = await getPrintDesign(restaurantId, themeId);
+  if (d.theme.restaurantId !== restaurantId) throw new AppError("forbidden");
+  await deleteTheme(restaurantId, themeId);
+  return null;
+});
+
+/**
+ * "Als Standard": writes the current customizer values as manifest defaults of an OWN print design (new version,
+ * published + selected with these values). Library designs must be duplicated first.
+ */
+export const savePrintDefaultsAction = action(
+  z.object({ restaurantId: rid, themeId, config: printConfig }),
+  async ({ restaurantId, themeId, config }) => {
+    const ctx = await assertRestaurantPermission(restaurantId, "tables.manage");
+    const d = await getPrintDesign(restaurantId, themeId);
+    if (d.theme.restaurantId !== restaurantId) throw new AppError("forbidden", "library_design");
+    const values = resolveSettings(d.pkg.manifest, config);
+    const manifest = {
+      ...d.pkg.manifest,
+      settings: d.pkg.manifest.settings.map((f) => (f.type === "image" ? f : ({ ...f, default: values[f.id] ?? f.default } as typeof f))),
+    };
+    const saved = await saveThemeVersion({ restaurantId, themeId, pkg: { manifest, files: d.pkg.files }, note: "Standardwerte (Tische & QR-Codes)", author: "user", userId: ctx.user.id });
+    await publishTheme({ restaurantId, themeId, versionId: saved.versionId, userId: ctx.user.id, config: values });
+    return { versionId: saved.versionId };
   },
 );

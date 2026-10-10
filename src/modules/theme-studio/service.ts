@@ -11,8 +11,11 @@ import { env } from "@/core/env";
 import { AppError } from "@/core/http/action";
 import { getGuestMessages } from "@/modules/guest/i18n";
 import type { GuestMessages } from "@/modules/guest/t";
-import { buildThemeView, renderThemeDocument, sampleThemeView, validatePackage, type ThemeMediaRef } from "@/modules/theme-engine";
-import type { ThemePackage, ThemeView } from "@/modules/theme-engine/types";
+import { buildThemeView, printLayout, renderPrintDocument, renderThemeDocument, samplePrintViews, sampleThemeView, validatePackage, type ThemeMediaRef } from "@/modules/theme-engine";
+import type { PrintView, ThemeKind, ThemePackage, ThemeView } from "@/modules/theme-engine/types";
+import { planHas } from "@/modules/billing/plans";
+import { listTables } from "@/modules/tables/service";
+import { buildPrintViews } from "@/modules/tables/print-designs";
 import { getThemeWithPackage } from "@/modules/theme-engine/service";
 import { mediaIdsFor, sanitizeSettings } from "./lib/package";
 
@@ -80,13 +83,59 @@ export async function renderPreviewHtml(pkg: ThemePackage, view: ThemeView, sett
   return html;
 }
 
+// ------------------------------------------------------------------ print designs (kind "print")
+
+type PrintRestaurant = { id: string; slug: string; name: string; plan: string; defaultLocale: string; enabledLocales: string[]; settings: typeof restaurants.$inferSelect.settings };
+
+/** Max cards in the studio preview (the print route prints all tables). */
+export const PRINT_PREVIEW_MAX_CARDS = 24;
+
+/**
+ * PrintViews for the studio preview: the restaurant's real data – generic card + active tables (QR = real menu
+ * URL; the engine renders the QR from table.url) – or the engine's sample cards. Settings are filled by the caller.
+ */
+export async function printPreviewViews(r: PrintRestaurant, source: "real" | "sample", limit = PRINT_PREVIEW_MAX_CARDS): Promise<{ views: PrintView[]; source: "real" | "sample"; total: number }> {
+  if (source === "sample") {
+    const views = samplePrintViews();
+    return { views, source: "sample", total: views.length };
+  }
+  // same data as the print route (tables module): generic card + active tables, QR from table.url
+  const rows = planHas(r.plan, "tables") ? (await listTables(r.id)).filter((t) => t.isActive) : [];
+  const views = await buildPrintViews(r, { tables: rows.slice(0, Math.max(0, limit - 1)), generic: true, settings: {}, mode: "preview" });
+  return { views, source: "real", total: rows.length + 1 };
+}
+
+/** Server-rendered print document (first card(s) only) for card previews of print designs. */
+export async function renderPrintPreviewHtml(pkg: ThemePackage, views: PrintView[], settings: unknown, restaurantId: string | null, locale = "de"): Promise<string> {
+  const clean = sanitizeSettings(pkg.manifest, settings);
+  const { html } = await renderPrintDocument({
+    // one card per page for previews (no A4 imposition)
+    pkg: { ...pkg, manifest: { ...pkg.manifest, print: { ...(pkg.manifest.print ?? { format: "a6" }), sheet: "card" } } },
+    views: views.map((v) => ({ ...v, settings: clean, mode: "preview" as const })),
+    assetBaseUrl: assetBaseUrl(),
+    guestMessages: flatGuestMessages(locale),
+    media: await resolvePreviewMedia(restaurantId, mediaIdsFor(pkg.manifest, clean)),
+    mode: "preview",
+    locale,
+  });
+  return html;
+}
+
+export const packageKind = (pkg: ThemePackage): ThemeKind => (pkg.manifest?.kind === "print" ? "print" : "menu");
+
+/** Page size (CSS px at 96 dpi) of a single-card print preview. */
+export function printPreviewSize(pkg: ThemePackage): { width: number; height: number } {
+  const { page } = printLayout({ ...(pkg.manifest.print ?? { format: "a6" }), sheet: "card" });
+  return { width: Math.round((page.w * 96) / 25.4), height: Math.round((page.h * 96) / 25.4) };
+}
+
 // ------------------------------------------------------------------ platform library (admin)
 
-export type LibraryTheme = { id: string; name: string; description: string | null; origin: string; currentVersionId: string | null; updatedAt: Date };
+export type LibraryTheme = { id: string; name: string; description: string | null; origin: string; currentVersionId: string | null; updatedAt: Date; kind: string };
 
 export async function listLibraryThemes(): Promise<LibraryTheme[]> {
   return db
-    .select({ id: themes.id, name: themes.name, description: themes.description, origin: themes.origin, currentVersionId: themes.currentVersionId, updatedAt: themes.updatedAt })
+    .select({ id: themes.id, name: themes.name, description: themes.description, origin: themes.origin, currentVersionId: themes.currentVersionId, updatedAt: themes.updatedAt, kind: themes.kind })
     .from(themes)
     .where(isNull(themes.restaurantId))
     .orderBy(themes.name);
@@ -95,7 +144,7 @@ export async function listLibraryThemes(): Promise<LibraryTheme[]> {
 /** Restaurant themes that can be promoted into the library (latest first). */
 export async function listPromotableThemes(limit = 100) {
   return db
-    .select({ id: themes.id, name: themes.name, origin: themes.origin, restaurantId: themes.restaurantId, restaurantName: restaurants.name, updatedAt: themes.updatedAt })
+    .select({ id: themes.id, name: themes.name, origin: themes.origin, restaurantId: themes.restaurantId, restaurantName: restaurants.name, updatedAt: themes.updatedAt, kind: themes.kind })
     .from(themes)
     .innerJoin(restaurants, eq(restaurants.id, themes.restaurantId))
     .where(and(isNotNull(themes.restaurantId), isNotNull(themes.currentVersionId)))
@@ -112,7 +161,7 @@ async function loadVersionPackage(themeId: string, versionId: string | null): Pr
 
 export async function getLibraryPackage(themeId: string): Promise<{ theme: LibraryTheme; pkg: ThemePackage }> {
   const [t] = await db
-    .select({ id: themes.id, name: themes.name, description: themes.description, origin: themes.origin, currentVersionId: themes.currentVersionId, updatedAt: themes.updatedAt })
+    .select({ id: themes.id, name: themes.name, description: themes.description, origin: themes.origin, currentVersionId: themes.currentVersionId, updatedAt: themes.updatedAt, kind: themes.kind })
     .from(themes)
     .where(and(eq(themes.id, themeId), isNull(themes.restaurantId)))
     .limit(1);
@@ -126,7 +175,7 @@ async function insertLibraryTheme(opts: { name: string; description: string | nu
   return db.transaction(async (tx) => {
     const [t] = await tx
       .insert(themes)
-      .values({ restaurantId: null, name: opts.name, description: opts.description, origin: opts.origin, parentThemeId: opts.parentThemeId ?? null, createdBy: opts.userId })
+      .values({ restaurantId: null, kind: packageKind(opts.pkg), name: opts.name, description: opts.description, origin: opts.origin, parentThemeId: opts.parentThemeId ?? null, createdBy: opts.userId })
       .returning({ id: themes.id });
     const [v] = await tx
       .insert(themeVersions)

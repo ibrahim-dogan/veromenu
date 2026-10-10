@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import { redirect } from "@/core/i18n/navigation";
 import { requireRestaurant } from "@/core/auth/guards";
 import { FeatureGate } from "@/components/shell/feature-gate";
 import { localeInfo } from "@/core/i18n/locales";
@@ -7,6 +8,7 @@ import { planHas } from "@/modules/billing/plans";
 import { getThemeWithPackage } from "@/modules/theme-engine/service";
 import { StudioApp, type Panel } from "@/modules/theme-studio/components/studio/studio-app";
 import { sanitizeSettings } from "@/modules/theme-studio/lib/package";
+import { canManageKind } from "@/modules/theme-studio/access";
 
 export async function generateMetadata() {
   const t = await getTranslations("themeStudio.studio");
@@ -15,11 +17,14 @@ export async function generateMetadata() {
 
 const PANELS: Panel[] = ["files", "customize", "ai", "versions"];
 
-/** Theme Studio: file tree + code editor + live sandboxed preview, customizer, AI chat with diff review, versions. */
+/**
+ * Theme Studio: file tree + code editor + live sandboxed preview, customizer, AI chat with diff review, versions.
+ * Works for menu themes (`theme.manage`) and QR print designs (kind "print": `tables.manage` or `theme.manage`).
+ */
 export default async function ThemeStudioPage({ params, searchParams }: PageProps<"/[locale]/dashboard/[rid]/design/studio/[themeId]">) {
   const { rid, themeId } = await params;
   const sp = await searchParams;
-  const ctx = await requireRestaurant(rid, "theme.manage");
+  const ctx = await requireRestaurant(rid);
   const r = ctx.restaurant;
   if (!planHas(r.plan, "theme_studio")) return <FeatureGate plan={r.plan} feature="theme_studio">{null}</FeatureGate>;
   if (!/^[0-9a-f-]{36}$/i.test(themeId)) notFound();
@@ -32,6 +37,9 @@ export default async function ThemeStudioPage({ params, searchParams }: PageProp
   }
   // Library themes are only editable as a copy ("Verwenden").
   if (data.theme.restaurantId !== rid) notFound();
+  const kind = data.theme.kind === "print" ? "print" : "menu";
+  if (!canManageKind(ctx, kind)) redirect({ href: `/dashboard/${rid}/forbidden`, locale: await getLocale() });
+  const printConfig = r.settings?.print?.themeId === themeId ? r.settings.print.config : undefined;
 
   const panel = typeof sp.panel === "string" && (PANELS as string[]).includes(sp.panel) ? (sp.panel as Panel) : "files";
   const locales = [...new Set([r.defaultLocale, ...r.enabledLocales])].map((code) => {
@@ -47,11 +55,12 @@ export default async function ThemeStudioPage({ params, searchParams }: PageProp
       meta={{ name: data.theme.name, isActive: data.theme.isActive, currentVersionId: data.theme.currentVersionId, publishedVersionId: data.theme.publishedVersionId }}
       versionId={data.versionId}
       pkg={data.pkg}
-      initialSettings={data.theme.isActive ? sanitizeSettings(data.pkg.manifest, r.themeConfig) : {}}
+      initialSettings={data.theme.isActive ? sanitizeSettings(data.pkg.manifest, kind === "print" ? printConfig : r.themeConfig) : {}}
       initialPanel={panel}
       locales={locales}
       defaultLocale={r.defaultLocale}
       canUseAi={ctx.can("ai.use") && planHas(r.plan, "theme_studio")}
+      kind={kind}
     />
   );
 }

@@ -11,13 +11,15 @@ import { downloadText, themeStatus, type ThemeCardData } from "../lib/client";
 import { MiniPreview } from "./mini-preview";
 import { SandboxFrame } from "./sandbox-frame";
 
-export function StatusBadges({ theme }: { theme: Pick<ThemeCardData, "isActive" | "publishedVersionId" | "currentVersionId"> }) {
+export function StatusBadges({ theme, kind = "menu" }: { theme: Pick<ThemeCardData, "isActive" | "publishedVersionId" | "currentVersionId">; kind?: "menu" | "print" }) {
   const t = useTranslations("themeStudio.status");
+  // print designs: "active" = selected for printing; a never-used draft is normal (no "draft" badge)
+  const list = kind === "print" ? themeStatus(theme).filter((s) => s !== "draft") : themeStatus(theme);
   return (
     <>
-      {themeStatus(theme).map((s) => (
+      {list.map((s) => (
         <Badge key={s} tone={s === "active" ? "green" : s === "unpublished" ? "yellow" : "neutral"}>
-          {t(s)}
+          {kind === "print" ? t(`print_${s}`) : t(s)}
         </Badge>
       ))}
     </>

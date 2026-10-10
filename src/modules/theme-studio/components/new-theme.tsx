@@ -18,6 +18,14 @@ import { AiProgress } from "./ai-progress";
 import { VoiceButton } from "./voice-button";
 
 type Mode = "files" | "prompt" | "blank" | null;
+
+const parsedKind = (json: string) => {
+  try {
+    return (JSON.parse(json) as { manifest?: { kind?: unknown } })?.manifest?.kind;
+  } catch {
+    return undefined;
+  }
+};
 const EXAMPLES = ["bistro", "sushi", "cafe", "steakhouse", "vegan", "biergarten"] as const;
 
 export function NewTheme({ restaurantId, canUseAi, onTemplates }: { restaurantId: string; canUseAi: boolean; onTemplates: () => void }) {
@@ -37,7 +45,10 @@ export function NewTheme({ restaurantId, canUseAi, onTemplates }: { restaurantId
     if (!file) return;
     if (file.size > 6_000_000) return toast.error(t("importTooLarge"));
     try {
-      await imp.run({ restaurantId, json: await readFileText(file) });
+      const json = await readFileText(file);
+      // print designs (QR table cards) are imported on the tables page – the hub only takes menu themes
+      if (/"kind"\s*:\s*"print"/.test(json.slice(0, 20_000)) && parsedKind(json) === "print") return toast.error(t("importIsPrint"));
+      await imp.run({ restaurantId, json, kind: "menu" });
     } catch {
       toast.error(te("unexpected"));
     }
@@ -110,7 +121,7 @@ export function NewTheme({ restaurantId, canUseAi, onTemplates }: { restaurantId
   );
 }
 
-function UploadedList({ items, onRemove }: { items: MediaItem[]; onRemove: (id: string) => void }) {
+export function UploadedList({ items, onRemove }: { items: MediaItem[]; onRemove: (id: string) => void }) {
   const t = useTranslations("themeStudio.new");
   if (!items.length) return null;
   return (

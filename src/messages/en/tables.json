@@ -70,9 +70,9 @@
     "done": "{count, plural, =0 {No new tables – they all existed already.} one {# table created} other {# tables created}}"
   },
   "print": {
-    "button": "Print QR codes",
-    "title": "Print QR codes",
-    "description": "Download a print-ready PDF.",
+    "button": "Quick PDF",
+    "title": "Quick PDF",
+    "description": "Simple print-ready PDF in the standard layout. For your own look, use the print designs above.",
     "download": "Download PDF",
     "layout": "Format",
     "sheet": "A4 sheet",

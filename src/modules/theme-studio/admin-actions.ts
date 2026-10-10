@@ -5,9 +5,9 @@ import { action } from "@/core/http/action";
 import { ForbiddenError } from "@/core/http/errors";
 import { getCurrentUser } from "@/core/auth/session";
 import { audit } from "@/core/audit";
-import { sampleThemeView } from "@/modules/theme-engine";
-import { seedStarterThemes } from "@/modules/theme-engine/service";
-import { deleteLibraryTheme, getLibraryPackage, promoteToLibrary, renderPreviewHtml, updateLibraryTheme } from "./service";
+import { samplePrintViews, sampleThemeView } from "@/modules/theme-engine";
+import { seedPrintStarters, seedStarterThemes } from "@/modules/theme-engine/service";
+import { deleteLibraryTheme, getLibraryPackage, packageKind, printPreviewSize, promoteToLibrary, renderPreviewHtml, renderPrintPreviewHtml, updateLibraryTheme } from "./service";
 
 async function admin() {
   const user = await getCurrentUser();
@@ -41,13 +41,20 @@ export const deleteLibraryThemeAction = action(z.object({ themeId: tid }), async
 
 export const seedStartersAction = action(z.object({}), async () => {
   const user = await admin();
-  const res = await seedStarterThemes();
-  await audit({ userId: user.id, action: "admin.theme.seed", data: res });
+  const menu = await seedStarterThemes();
+  const print = await seedPrintStarters();
+  const res = { created: menu.created + print.created, updated: menu.updated + print.updated };
+  await audit({ userId: user.id, action: "admin.theme.seed", data: { menu, print } });
   return { added: res.created, updated: res.updated };
 });
 
 export const adminPreviewAction = action(z.object({ themeId: tid }), async ({ themeId }) => {
   await admin();
   const { pkg } = await getLibraryPackage(themeId);
-  return { html: await renderPreviewHtml(pkg, sampleThemeView(), {}) };
+  if (packageKind(pkg) === "print") {
+    // a real table card (sample "Tisch 12") – one card per page
+    const card = samplePrintViews().filter((v) => !v.table.is_generic)[1] ?? samplePrintViews()[0];
+    return { html: await renderPrintPreviewHtml(pkg, [card], {}, null), kind: "print" as const, ...printPreviewSize(pkg) };
+  }
+  return { html: await renderPreviewHtml(pkg, sampleThemeView(), {}), kind: "menu" as const };
 });

@@ -7,6 +7,8 @@ import "server-only";
 import { getRestaurantContext, type RestaurantContext } from "@/core/auth/guards";
 import { toActionError } from "@/core/http/action";
 import { planHas } from "@/modules/billing/plans";
+import type { ThemeKind } from "@/modules/theme-engine/types";
+import { canManageKind, themeKindOf } from "./access";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const isUuid = (v: string | null | undefined): v is string => !!v && UUID.test(v);
@@ -18,12 +20,19 @@ export const studioError = (error: string, status: number, detail?: string) =>
 
 const STATUS: Record<string, number> = { forbidden: 403, featureNotInPlan: 403, notFound: 404, validation: 400 };
 
-export async function studioRoute<T>(rid: string, handler: (ctx: RestaurantContext) => Promise<T>): Promise<Response> {
+/**
+ * `target`: kind of design the endpoint serves ("print" also admits `tables.manage`), or a theme id whose kind is
+ * looked up when the user lacks `theme.manage`. Default "menu" = `theme.manage` only.
+ */
+export async function studioRoute<T>(rid: string, handler: (ctx: RestaurantContext) => Promise<T>, target: ThemeKind | { themeId: string } = "menu"): Promise<Response> {
   if (!isUuid(rid)) return studioError("notFound", 404);
   try {
     const ctx = await getRestaurantContext(rid);
     if (!ctx) return studioError("forbidden", 401);
-    if (!ctx.can("theme.manage")) return studioError("forbidden", 403);
+    if (!ctx.can("theme.manage")) {
+      const kind = typeof target === "string" ? target : isUuid(target.themeId) ? await themeKindOf(rid, target.themeId) : "menu";
+      if (!canManageKind(ctx, kind)) return studioError("forbidden", 403);
+    }
     if (!planHas(ctx.restaurant.plan, "theme_studio")) return studioError("featureNotInPlan", 403);
     return Response.json({ ok: true, data: await handler(ctx) }, { headers: NO_STORE });
   } catch (e) {

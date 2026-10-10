@@ -1,0 +1,9 @@
+{%- if settings.show_wifi and settings.wifi_ssid != blank -%}
+<div class="wifi">
+  <svg class="wifi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M2 8.8a15 15 0 0 1 20 0"/><path d="M5.2 12.4a10.5 10.5 0 0 1 13.6 0"/><path d="M8.6 16a5.5 5.5 0 0 1 6.8 0"/><circle cx="12" cy="19.6" r="1.1" fill="currentColor" stroke="none"/></svg>
+  <dl class="wifi-data">
+    <div><dt>{{ 'wifi' | t }}</dt><dd>{{ settings.wifi_ssid }}</dd></div>
+    {%- if settings.wifi_password != blank -%}<div><dt>{{ 'wifiPassword' | t }}</dt><dd>{{ settings.wifi_password }}</dd></div>{%- endif -%}
+  </dl>
+</div>
+{%- endif -%}

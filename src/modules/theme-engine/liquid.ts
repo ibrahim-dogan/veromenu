@@ -25,6 +25,8 @@ export const THEME_FILTERS = ["money", "t", "image_url", "asset_url", "font_fami
 
 export const PARTIAL_PATH = /^templates\/partials\/([a-z0-9_-]+)\.liquid$/;
 export const MENU_TEMPLATE = "templates/menu.liquid";
+/** Card template of print packages (kind "print"); re-exported as PRINT_TEMPLATE from ./print. */
+export const PRINT_TEMPLATE_PATH = "templates/print.liquid";
 
 /** Liquid template map: "menu" + every partial by its name ({% render 'card' %}). */
 export function templateMap(files: Record<string, string>): Record<string, string> {
@@ -34,6 +36,7 @@ export function templateMap(files: Record<string, string>): Record<string, strin
     if (m && typeof content === "string") map[m[1]] = content;
   }
   if (typeof files?.[MENU_TEMPLATE] === "string") map.menu = files[MENU_TEMPLATE];
+  if (typeof files?.[PRINT_TEMPLATE_PATH] === "string") map.print = files[PRINT_TEMPLATE_PATH];
   return map;
 }
 

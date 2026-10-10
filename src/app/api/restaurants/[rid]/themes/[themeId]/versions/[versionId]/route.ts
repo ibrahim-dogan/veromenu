@@ -8,5 +8,5 @@ export async function GET(_req: Request, { params }: RouteContext<"/api/restaura
   return studioRoute(rid, async () => {
     const res = await getThemeWithPackage(rid, themeId, versionId);
     return { versionId: res.versionId, pkg: res.pkg };
-  });
+  }, { themeId });
 }

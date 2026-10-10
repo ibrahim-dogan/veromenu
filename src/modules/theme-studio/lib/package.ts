@@ -2,12 +2,25 @@
  * Isomorphic helpers for theme packages used by the Theme Studio UI and its server actions.
  * No server-only imports – runs in the browser (editor, customizer) and on the server (actions).
  */
-import { THEME_API_VERSION, THEME_FILE_PATTERNS, THEME_LIMITS, type ThemeManifest, type ThemePackage, type ThemeSettingField } from "@/modules/theme-engine/types";
+import {
+  THEME_API_VERSION,
+  THEME_FILE_PATTERNS,
+  THEME_LIMITS,
+  type PrintFormat,
+  type ThemeKind,
+  type ThemeManifest,
+  type ThemePackage,
+  type ThemeSettingField,
+} from "@/modules/theme-engine/types";
 import { resolveSettings, settingFields } from "@/modules/theme-engine/settings";
 
 /** Virtual path for the manifest inside the studio file tree (it is not part of `files`). */
 export const MANIFEST_PATH = "manifest.json";
 export const MENU_TEMPLATE = "templates/menu.liquid";
+export const PRINT_TEMPLATE_PATH = "templates/print.liquid";
+export const kindOfPackage = (pkg: Pick<ThemePackage, "manifest"> | null | undefined): ThemeKind => (pkg?.manifest?.kind === "print" ? "print" : "menu");
+/** The required main template of a package kind (cannot be deleted / renamed in the file tree). */
+export const mainTemplate = (kind: ThemeKind) => (kind === "print" ? PRINT_TEMPLATE_PATH : MENU_TEMPLATE);
 
 export type FileKind = "liquid" | "css" | "js" | "json";
 
@@ -28,6 +41,8 @@ export const NEW_FILE_KINDS = {
   locale: { prefix: "locales/", ext: ".json" },
 } as const;
 export type NewFileKind = keyof typeof NEW_FILE_KINDS;
+/** File kinds offered in the "new file" dialog: print designs have no JavaScript. */
+export const newFileKindsFor = (kind: ThemeKind): NewFileKind[] => (kind === "print" ? ["partial", "css", "locale"] : (Object.keys(NEW_FILE_KINDS) as NewFileKind[]));
 
 /** Builds a package path from a user-entered name; returns null when the result is not allowed. */
 export function pathFor(kind: NewFileKind, rawName: string): string | null {
@@ -47,7 +62,7 @@ export function starterContent(path: string): string {
   return "{\n}\n";
 }
 
-const ORDER = [/^templates\/menu\.liquid$/, /^templates\/partials\//, /^assets\/theme\.css$/, /^assets\/.*\.css$/, /^assets\/.*\.js$/, /^locales\//];
+const ORDER = [/^templates\/(menu|print)\.liquid$/, /^templates\/partials\//, /^assets\/theme\.css$/, /^assets\/.*\.css$/, /^assets\/.*\.js$/, /^locales\//];
 const rank = (p: string) => {
   const i = ORDER.findIndex((r) => r.test(p));
   return i === -1 ? ORDER.length : i;
@@ -188,6 +203,103 @@ main { max-width: 42rem; margin: 0 auto; padding: 0 1.25rem 4rem; }
 .item p { margin: .25rem 0 0; color: #57534e; font-size: .875rem; }
 .price { font-weight: 600; white-space: nowrap; }
 .is-off { opacity: .5; }
+`,
+    },
+  };
+}
+
+// ------------------------------------------------------------------ print designs
+
+/** Owner-facing format names are translated in the UI; these are the physical facts shown next to them. */
+export const PRINT_FORMAT_OPTIONS: PrintFormat[] = ["a6", "a6-landscape", "tent-a6", "a5", "a5-landscape", "a4", "a4-landscape"];
+
+const L = (de: string, en: string, tr: string) => ({ de, en, tr });
+
+/**
+ * Minimal valid print design for "Leer starten": one clean card (table number, QR, headline, languages, Wi-Fi,
+ * contact) – every optional element is a show_* setting. Works for every format (sizes from the engine's CSS vars).
+ */
+export function blankPrintPackage(name: string, format: PrintFormat = "a6"): ThemePackage {
+  const small = format === "a6" || format === "a6-landscape" || format === "tent-a6";
+  return {
+    manifest: {
+      apiVersion: THEME_API_VERSION,
+      kind: "print",
+      name,
+      version: "1.0.0",
+      description: { de: "Schlichte QR-Tischkarte", en: "Simple QR table card", tr: "Sade QR masa kartı" },
+      print: { format, sheet: small || format === "a5" || format === "a5-landscape" ? (format === "tent-a6" ? "card" : "a4") : "card", safeMm: 5 },
+      fonts: ["dm-serif-display", "inter"],
+      settings: [
+        { id: "color_background", type: "color", label: L("Papier", "Paper", "Kâğıt"), default: "#ffffff" },
+        { id: "color_text", type: "color", label: L("Text", "Text", "Metin"), default: "#1c1917" },
+        { id: "color_primary", type: "color", label: L("Akzent", "Accent", "Vurgu"), default: "#9a3412" },
+        { id: "font_heading", type: "font", label: L("Schrift Tischnummer", "Table number font", "Masa numarası yazı tipi"), default: "dm-serif-display" },
+        { id: "font_body", type: "font", label: L("Schrift Text", "Body font", "Metin yazı tipi"), default: "inter" },
+        { id: "show_logo", type: "checkbox", label: L("Logo zeigen", "Show logo", "Logoyu göster"), default: true },
+        { id: "show_table_number", type: "checkbox", label: L("Tischnummer zeigen", "Show table number", "Masa numarasını göster"), default: true },
+        { id: "show_headline", type: "checkbox", label: L("Überschrift zeigen", "Show headline", "Başlığı göster"), default: true },
+        { id: "headline", type: "text", label: L("Überschrift", "Headline", "Başlık"), default: "Speisekarte scannen", maxLength: 60 },
+        { id: "show_languages", type: "checkbox", label: L("Sprachen zeigen", "Show languages", "Dilleri göster"), default: true },
+        { id: "show_ordering_hint", type: "checkbox", label: L("Bestell-Hinweis zeigen", "Show ordering hint", "Sipariş notunu göster"), default: true },
+        { id: "show_wifi", type: "checkbox", label: L("WLAN zeigen", "Show Wi-Fi", "Wi-Fi göster"), default: false },
+        { id: "wifi_ssid", type: "text", label: L("WLAN-Name", "Wi-Fi name", "Wi-Fi adı"), default: "", maxLength: 40 },
+        { id: "wifi_password", type: "text", label: L("WLAN-Passwort", "Wi-Fi password", "Wi-Fi şifresi"), default: "", maxLength: 40 },
+        { id: "show_contact", type: "checkbox", label: L("Adresse & Telefon zeigen", "Show address & phone", "Adres ve telefonu göster"), default: false },
+      ],
+    },
+    files: {
+      [PRINT_TEMPLATE_PATH]: `<div class="card{% if table.is_generic %} is-generic{% endif %}">
+  <header class="brand">
+    {%- if settings.show_logo and restaurant.logo_url -%}<img class="logo" src="{{ restaurant.logo_url }}" alt="{{ restaurant.name }}">
+    {%- else -%}<p class="name">{{ restaurant.name }}</p>{%- endif -%}
+  </header>
+
+  {%- if settings.show_table_number and table.is_generic == false -%}
+  <div class="table">
+    <span class="table-word">{{ 'tableWord' | t }}</span>
+    <span class="table-number">{{ table.number }}</span>
+    {%- if table.area -%}<span class="table-area">{{ table.area }}</span>{%- endif -%}
+  </div>
+  {%- endif -%}
+
+  <div class="scan">
+    <div class="qr">{{ table.qr_svg }}</div>
+    {%- if settings.show_headline and settings.headline != blank -%}<p class="headline">{{ settings.headline }}</p>{%- endif -%}
+    {%- if settings.show_ordering_hint and ordering.enabled -%}<p class="hint">{{ 'orderAtTable' | t }}</p>{%- endif -%}
+  </div>
+
+  <footer class="extras">
+    {%- if settings.show_languages and languages.size > 1 -%}
+    <p class="langs">{% for l in languages %}<span>{{ l.flag }} {{ l.name }}</span>{% unless forloop.last %} · {% endunless %}{% endfor %}</p>
+    {%- endif -%}
+    {%- if settings.show_wifi and settings.wifi_ssid != blank -%}
+    <p class="wifi"><strong>{{ 'wifi' | t }}</strong> {{ settings.wifi_ssid }}{% if settings.wifi_password != blank %} · {{ 'wifiPassword' | t }} {{ settings.wifi_password }}{% endif %}</p>
+    {%- endif -%}
+    {%- if settings.show_contact -%}
+    <p class="contact">{{ restaurant.address }}{% if restaurant.address and restaurant.phone %} · {% endif %}{{ restaurant.phone }}</p>
+    {%- endif -%}
+  </footer>
+</div>
+`,
+      "assets/theme.css": `/* Card size comes from the engine (--vm-card-w/--vm-card-h); keep content inside var(--vm-safe). */
+.card { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 3mm;
+  padding: var(--vm-safe); background: var(--vm-color-background); color: var(--vm-color-text); font-family: var(--vm-font-body); text-align: center; }
+.brand { min-height: 10mm; display: flex; align-items: center; }
+.logo { max-height: 14mm; max-width: 50mm; object-fit: contain; }
+.name { margin: 0; font-family: var(--vm-font-heading); font-size: 13pt; letter-spacing: .02em; text-wrap: balance; }
+.table { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.table-word { font-size: 8pt; letter-spacing: .2em; text-transform: uppercase; }
+.table-number { font-family: var(--vm-font-heading); font-size: ${small ? "40pt" : "72pt"}; color: var(--vm-color-primary); font-variant-numeric: lining-nums tabular-nums; }
+.table-area { margin-top: 1mm; font-size: 8pt; opacity: .8; }
+.scan { display: flex; flex-direction: column; align-items: center; gap: 2mm; }
+.qr { width: ${small ? "40mm" : "70mm"}; min-width: var(--vm-qr-min); aspect-ratio: 1; padding: 3mm; background: #ffffff; border: .3mm solid var(--vm-color-primary); }
+.qr svg { display: block; width: 100%; height: 100%; }
+.headline { margin: 0; font-size: ${small ? "11pt" : "18pt"}; font-weight: 600; text-wrap: balance; }
+.hint { margin: 0; font-size: 8pt; color: var(--vm-color-primary); }
+.extras { display: flex; flex-direction: column; gap: 1mm; font-size: 7pt; line-height: 1.35; }
+.extras p { margin: 0; }
+.is-generic .scan { flex: 1; justify-content: center; }
 `,
     },
   };

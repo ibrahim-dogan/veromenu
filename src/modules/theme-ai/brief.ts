@@ -96,7 +96,8 @@ export function normalizeBrief(b: DesignBrief): DesignBrief {
   };
 }
 
-export function analyzeSystemPrompt(locale: string) {
+export function analyzeSystemPrompt(locale: string, kind: "menu" | "print" = "menu") {
+  if (kind === "print") return analyzePrintSystemPrompt(locale);
   return `You are a senior brand & menu designer. You receive photos / PDF pages of a restaurant's printed menu, flyer or brand material.
 Extract the VISUAL DESIGN LANGUAGE (not the dishes) so a front-end developer can recreate the look as a mobile web menu theme.
 
@@ -107,6 +108,24 @@ Be concrete and faithful:
 - Ornaments/textures: describe frames, dividers, flourishes, stamps, illustrations or paper textures so they can be rebuilt with CSS (borders, gradients) or tiny inline SVG. Do not invent decorations that are not there.
 - If the material is brand material rather than a menu (logo, flyer, sign), infer a menu style that fits the brand.
 - Never transcribe dish lists or prices; mention content only when it matters for design (e.g. "item numbers in circles").
+
+Write ALL free-text fields in ${languageName(locale)} (the restaurant owner reads this brief). Keep font ids and enum values exactly as specified.
+Return only the JSON object.`;
+}
+
+/** Same schema, but the brief is for a printed QR table card / tent / poster (fields keep their names). */
+function analyzePrintSystemPrompt(locale: string) {
+  return `You are a senior brand & print designer. You receive photos / PDF pages of a restaurant's printed material: a menu, flyer, existing table card, sign, business card or other brand material.
+Extract the VISUAL DESIGN LANGUAGE so a developer can build a matching printed QR TABLE CARD / TABLE TENT / POSTER (HTML/CSS, printed on paper) for this restaurant.
+
+Be concrete and faithful:
+- Colours: sample the real paper tone, ink colour, brand colour and accents (gold foil, stamp red …) as hex #rrggbb. Text vs background must reach high contrast on paper (≥ 7:1 for small text) – adjust and say so in notes if the original is weak. "surface" = colour of boxes/panels (e.g. the white field behind a QR code).
+- Typography: describe the lettering precisely (classification, weight, case, tracking, quirks) and choose the closest ids from the font library; also note how NUMBERS look (they will be used for big table numbers).
+- Layout (map the menu-oriented fields sensibly): columns = how many text columns the material uses; itemStyle/priceAlignment/dottedLeaders = how lists look (use "list"/"inline"/false when there is no list); alignment and density = overall composition; categoryHeaderStyle = how headlines/labels are styled; separators = rules, frames and dividers.
+- Ornaments/textures: frames, corner pieces, rules, stamps, icons, patterns – precise enough to rebuild with CSS borders or tiny inline SVG. Note which ones are ink-heavy.
+- header = how the brand/name/logo is placed; logo = describe the logo if present.
+- If an existing table card or QR sign is shown, describe its composition (where the QR code, table number and texts sit) and what to improve (QR too small, low contrast, cluttered).
+- Never transcribe dish lists or prices.
 
 Write ALL free-text fields in ${languageName(locale)} (the restaurant owner reads this brief). Keep font ids and enum values exactly as specified.
 Return only the JSON object.`;

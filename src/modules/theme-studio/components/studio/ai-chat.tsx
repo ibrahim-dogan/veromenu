@@ -8,6 +8,7 @@ import { VoiceButton } from "../voice-button";
 
 export type ChatMessage = { id: number; role: "user" | "ai" | "system"; text: string };
 const SUGGESTIONS = ["darker", "bigger", "images", "font", "allergens"] as const;
+const PRINT_SUGGESTIONS = ["print_bigger_qr", "print_wifi", "print_poster", "print_minimal", "print_tent_back"] as const;
 
 /** Instruction (text or voice) → proposeThemeEdit; the result is reviewed as a diff in the center pane. */
 export function AiChat({
@@ -17,6 +18,7 @@ export function AiChat({
   disabled,
   disabledHint,
   onSend,
+  kind = "menu",
 }: {
   restaurantId: string;
   messages: ChatMessage[];
@@ -24,6 +26,7 @@ export function AiChat({
   disabled?: boolean;
   disabledHint?: string;
   onSend: (text: string) => void;
+  kind?: "menu" | "print";
 }) {
   const t = useTranslations("themeStudio.ai");
   const [text, setText] = useState("");
@@ -47,9 +50,9 @@ export function AiChat({
       <div className="flex-1 space-y-3 overflow-y-auto px-3 pb-3">
         {messages.length === 0 && (
           <div className="space-y-3 rounded-lg bg-violet-50 p-3 text-sm text-violet-900">
-            <p>{t("intro")}</p>
+            <p>{kind === "print" ? t("printIntro") : t("intro")}</p>
             <div className="flex flex-wrap gap-1.5">
-              {SUGGESTIONS.map((s) => (
+              {(kind === "print" ? PRINT_SUGGESTIONS : SUGGESTIONS).map((s) => (
                 <button key={s} type="button" onClick={() => setText(t(`suggestion_${s}`))} className="focus-ring rounded-full border border-violet-200 bg-white px-2.5 py-1 text-xs text-violet-800 hover:border-violet-400">
                   {t(`suggestion_${s}`)}
                 </button>
@@ -99,7 +102,7 @@ export function AiChat({
           aria-label={t("placeholder")}
         />
         <div className="flex items-center gap-2">
-          <VoiceButton restaurantId={restaurantId} disabled={disabled || busy} onText={(v) => setText((p) => (p ? `${p.trimEnd()} ${v}` : v))} />
+          <VoiceButton restaurantId={restaurantId} kind={kind} disabled={disabled || busy} onText={(v) => setText((p) => (p ? `${p.trimEnd()} ${v}` : v))} />
           <Button className="ml-auto bg-violet-600 hover:bg-violet-700" size="sm" onClick={send} disabled={disabled || busy || text.trim().length < 2} loading={busy}>
             {!busy && <Send size={14} aria-hidden />} {t("send")}
           </Button>

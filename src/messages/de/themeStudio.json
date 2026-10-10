@@ -45,7 +45,11 @@
     "active": "Aktiv",
     "draft": "Entwurf",
     "unpublished": "Änderungen nicht veröffentlicht",
-    "published": "Veröffentlicht"
+    "published": "Veröffentlicht",
+    "print_active": "Im Druck",
+    "print_draft": "Entwurf",
+    "print_unpublished": "Änderungen nicht übernommen",
+    "print_published": "Übernommen"
   },
   "upgrade": {
     "badge": "Ab Tarif Starter",
@@ -105,7 +109,8 @@
     "created": "Theme erstellt",
     "cancel": "Abbrechen",
     "imported": "Theme importiert",
-    "importTooLarge": "Die Datei ist zu groß (max. 6 MB)."
+    "importTooLarge": "Die Datei ist zu groß (max. 6 MB).",
+    "importIsPrint": "Diese Datei ist ein Druckdesign (QR-Tischkarte). Importiere es unter „Tische & QR-Codes“."
   },
   "progress": {
     "title_files": "Die KI gestaltet dein Theme aus deinen Dateien",
@@ -117,7 +122,16 @@
     "step_layout": "Layout entwerfen",
     "step_code": "Templates und CSS schreiben",
     "step_check": "Theme prüfen",
-    "elapsed": "{seconds} s"
+    "elapsed": "{seconds} s",
+    "title_printFiles": "Die KI gestaltet dein Druckdesign nach deiner Vorlage",
+    "title_printPrompt": "Die KI gestaltet dein Druckdesign",
+    "hintBackground": "Das dauert meist 30–90 Sekunden. Du kannst dieses Fenster schließen – wir melden uns, sobald das Design fertig ist.",
+    "background": "Im Hintergrund weiterlaufen lassen",
+    "printStep_analyze": "Vorgaben verstehen",
+    "printStep_palette": "Farben und Schriften wählen",
+    "printStep_layout": "Karte, QR-Code und Tischnummer anordnen",
+    "printStep_code": "Druckvorlage schreiben",
+    "printStep_check": "Mit Beispielkarten testen"
   },
   "voice": {
     "label": "Sprechen",
@@ -178,7 +192,17 @@
     "fontCategory_serif": "Serif",
     "fontCategory_sans": "Serifenlos",
     "fontCategory_display": "Display",
-    "fontCategory_script": "Handschrift"
+    "fontCategory_script": "Handschrift",
+    "printHintActive": "Das ist dein aktuelles Druckdesign. „Für den Druck speichern“ übernimmt die Werte für alle QR-Karten.",
+    "printHintInactive": "Hier legst du fest, welche Elemente auf der Karte zu sehen sind. Die Werte gelten zunächst nur für die Vorschau und werden mit „Als Druckdesign verwenden“ gespeichert.",
+    "saveForPrint": "Für den Druck speichern",
+    "printFormat": "Format & Druck",
+    "format": "Format",
+    "sheet": "Druckbogen",
+    "sheet_a4": "Auf A4-Bogen mit Schnittmarken",
+    "sheet_card": "Eine Karte pro Seite",
+    "sheetOnlyCard": "Dieses Format wird immer einzeln gedruckt.",
+    "formatHint": "Änderst du das Format, passt du am besten auch die Größen im CSS an – oder bitte die KI darum."
   },
   "preview": {
     "title": "Live-Vorschau",
@@ -208,7 +232,13 @@
     "suggestion_allergens": "Zeig Allergene als kleine Kürzel neben dem Preis",
     "placeholder": "Was soll die KI ändern? (⌘ + Enter zum Senden)",
     "send": "Senden",
-    "thinking": "Die KI arbeitet an deinem Theme …"
+    "thinking": "Die KI arbeitet an deinem Theme …",
+    "printIntro": "Sag mir, was ich an deiner Tischkarte ändern soll – per Text oder Sprache. Du siehst die Änderungen vorher in der Vorschau.",
+    "suggestion_print_bigger_qr": "QR-Code größer und Tischnummer auffälliger",
+    "suggestion_print_wifi": "WLAN-Daten unten auf der Karte anzeigen",
+    "suggestion_print_poster": "Als A4-Poster fürs Schaufenster umbauen",
+    "suggestion_print_minimal": "Schlichter und mit mehr Weißraum",
+    "suggestion_print_tent_back": "Rückseite mit Sprachen und Bestell-Hinweis"
   },
   "diff": {
     "title": "Vorschlag der KI prüfen",
@@ -298,7 +328,17 @@
     "publishActivates": "Das bisher aktive Design wird ersetzt – du kannst jederzeit zurückwechseln.",
     "publishConfirm": "Jetzt veröffentlichen",
     "published": "Veröffentlicht – Gäste sehen ab sofort dieses Design",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "backPrint": "Zurück zu Tische & QR-Codes",
+    "kindPrint": "Druckdesign",
+    "usePrint": "Als Druckdesign verwenden",
+    "usePrintUpdate": "Druckdesign aktualisieren",
+    "usePrintTitle": "Als Druckdesign verwenden?",
+    "usePrintDescription": "Deine QR-Tischkarten werden ab sofort mit diesem Design gedruckt.",
+    "usePrintSettings": "Die aktuellen Einstellungen (sichtbare Elemente, Texte, Farben) werden für den Druck übernommen.",
+    "usePrintReplaces": "Das bisherige Druckdesign wird ersetzt – deine Speisekarte für Gäste bleibt unverändert.",
+    "usePrintConfirm": "Jetzt verwenden",
+    "printSelected": "Gespeichert – deine QR-Karten nutzen jetzt dieses Design"
   },
   "admin": {
     "title": "Theme-Bibliothek",
@@ -334,6 +374,38 @@
     "descriptionLabel": "Beschreibung",
     "save": "Speichern",
     "saved": "Gespeichert",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "kindFilter": "Art der Designs",
+    "kindAll": "Alle",
+    "kindMenu": "Menü",
+    "kindPrint": "Druck"
+  },
+  "formats": {
+    "a6": "A6 Tischkarte",
+    "a6-landscape": "A6 quer",
+    "tent-a6": "Tischaufsteller (A6)",
+    "a5": "A5",
+    "a5-landscape": "A5 quer",
+    "a4": "A4-Poster",
+    "a4-landscape": "A4 quer"
+  },
+  "printPreview": {
+    "title": "Druckvorschau",
+    "formatTitle": "Format des Druckdesigns",
+    "sheet": "Druckbogen",
+    "sheet_a4": "A4-Bogen",
+    "sheet_card": "Einzelkarten",
+    "sheetHint_a4": "Mehrere Karten pro A4-Blatt mit Schnittmarken (Bürodrucker)",
+    "sheetHint_card": "Eine Karte pro Seite (Druckerei)",
+    "data": "Daten der Vorschau",
+    "dataReal": "Meine Tische",
+    "dataSample": "Beispielkarten",
+    "rendering": "Vorschau wird erstellt",
+    "zoomOut": "Verkleinern",
+    "zoomIn": "Vergrößern",
+    "fit": "An Breite anpassen",
+    "reload": "Vorschau neu laden",
+    "summary": "{cards, plural, one {# Karte} other {# Karten}} · {pages, plural, one {# Seite} other {# Seiten}} · {perPage} pro Seite",
+    "truncated": "Vorschau zeigt {shown} von {total} Karten"
   }
 }

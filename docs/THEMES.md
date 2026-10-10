@@ -190,3 +190,85 @@ ul { list-style: none; padding: 0; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 :focus-visible { outline: 2px solid var(--vm-color-primary); outline-offset: 2px; }
 ```
+
+---
+
+# Print designs (kind "print") – QR table cards, tents, posters
+
+A print design is a theme package with `"kind": "print"`. Same package rules as above (files, limits, Liquid, filters, settings → CSS vars / `data-setting-*`), but it renders **static, printable HTML**: the engine renders `templates/print.liquid` **once per card** (programmatic table label/number, QR code, URL), puts the cards on physical pages and the restaurant prints with the browser (print / save as PDF). Owners choose what is visible through the customizer (`settings`).
+
+| Path | Purpose |
+|---|---|
+| `manifest.json` | `kind: "print"`, `print: { format, sheet, safeMm? }`, settings, fonts |
+| `templates/print.liquid` | **required** – markup of ONE card (no `<html>/<head>/<body>`) |
+| `templates/partials/*.liquid`, `assets/*.css`, `locales/*.json` | as for menu themes |
+| `assets/theme.js` | **not allowed** – print designs have no JavaScript (`<script>`, `on…=` handlers, `javascript:` are rejected and stripped) |
+
+```json
+{ "apiVersion": 1, "kind": "print", "name": "Klar A6", "version": "1.0.0", "fonts": [],
+  "print": { "format": "a6", "sheet": "a4", "safeMm": 5 },
+  "settings": [ … ] }
+```
+
+## Formats & imposition
+
+| `format` | card (trim) | notes |
+|---|---|---|
+| `a6` / `a6-landscape` | 105 × 148 / 148 × 105 mm | table cards |
+| `a5` / `a5-landscape` | 148 × 210 / 210 × 148 mm | |
+| `a4` / `a4-landscape` | 210 × 297 / 297 × 210 mm | posters (window, entrance) |
+| `tent-a6` | face 148 × 105 mm | table tent: A5 portrait sheet folded at 105 mm; the template is rendered twice – `card.face` = `"back"` (top half, rotated 180° by the engine) and `"front"` |
+
+`sheet: "card"` → one card per page (page = card; tent = A5). `sheet: "a4"` → the engine imposes as many cards as fit on A4 (orientation chosen automatically: 4 × A6, 4 × A6 landscape, 2 × A5, 2 tents) with 3 mm crop marks. `@page { margin: 0 }`; print dialog: scale 100 %, margins none, background graphics on.
+
+## Card box & CSS
+
+- Each card is wrapped in `<div class="vm-card" data-face data-index data-generic>` with the exact trim size, `overflow: hidden`, `display: flex; flex-direction: column`. Make your root element fill it (`height: 100%`) and keep content inside the safe area: `padding: var(--vm-safe)` (default 4 mm, `print.safeMm`). Backgrounds on the root element bleed to the trim.
+- Engine CSS vars: `--vm-card-w`, `--vm-card-h`, `--vm-safe`, `--vm-page-w`, `--vm-page-h`, plus every setting (`--vm-color-accent`, `--vm-qr-size` …). `html[data-format][data-sheet][data-mode]` and `data-setting-*` are set.
+- Use physical units (`mm`, `pt`); never `vh/vw`, `position: fixed`, animations or hover effects. Text ≥ 6 pt, contrast ≥ 4.5 : 1. Colors print exactly (`print-color-adjust: exact` is set), so dark full-bleed cards work.
+- Screen preview (`@media screen`) shows the sheets on grey with a shadow; `@media print` is the exact output – don't add your own `@page`.
+
+## Data model (`templates/print.liquid`, also visible in partials)
+
+```
+restaurant: { name, slug, cuisine, logo_url, address, phone, website }
+table: { label ("Tisch 12" | null for the generic card), area, number ("12", "T2" – big numerals),
+         is_generic, url (menu URL in the QR), qr_svg }
+languages: [{ code, name, flag "🇩🇪", scan_text "Speisekarte scannen" }]   (enabled guest languages, default first)
+ordering: { enabled }      card: { index, total, face "front" | "back" }
+settings   mode: "print" | "preview"
+```
+
+Strings in the restaurant's language: `{{ 'scanMenu' | t }}`, `'orderAtTable'` („Bestellung direkt am Tisch“), `'wifi'`, `'wifiPassword'`, `'tableWord'` („Tisch“); own strings via `locales/*.json`. Show `table.number` big and `'tableWord' | t` only when `table.number != table.label`. The generic card (`table.is_generic`) has no table – show a headline instead.
+
+## QR code (rules)
+
+- `{{ table.qr_svg }}` outputs the engine's inline SVG (the ONLY unescaped value; vector, quiet zone included, error correction Q). It is `width: 100%` – put it in a **square box ≥ 35 mm** (`.qr { width: var(--vm-qr-size, 40mm); height: var(--vm-qr-size, 40mm) }`, range setting `qr_size` with `min: 35`, unit `mm`). The validator warns below 30 mm and when `table.qr_svg` is never rendered.
+- Colors: settings `qr_color` (modules) and `qr_background`; combinations with contrast < 4.5 or light-on-dark fall back to black on white. Never rotate, skew, blur, overlay or crop the code; keep a light area around it.
+
+## Customizer conventions (what owners switch on/off)
+
+`show_logo`, `show_name`, `show_table`, `show_headline` + `headline`, `show_scan` (multilingual line), `show_flags`, `show_ordering` (only when `ordering.enabled` and not generic), `show_wifi` + `wifi_ssid` + `wifi_password` (hide when the SSID is blank), `show_website`, `show_footer` + `footer_note`, `color_background`, `color_text`, `color_accent`, `qr_color`, `qr_background`, `qr_size`, `heading_font`, `body_font`. Defaults must print well as they are.
+
+## Example
+
+```liquid
+<article class="card">
+  {%- if settings.show_name -%}<p class="name">{{ restaurant.name }}</p>{%- endif -%}
+  {%- if settings.show_table and table.is_generic == false -%}
+    <p class="table">{% if table.number != table.label %}<span>{{ 'tableWord' | t }}</span>{% endif %}<b>{{ table.number }}</b></p>
+  {%- elsif settings.show_headline and settings.headline != blank -%}<h1>{{ settings.headline }}</h1>{%- endif -%}
+  <div class="qr">{{ table.qr_svg }}</div>
+  {%- if settings.show_scan -%}<ul>{%- for l in languages limit: 4 -%}<li>{% if settings.show_flags %}{{ l.flag }} {% endif %}{{ l.scan_text }}</li>{%- endfor -%}</ul>{%- endif -%}
+  {%- if settings.show_wifi and settings.wifi_ssid != blank -%}<p>{{ 'wifi' | t }}: {{ settings.wifi_ssid }} · {{ 'wifiPassword' | t }}: {{ settings.wifi_password }}</p>{%- endif -%}
+</article>
+```
+```css
+.card { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+        padding: var(--vm-safe); background: var(--vm-color-background); color: var(--vm-color-text);
+        font: 8pt/1.3 var(--vm-body-font); text-align: center; }
+.table b { font: 700 44pt/1 var(--vm-heading-font); }
+.qr { width: var(--vm-qr-size, 44mm); height: var(--vm-qr-size, 44mm); }
+```
+
+Security: the print document runs with `Content-Security-Policy: sandbox allow-scripts allow-modals; default-src 'none'; img-src <app>/media/ data:; font-src <app>/theme-fonts/ data:; style-src 'unsafe-inline'; script-src 'nonce-…'` (only the platform's print button). External URLs, `@import`, scripts and event handlers are removed from the output. Starters: `src/themes/print-starters/` (`pnpm themes:print-starters`).

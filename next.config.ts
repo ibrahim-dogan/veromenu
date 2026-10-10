@@ -46,10 +46,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   async headers() {
     return [
-      // Everything except the studio theme frame. The frame route (src/app/m/[slug]/frame) sets its own
-      // strict headers (CSP `sandbox allow-scripts`, no network, no-referrer) – Next does NOT let a route
-      // override a header already set here, so the frame must be excluded from the app-wide CSP.
-      { source: "/:path((?!m/[^/]+/frame$).*)", headers: securityHeaders },
+      // Everything except the studio theme frame and the QR print document. Those routes
+      // (src/app/m/[slug]/frame, src/app/api/restaurants/[rid]/print) set their own strict headers (CSP `sandbox …`,
+      // no network, no-referrer) – Next does NOT let a route override a header already set here, so they must be
+      // excluded from the app-wide CSP.
+      { source: "/:path((?!m/[^/]+/frame$|api/restaurants/[^/]+/print$).*)", headers: securityHeaders },
       // Self-hosted theme fonts are loaded from the frame's opaque origin ("null") → CORS needed.
       {
         source: "/theme-fonts/:path*",

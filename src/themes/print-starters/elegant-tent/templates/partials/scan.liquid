@@ -1,0 +1,10 @@
+{%- if settings.show_scan and languages.size > 0 -%}
+<ul class="scan">
+  {%- for l in languages limit: 4 -%}
+  <li class="scan-item" lang="{{ l.code }}">
+    {%- if settings.show_flags -%}<span class="flag" aria-hidden="true">{{ l.flag }}</span>{%- endif -%}
+    <span class="scan-text">{{ l.scan_text }}</span>
+  </li>
+  {%- endfor -%}
+</ul>
+{%- endif -%}

@@ -5,5 +5,6 @@ import { resolvePreviewMedia } from "@/modules/theme-studio/service";
 export async function GET(req: Request, { params }: RouteContext<"/api/restaurants/[rid]/themes/media">) {
   const { rid } = await params;
   const ids = [...new Set((new URL(req.url).searchParams.get("ids") ?? "").split(","))].filter(isUuid).slice(0, 60);
-  return studioRoute(rid, async () => (ids.length ? resolvePreviewMedia(rid, ids) : {}));
+  // "print": also for print-design editors (tables.manage) – ids are resolved within the restaurant only
+  return studioRoute(rid, async () => (ids.length ? resolvePreviewMedia(rid, ids) : {}), "print");
 }

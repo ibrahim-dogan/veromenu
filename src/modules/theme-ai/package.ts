@@ -3,8 +3,18 @@
  * allowed paths only, size limits, external resources stripped (the CSP blocks them anyway – this keeps the
  * code clean and honest), manifest normalized so small model mistakes don't fail the whole generation.
  */
-import { FONT_LIBRARY } from "@/modules/theme-engine";
-import { THEME_API_VERSION, THEME_FILE_PATTERNS, THEME_LIMITS, type ThemeManifest, type ThemePackage, type ThemeSettingField } from "@/modules/theme-engine/types";
+import { FONT_LIBRARY, PRINT_FORMAT_SIZES, PRINT_FORMATS } from "@/modules/theme-engine";
+import {
+  THEME_API_VERSION,
+  THEME_FILE_PATTERNS,
+  THEME_LIMITS,
+  type PrintFormat,
+  type PrintSpec,
+  type ThemeKind,
+  type ThemeManifest,
+  type ThemePackage,
+  type ThemeSettingField,
+} from "@/modules/theme-engine/types";
 
 /** Fallback while FONT_LIBRARY is not populated (same ids as the self-hosted library). */
 export const STATIC_FONT_IDS = [
@@ -26,7 +36,7 @@ const bytes = (s: string) => new TextEncoder().encode(s).length;
 const EXTERNAL = String.raw`(?:https?:)?\/\/[^\s"'()<>]+`;
 
 /** Removes references to external resources. Liquid expressions ({{ item.image_url }}) are untouched. */
-export function stripExternal(path: string, content: string): { content: string; removed: number } {
+export function stripExternal(path: string, content: string, opts: { noScripts?: boolean } = {}): { content: string; removed: number } {
   let removed = 0;
   const count = <T,>(v: T) => {
     removed++;
@@ -39,6 +49,7 @@ export function stripExternal(path: string, content: string): { content: string;
     s = s.replace(new RegExp(String.raw`url\(\s*(["']?)${EXTERNAL}\1\s*\)`, "gi"), () => count("none"));
   }
   if (path.endsWith(".liquid")) {
+    if (opts.noScripts) s = s.replace(/<script\b[\s\S]*?(?:<\/script\s*>|$)/gi, () => count("")); // print documents are static
     s = s.replace(/<script\b[^>]*\bsrc\s*=[^>]*>\s*<\/script\s*>/gi, () => count(""));
     s = s.replace(/<script\b[^>]*\bsrc\s*=[^>]*\/?>/gi, () => count(""));
     s = s.replace(/<(iframe|object|embed|frame|frameset|applet|portal)\b[\s\S]*?(?:<\/\1\s*>|\/>)/gi, () => count(""));
@@ -154,11 +165,34 @@ function normalizeSetting(raw: unknown, fonts: string[], allFonts: Set<string>, 
   }
 }
 
-export function normalizeManifest(raw: unknown, opts: { fallbackName: string; base?: ThemeManifest | null }): { manifest: ThemeManifest; warnings: string[] } {
+// ------------------------------------------------------------------ print spec
+
+export const isPrintFormat = (v: unknown): v is PrintFormat => typeof v === "string" && (PRINT_FORMATS as readonly string[]).includes(v);
+/** Trim size of ONE card (tent-a6: one face, A6 landscape) in mm – the engine's table. */
+export const PRINT_CARD_MM = PRINT_FORMAT_SIZES;
+/** Sensible default imposition: small cards on A4 sheets (office printer), A4 posters / tents one per page. */
+export const defaultSheet = (f: PrintFormat): PrintSpec["sheet"] => (f === "a6" || f === "a6-landscape" || f === "a5" || f === "a5-landscape" ? "a4" : "card");
+
+/** Normalizes manifest.print; `force` (generation) wins over the model's choice for the format. */
+export function normalizePrintSpec(raw: unknown, opts: { base?: PrintSpec | null; force?: Partial<PrintSpec> } = {}): PrintSpec {
+  const r = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+  const forced = opts.force?.format;
+  const format = isPrintFormat(forced) ? forced : isPrintFormat(r.format) ? r.format : (opts.base?.format ?? "a6");
+  const sheetIn = opts.force?.sheet ?? r.sheet ?? opts.base?.sheet;
+  const sheet = sheetIn === "card" || sheetIn === "a4" ? sheetIn : defaultSheet(format);
+  const safeIn = typeof r.safeMm === "number" && Number.isFinite(r.safeMm) ? r.safeMm : opts.base?.safeMm;
+  return { format, sheet: format === "a4" || format === "a4-landscape" || format === "tent-a6" ? "card" : sheet, ...(typeof safeIn === "number" ? { safeMm: Math.min(15, Math.max(2, Math.round(safeIn))) } : {}) };
+}
+
+export function normalizeManifest(
+  raw: unknown,
+  opts: { fallbackName: string; base?: ThemeManifest | null; kind?: ThemeKind; print?: Partial<PrintSpec> },
+): { manifest: ThemeManifest; warnings: string[] } {
   const warnings: string[] = [];
   const warn = (m: string) => warnings.push(m);
   const base = opts.base ?? null;
   const m = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+  const kind: ThemeKind = opts.kind ?? base?.kind ?? "menu";
   const all = new Set(fontIds());
   const fontsIn = Array.isArray(m.fonts) ? m.fonts : (base?.fonts ?? []);
   const fonts = [...new Set(fontsIn.filter((x): x is string => typeof x === "string").map((x) => x.trim()))].filter((x) => {
@@ -189,9 +223,11 @@ export function normalizeManifest(raw: unknown, opts: { fallbackName: string; ba
     ...(description && Object.values(description).some(Boolean) ? { description: Object.fromEntries(Object.entries(description).map(([k, v]) => [k, v.slice(0, 400)])) } : {}),
     settings,
     fonts: fonts.length ? fonts.slice(0, 8) : ["inter"],
-    ...(controls ? { controls: { languageSwitcher: ctl(controls.languageSwitcher), cartButton: ctl(controls.cartButton) } } : {}),
+    ...(controls && kind !== "print" ? { controls: { languageSwitcher: ctl(controls.languageSwitcher), cartButton: ctl(controls.cartButton) } } : {}),
     // Named assets map to media ids – the model can't create media, so only keep what the base already had.
     ...(base?.assets ? { assets: base.assets } : {}),
+    // Print designs: kind + physical format (menu manifests stay exactly as before – no kind key added).
+    ...(kind === "print" ? { kind: "print" as const, print: normalizePrintSpec(m.print, { base: base?.print, force: opts.print }) } : base?.kind ? { kind: base.kind } : {}),
   };
   if (manifest.controls && !manifest.controls.languageSwitcher && !manifest.controls.cartButton) delete manifest.controls;
   return { manifest, warnings };
@@ -211,34 +247,56 @@ export function assemblePackage(opts: {
   deleted?: string[];
   base?: ThemePackage | null;
   fallbackName: string;
+  /** "print" → templates/print.liquid required, no JavaScript, manifest.kind/print kept (default: base kind or "menu"). */
+  kind?: ThemeKind;
+  /** Print generation: forced format/sheet (the owner picked it). */
+  print?: Partial<PrintSpec>;
 }): AssembleResult {
   const warnings: string[] = [];
   const errors: string[] = [];
+  const kind: ThemeKind = opts.kind ?? opts.base?.manifest.kind ?? "menu";
+  const isPrint = kind === "print";
+  const mainTemplate = isPrint ? "templates/print.liquid" : "templates/menu.liquid";
   const files: Record<string, string> = { ...(opts.base?.files ?? {}) };
   for (const p of opts.deleted ?? []) {
-    if (p === "templates/menu.liquid") warnings.push("refused to delete templates/menu.liquid");
+    if (p === mainTemplate) warnings.push(`refused to delete ${mainTemplate}`);
     else delete files[p];
   }
   for (const [rawPath, content] of Object.entries(opts.files)) {
-    const p = rawPath === "theme.css" ? "assets/theme.css" : rawPath === "menu.liquid" ? "templates/menu.liquid" : rawPath;
+    const p =
+      rawPath === "theme.css"
+        ? "assets/theme.css"
+        : rawPath === "menu.liquid" || rawPath === "print.liquid"
+          ? `templates/${rawPath}`
+          : rawPath;
     if (!isAllowedPath(p)) {
       warnings.push(`file "${p}" is not an allowed path – dropped`);
       continue;
     }
+    if (isPrint && (p.endsWith(".js") || p === "templates/menu.liquid")) {
+      warnings.push(`${p}: not used by print designs – dropped`);
+      continue;
+    }
+    if (!isPrint && p === "templates/print.liquid") {
+      warnings.push(`${p}: only for print designs – dropped`);
+      continue;
+    }
     if (p.startsWith("locales/") && /^\s*\{\s*\}\s*$/.test(content)) continue; // empty locale file – noise
-    const { content: clean, removed } = stripExternal(p, content);
+    const { content: clean, removed } = stripExternal(p, content, { noScripts: isPrint });
     if (removed) warnings.push(`${p}: removed ${removed} external reference(s)`);
     files[p] = clean;
   }
+  if (isPrint) for (const p of Object.keys(files)) if (p.endsWith(".js")) delete files[p];
+  const mOpts = { fallbackName: opts.fallbackName, base: opts.base?.manifest, ...(isPrint ? { kind, print: opts.print } : {}) };
   const { manifest, warnings: mw } = opts.manifest
-    ? normalizeManifest(opts.manifest, { fallbackName: opts.fallbackName, base: opts.base?.manifest })
+    ? normalizeManifest(opts.manifest, mOpts)
     : opts.base
       ? { manifest: opts.base.manifest, warnings: [] }
-      : normalizeManifest({}, { fallbackName: opts.fallbackName });
+      : normalizeManifest({}, mOpts);
   warnings.push(...mw);
   if (!opts.manifest && !opts.base) errors.push("<manifest> is missing or not valid JSON");
 
-  if (!files["templates/menu.liquid"]?.trim()) errors.push("templates/menu.liquid is missing");
+  if (!files[mainTemplate]?.trim()) errors.push(`${mainTemplate} is missing`);
   const paths = Object.keys(files);
   if (paths.length > THEME_LIMITS.maxFiles) errors.push(`too many files (${paths.length} > ${THEME_LIMITS.maxFiles})`);
   let total = 0;
@@ -304,4 +362,37 @@ export function hardcodedText(pkg: ThemePackage): string[] {
     }
   }
   return [...found];
+}
+
+/**
+ * Static checks for PRINT packages (QR table cards / tents / posters). `errors` trigger the repair round.
+ * Keep in sync with PRINT_HARD_RULES in prompts.ts.
+ */
+export function printQualityChecks(pkg: ThemePackage): { errors: string[]; warnings: string[] } {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const liquid = Object.entries(pkg.files)
+    .filter(([p]) => p.endsWith(".liquid"))
+    .map(([, c]) => c)
+    .join("\n");
+  const css = Object.entries(pkg.files)
+    .filter(([p]) => p.endsWith(".css"))
+    .map(([, c]) => c)
+    .join("\n");
+  const has = (re: RegExp) => re.test(liquid);
+  if (!has(/table\.qr_svg/)) errors.push("The QR code is never rendered – output {{ table.qr_svg }} (inline SVG) in a white quiet-zone box of at least 35 mm.");
+  if (!has(/table\.(number|label)/)) errors.push("The table number is never shown – render table.number (big) or table.label when not table.is_generic.");
+  if (!has(/is_generic/)) warnings.push("table.is_generic is never checked – the generic restaurant card (no table) should not show an empty table number.");
+  if (has(/<script\b/i)) errors.push("Print designs must not contain <script> – they are static documents (scripts are stripped).");
+  if (pkg.manifest.print?.format === "tent-a6" && !has(/card\.face/)) warnings.push("tent-a6: card.face is never used – front and back look identical (fine, but consider a different back side).");
+  const fields = pkg.manifest.settings ?? [];
+  const toggles = fields.filter((f) => f.type === "checkbox" && f.id.startsWith("show_"));
+  if (toggles.length < 2) errors.push("Add show_* checkbox settings for the optional elements (logo, headline, languages, Wi-Fi, address …) so the owner can decide what is visible.");
+  for (const f of toggles) if (!new RegExp(`settings\\.${f.id}\\b`).test(liquid) && !css.includes(`data-setting-${f.id.replace(/_/g, "-")}`)) warnings.push(`setting ${f.id} is never used in the templates`);
+  if (!/\d(?:\.\d+)?mm\b/.test(css)) warnings.push("No mm units in the CSS – print layouts should be sized in mm/pt, not px/vw.");
+  if (/\b\d+(?:\.\d+)?v[wh]\b/.test(css)) warnings.push("vw/vh units found – use mm (the card size is fixed).");
+  if (/position\s*:\s*fixed/.test(css)) warnings.push("position: fixed repeats on every printed page – use absolute positioning inside the card.");
+  const text = hardcodedText(pkg);
+  if (text.length) errors.push(`Hard-coded text found: ${text.map((t) => `"${t}"`).join(", ")} – visible words must come from data, text settings (with German defaults) or {{ 'key' | t }} with locales/*.json.`);
+  return { errors, warnings };
 }

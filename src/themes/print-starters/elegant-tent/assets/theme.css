@@ -1,0 +1,46 @@
+/* Elegant Tischaufsteller – one face of the folded tent (148 × 105 mm) */
+.tent {
+  height: 100%; padding: var(--vm-safe);
+  background: var(--vm-color-background); color: var(--vm-color-text);
+  font-family: var(--vm-body-font); font-size: 7.6pt;
+}
+.frame {
+  position: relative; height: 100%;
+  display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 6mm;
+  padding: 4mm 6mm;
+  border: 1.1mm double var(--vm-color-accent);
+}
+.frame::before, .frame::after {
+  content: ""; position: absolute; width: 2.4mm; height: 2.4mm; background: var(--vm-color-accent);
+  transform: rotate(45deg); top: -1.75mm;
+}
+.frame::before { left: calc(50% - 1.2mm); }
+.frame::after { top: auto; bottom: -1.75mm; left: calc(50% - 1.2mm); }
+.qr-col { display: flex; align-items: center; justify-content: center; }
+.qr { width: var(--vm-qr-size, 40mm); height: var(--vm-qr-size, 40mm); padding: 1.5mm; background: var(--vm-qr-background); outline: .3mm solid var(--vm-color-accent); outline-offset: 1mm; }
+.text-col { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.6mm; text-align: center; min-width: 0; }
+.logo { height: 9mm; width: auto; max-width: 36mm; object-fit: contain; }
+.name { margin: 0; font-family: var(--vm-heading-font); font-size: 15pt; font-weight: 600; font-style: italic; line-height: 1.05; }
+.rule { width: 18mm; height: .3mm; background: var(--vm-color-accent); }
+.table { margin: 0; display: flex; align-items: baseline; justify-content: center; gap: 1.6mm; flex-wrap: wrap; line-height: 1; }
+.table-word { font-family: var(--vm-heading-font); font-size: 11pt; letter-spacing: .18em; text-transform: uppercase; color: var(--vm-color-accent); }
+.table-number { font-family: var(--vm-heading-font); font-size: 26pt; font-weight: 700; }
+.table-area { flex-basis: 100%; font-size: 6.8pt; letter-spacing: .1em; text-transform: uppercase; opacity: .7; }
+.headline { margin: 0; font-family: var(--vm-heading-font); font-size: 16pt; font-style: italic; }
+.scan { font-size: 6.8pt; }
+.scan-item:first-child { flex-basis: 100%; justify-content: center; font-size: 8pt; font-weight: 600; }
+.order { margin: 0; font-size: 7pt; font-style: italic; color: var(--vm-color-accent); }
+.wifi { font-size: 6.6pt; padding-top: 1.2mm; border-top: .25mm solid var(--vm-color-accent); }
+.foot { font-family: var(--vm-heading-font); font-size: 8pt; font-style: italic; color: var(--vm-color-accent); }
+
+/* shared blocks: languages, wifi, footer */
+.scan { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: .6mm 3mm; }
+.scan-item { display: inline-flex; align-items: center; gap: 1mm; white-space: nowrap; }
+.flag { font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; }
+.wifi { display: inline-flex; align-items: center; gap: 2mm; }
+.wifi-icon { width: 5mm; height: 5mm; flex: none; }
+.wifi-data { margin: 0; display: flex; gap: 3.5mm; text-align: start; }
+.wifi-data dt { font-size: .78em; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+.wifi-data dd { margin: 0; font-weight: 600; word-break: break-all; }
+.foot { display: flex; flex-wrap: wrap; justify-content: center; gap: 1mm 4mm; }
+.qr svg { display: block; width: 100%; height: 100%; }

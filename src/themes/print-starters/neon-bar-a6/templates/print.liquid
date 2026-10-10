@@ -1,0 +1,22 @@
+<article class="neon{% if table.is_generic %} neon--generic{% endif %}">
+  {%- if settings.show_logo or settings.show_name -%}
+  <header class="brand">
+    {%- if settings.show_logo and restaurant.logo_url -%}<img class="logo" src="{{ restaurant.logo_url }}" alt="">{%- endif -%}
+    {%- if settings.show_name -%}<p class="name">{{ restaurant.name }}</p>{%- endif -%}
+  </header>
+  {%- endif -%}
+  {%- if settings.show_table and table.is_generic == false -%}
+    <p class="table">
+      {%- if table.number != table.label -%}<span class="table-word">{{ 'tableWord' | t }}</span>{%- endif -%}
+      <span class="table-number">{{ table.number }}</span>
+      {%- if table.area -%}<span class="table-area">{{ table.area }}</span>{%- endif -%}
+    </p>
+  {%- elsif settings.show_headline and settings.headline != blank -%}
+    <h1 class="headline">{{ settings.headline }}</h1>
+  {%- endif -%}
+  <div class="qr">{{ table.qr_svg }}</div>
+  {% render 'scan' %}
+  {%- if settings.show_ordering and ordering.enabled -%}{%- unless table.is_generic -%}<p class="order">{{ 'orderAtTable' | t }}</p>{%- endunless -%}{%- endif -%}
+  {% render 'wifi' %}
+  {% render 'footer' %}
+</article>

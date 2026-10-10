@@ -16,6 +16,7 @@
     "themes:sync": "tsx scripts/sync-themes.ts",
     "themes:fonts": "tsx scripts/build-theme-fonts.ts",
     "themes:starters": "tsx scripts/build-theme-starters.ts",
+    "themes:print-starters": "tsx scripts/build-print-starters.ts",
     "i18n:check": "tsx scripts/check-i18n.ts",
     "db:seed:demo": "tsx --env-file=.env --conditions=react-server scripts/seed.ts --demo",
     "ai:smoke": "tsx --env-file=.env --conditions=react-server scripts/ai-smoke.ts",

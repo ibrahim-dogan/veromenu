@@ -1,0 +1,5 @@
+{%- capture foot -%}
+{%- if settings.show_footer and settings.footer_note != blank -%}<span class="foot-note">{{ settings.footer_note }}</span>{%- endif -%}
+{%- if settings.show_website and restaurant.website -%}<span class="foot-web">{{ restaurant.website }}</span>{%- endif -%}
+{%- endcapture -%}
+{%- if foot != blank -%}<footer class="foot">{{ foot | raw }}</footer>{%- endif -%}

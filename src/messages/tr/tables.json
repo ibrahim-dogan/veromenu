@@ -70,9 +70,9 @@
     "done": "{count, plural, =0 {Yeni masa yok – hepsi zaten vardı.} other {# masa oluşturuldu}}"
   },
   "print": {
-    "button": "QR kodlarını yazdır",
-    "title": "QR kodlarını yazdır",
-    "description": "Baskıya hazır bir PDF indir.",
+    "button": "Hızlı PDF",
+    "title": "Hızlı PDF",
+    "description": "Standart düzende basit, baskıya hazır PDF. Kendi tasarımın için yukarıdaki baskı tasarımlarını kullan.",
     "download": "PDF indir",
     "layout": "Format",
     "sheet": "A4 sayfa",

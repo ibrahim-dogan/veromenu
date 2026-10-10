@@ -1,35 +1,69 @@
 "use client";
 import { useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
-import { ArrowUpCircle, Eye, Library, PackagePlus, Pencil, Search, Trash2 } from "lucide-react";
+import { ArrowUpCircle, Eye, Library, PackagePlus, Pencil, Printer, Search, Smartphone, Trash2 } from "lucide-react";
+import { cn } from "@/core/utils";
 import { Badge, Button, Card, CardBody, CardHeader, DataTable, EmptyState, Field, Input, Td, Textarea, Th } from "@/components/ui";
 import { Dialog } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
 import { useAction } from "@/components/use-action";
 import { adminPreviewAction, deleteLibraryThemeAction, promoteThemeAction, seedStartersAction, updateLibraryThemeAction } from "../admin-actions";
 import { MiniPreview } from "./mini-preview";
+import { PrintFrame } from "./print-frame";
 import { SandboxFrame } from "./sandbox-frame";
 
-type Lib = { id: string; name: string; description: string | null; origin: string; currentVersionId: string | null; updatedAt: string };
-type Promotable = { id: string; name: string; origin: string; restaurantId: string; restaurantName: string; updatedAt: string };
+type Lib = { id: string; name: string; description: string | null; origin: string; currentVersionId: string | null; updatedAt: string; kind: string };
+type Promotable = { id: string; name: string; origin: string; restaurantId: string; restaurantName: string; updatedAt: string; kind: string };
+type KindFilter = "all" | "menu" | "print";
+type Preview = { name: string; html: string; kind?: "menu" | "print"; width?: number; height?: number };
 
 export function AdminThemeLibrary({ library, promotable }: { library: Lib[]; promotable: Promotable[] }) {
   const t = useTranslations("themeStudio.admin");
   const f = useFormatter();
   const [edit, setEdit] = useState<{ mode: "edit"; theme: Lib } | { mode: "promote"; theme: Promotable } | null>(null);
   const [del, setDel] = useState<Lib | null>(null);
-  const [preview, setPreview] = useState<{ name: string; html: string } | null>(null);
+  const [preview, setPreview] = useState<Preview | null>(null);
   const [q, setQ] = useState("");
+  const [kind, setKind] = useState<KindFilter>("all");
+  const ofKind = <T extends { kind: string }>(l: T[]) => (kind === "all" ? l : l.filter((x) => (x.kind === "print" ? "print" : "menu") === kind));
+  const shown = ofKind(library);
   const seed = useAction(seedStartersAction, { onSuccess: (d) => toast.success(t("seeded", { count: d.added })) });
   const remove = useAction(deleteLibraryThemeAction, { success: t("deleted"), onSuccess: () => setDel(null) });
   const prev = useAction(adminPreviewAction, { refresh: false });
-  const filtered = promotable.filter((p) => !q || `${p.name} ${p.restaurantName}`.toLowerCase().includes(q.toLowerCase()));
+  const filtered = ofKind(promotable).filter((p) => !q || `${p.name} ${p.restaurantName}`.toLowerCase().includes(q.toLowerCase()));
+  const kindBadge = (k: string) =>
+    k === "print" ? (
+      <Badge tone="neutral">
+        <Printer size={11} aria-hidden className="mr-1 inline" />
+        {t("kindPrint")}
+      </Badge>
+    ) : null;
 
   return (
     <div className="space-y-6">
+      <div className="flex w-fit rounded-lg bg-stone-100 p-0.5" role="radiogroup" aria-label={t("kindFilter")}>
+        {(
+          [
+            ["all", null, t("kindAll")],
+            ["menu", Smartphone, t("kindMenu")],
+            ["print", Printer, t("kindPrint")],
+          ] as const
+        ).map(([k, Icon, label]) => (
+          <button
+            key={k}
+            type="button"
+            role="radio"
+            aria-checked={kind === k}
+            onClick={() => setKind(k)}
+            className={cn("focus-ring flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium", kind === k ? "bg-white text-stone-900 shadow-sm" : "text-stone-500 hover:text-stone-800")}
+          >
+            {Icon && <Icon size={14} aria-hidden />} {label}
+          </button>
+        ))}
+      </div>
       <Card>
         <CardHeader
-          title={t("libraryTitle", { count: library.length })}
+          title={t("libraryTitle", { count: shown.length })}
           description={t("libraryHint")}
           actions={
             <Button variant="secondary" size="sm" loading={seed.pending} onClick={() => seed.run({})}>
@@ -38,16 +72,17 @@ export function AdminThemeLibrary({ library, promotable }: { library: Lib[]; pro
           }
         />
         <CardBody>
-          {library.length === 0 ? (
+          {shown.length === 0 ? (
             <EmptyState icon={<Library size={28} />} title={t("empty")} description={t("emptyHint")} />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {library.map((l) => (
+              {shown.map((l) => (
                 <article key={l.id} className="flex flex-col overflow-hidden rounded-xl border border-stone-200">
                   <MiniPreview cacheKey={`admin:${l.id}:${l.currentVersionId}`} load={() => adminPreviewAction({ themeId: l.id })} title={l.name} height={640} />
                   <div className="flex flex-1 flex-col gap-2 border-t border-stone-100 p-3">
                     <div className="flex items-center gap-2">
                       <h3 className="mr-auto font-semibold text-stone-900">{l.name}</h3>
+                      {kindBadge(l.kind)}
                       <Badge tone={l.origin === "starter" ? "blue" : "purple"}>{t(l.origin === "starter" ? "originStarter" : "originPromoted")}</Badge>
                     </div>
                     {l.description && <p className="line-clamp-2 text-xs text-stone-500">{l.description}</p>}
@@ -58,7 +93,7 @@ export function AdminThemeLibrary({ library, promotable }: { library: Lib[]; pro
                         size="sm"
                         onClick={async () => {
                           const r = await prev.run({ themeId: l.id });
-                          if (r.ok) setPreview({ name: l.name, html: r.data.html });
+                          if (r.ok) setPreview({ name: l.name, ...r.data });
                         }}
                       >
                         <Eye size={13} aria-hidden /> {t("preview")}
@@ -103,7 +138,11 @@ export function AdminThemeLibrary({ library, promotable }: { library: Lib[]; pro
                 <tbody>
                   {filtered.map((p) => (
                     <tr key={p.id}>
-                      <Td className="font-medium text-stone-900">{p.name}</Td>
+                      <Td className="font-medium text-stone-900">
+                        <span className="flex items-center gap-2">
+                          {p.name} {kindBadge(p.kind)}
+                        </span>
+                      </Td>
                       <Td>{p.restaurantName}</Td>
                       <Td className="whitespace-nowrap text-stone-500">{f.dateTime(new Date(p.updatedAt), { dateStyle: "medium" })}</Td>
                       <Td className="text-right">
@@ -139,10 +178,14 @@ export function AdminThemeLibrary({ library, promotable }: { library: Lib[]; pro
         }
       />
       <Dialog open={!!preview} onClose={() => setPreview(null)} size="lg" title={preview?.name}>
-        {preview && (
-          <div className="mx-auto h-[70vh] max-w-[420px] overflow-hidden rounded-2xl border border-stone-200">
-            <SandboxFrame html={preview.html} title={preview.name} className="h-full w-full" />
-          </div>
+        {preview?.kind === "print" ? (
+          <PrintDialogPreview preview={preview} />
+        ) : (
+          preview && (
+            <div className="mx-auto h-[70vh] max-w-[420px] overflow-hidden rounded-2xl border border-stone-200">
+              <SandboxFrame html={preview.html} title={preview.name} className="h-full w-full" />
+            </div>
+          )
         )}
       </Dialog>
     </div>
@@ -201,5 +244,19 @@ function MetaDialog({ state, onClose }: { state: { mode: "edit"; theme: Lib } | 
         </Field>
       </form>
     </Dialog>
+  );
+}
+
+/** One print card at a size that fits the dialog (max 60vh high). */
+function PrintDialogPreview({ preview }: { preview: Preview }) {
+  const w = preview.width ?? 397;
+  const h = preview.height ?? 559;
+  const scale = Math.min(1, 560 / h, 640 / w);
+  return (
+    <div className="grid place-items-center rounded-xl bg-stone-200 p-4">
+      <div style={{ width: w * scale, height: h * scale }} className="shadow-lg">
+        <PrintFrame html={preview.html} title={preview.name} style={{ width: w, height: h, transform: `scale(${scale})`, transformOrigin: "top left" }} />
+      </div>
+    </div>
   );
 }

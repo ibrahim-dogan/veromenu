@@ -12,7 +12,8 @@ import { AppError } from "@/core/http/errors";
 import { mediaSrc } from "@/core/storage/media";
 import { planHas } from "@/modules/billing/plans";
 import { STARTER_THEMES } from "@/themes/starters/index.generated";
-import { parseStudioThemeId, studioThemeId, type ThemePackage, type ThemeValidation } from "./types";
+import { PRINT_STARTERS } from "@/themes/print-starters/index.generated";
+import { parseStudioThemeId, studioThemeId, type ThemeKind, type ThemePackage, type ThemeValidation } from "./types";
 import { validatePackage } from "./validate";
 import { resolveSettings } from "./settings";
 import type { ThemeMediaRef } from "./liquid";
@@ -25,8 +26,10 @@ export type ThemeSummary = {
   origin: string;
   currentVersionId: string | null;
   publishedVersionId: string | null;
-  isActive: boolean; // restaurants.themeId === studio:<id>
+  isActive: boolean; // menu: restaurants.themeId === studio:<id> · print: settings.print.themeId === id
   updatedAt: Date;
+  /** additive: "menu" | "print" */
+  kind: ThemeKind;
 };
 export type ThemeVersionSummary = { id: string; number: number; note: string | null; author: string; createdAt: Date };
 
@@ -43,7 +46,15 @@ type ThemeRow = typeof themes.$inferSelect;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function toSummary(t: ThemeRow, activeThemeId: string | null | undefined): ThemeSummary {
+const rowKind = (k: string | null | undefined): ThemeKind => (k === "print" ? "print" : "menu");
+const pkgKind = (pkg: ThemePackage | null | undefined): ThemeKind => (pkg?.manifest?.kind === "print" ? "print" : "menu");
+
+type RestaurantRow = { id: string; plan: string; themeId: string; settings: { print?: { themeId?: string | null; config?: Record<string, unknown> } } | null };
+
+function toSummary(t: ThemeRow, r: Pick<RestaurantRow, "themeId" | "settings"> | string | null | undefined): ThemeSummary {
+  const activeThemeId = typeof r === "object" && r ? r.themeId : r;
+  const printThemeId = typeof r === "object" && r ? (r.settings?.print?.themeId ?? null) : null;
+  const kind = rowKind(t.kind);
   return {
     id: t.id,
     restaurantId: t.restaurantId,
@@ -52,16 +63,21 @@ function toSummary(t: ThemeRow, activeThemeId: string | null | undefined): Theme
     origin: t.origin,
     currentVersionId: t.currentVersionId,
     publishedVersionId: t.publishedVersionId,
-    isActive: parseStudioThemeId(activeThemeId) === t.id,
+    isActive: kind === "print" ? printThemeId === t.id : parseStudioThemeId(activeThemeId) === t.id,
     updatedAt: t.updatedAt,
+    kind,
   };
 }
 
-async function restaurantRow(restaurantId: string) {
+async function restaurantRow(restaurantId: string): Promise<RestaurantRow> {
   if (!UUID.test(restaurantId)) throw new AppError("notFound");
-  const [r] = await db.select({ id: restaurants.id, plan: restaurants.plan, themeId: restaurants.themeId }).from(restaurants).where(eq(restaurants.id, restaurantId)).limit(1);
+  const [r] = await db
+    .select({ id: restaurants.id, plan: restaurants.plan, themeId: restaurants.themeId, settings: restaurants.settings })
+    .from(restaurants)
+    .where(eq(restaurants.id, restaurantId))
+    .limit(1);
   if (!r) throw new AppError("notFound");
-  return r;
+  return r as RestaurantRow;
 }
 
 /** Plan gating for Theme Studio (custom code themes + AI theme generation). Throws AppError("featureNotInPlan"). */
@@ -109,24 +125,25 @@ const cleanPkg = (pkg: ThemePackage): ThemePackage => ({ manifest: pkg.manifest,
 
 // ---------------------------------------------------------------- read
 
-export async function listThemes(restaurantId: string): Promise<{ own: ThemeSummary[]; library: ThemeSummary[] }> {
+/** Own + library themes of one kind (default "menu" – print designs are listed separately). */
+export async function listThemes(restaurantId: string, kind: ThemeKind = "menu"): Promise<{ own: ThemeSummary[]; library: ThemeSummary[] }> {
   const r = await restaurantRow(restaurantId);
   const rows = await db
     .select()
     .from(themes)
-    .where(or(eq(themes.restaurantId, restaurantId), isNull(themes.restaurantId)))
+    .where(and(or(eq(themes.restaurantId, restaurantId), isNull(themes.restaurantId)), eq(themes.kind, kind)))
     .orderBy(desc(themes.updatedAt));
   return {
-    own: rows.filter((t) => t.restaurantId === restaurantId).map((t) => toSummary(t, r.themeId)),
+    own: rows.filter((t) => t.restaurantId === restaurantId).map((t) => toSummary(t, r)),
     library: rows
       .filter((t) => t.restaurantId === null)
-      .sort((a, b) => starterOrder(a.name) - starterOrder(b.name) || a.name.localeCompare(b.name))
-      .map((t) => toSummary(t, r.themeId)),
+      .sort((a, b) => starterOrder(a.name, kind) - starterOrder(b.name, kind) || a.name.localeCompare(b.name))
+      .map((t) => toSummary(t, r)),
   };
 }
 
-const starterOrder = (name: string) => {
-  const i = STARTER_THEMES.findIndex((s) => s.name === name);
+const starterOrder = (name: string, kind: ThemeKind = "menu") => {
+  const i = (kind === "print" ? PRINT_STARTERS : STARTER_THEMES).findIndex((s) => s.name === name);
   return i < 0 ? 99 : i;
 };
 
@@ -136,7 +153,7 @@ export async function getThemeWithPackage(restaurantId: string, themeId: string,
   const t = await themeRow(restaurantId, themeId, "read");
   const vid = versionId ?? t.currentVersionId;
   if (!vid) throw new AppError("notFound");
-  return { theme: toSummary(t, r.themeId), versionId: vid, pkg: await versionPackage(t.id, vid) };
+  return { theme: toSummary(t, r), versionId: vid, pkg: await versionPackage(t.id, vid) };
 }
 
 /** Published package of the restaurant's ACTIVE studio theme (guest runtime). null → fall back to built-in. */
@@ -146,7 +163,7 @@ export async function getActiveStudioTheme(restaurantId: string, activeThemeId: 
   const [t] = await db
     .select({ id: themes.id, publishedVersionId: themes.publishedVersionId })
     .from(themes)
-    .where(and(eq(themes.id, themeId), or(eq(themes.restaurantId, restaurantId), isNull(themes.restaurantId))))
+    .where(and(eq(themes.id, themeId), eq(themes.kind, "menu"), or(eq(themes.restaurantId, restaurantId), isNull(themes.restaurantId))))
     .limit(1);
   if (!t?.publishedVersionId) return null;
   try {
@@ -198,8 +215,12 @@ export async function createTheme(opts: {
   parentThemeId?: string | null;
   userId: string;
   note?: string;
+  /** additive: "menu" (default) | "print" – must match pkg.manifest.kind (inferred from it when omitted). */
+  kind?: ThemeKind;
 }): Promise<{ themeId: string; versionId: string; validation: ThemeValidation }> {
   await assertThemeStudio(opts.restaurantId);
+  const kind = pkgKind(opts.pkg);
+  if (opts.kind && opts.kind !== kind) throw new AppError("validation", "kind_mismatch");
   const validation = assertValid(opts.pkg);
   const name = opts.name.trim().slice(0, 80) || opts.pkg.manifest.name;
   const res = await db.transaction(async (tx) => {
@@ -207,6 +228,7 @@ export async function createTheme(opts: {
       .insert(themes)
       .values({
         restaurantId: opts.restaurantId,
+        kind,
         name,
         description: opts.description?.slice(0, 500) ?? null,
         origin: opts.origin,
@@ -219,7 +241,7 @@ export async function createTheme(opts: {
       .values({ themeId: t.id, number: 1, package: cleanPkg(opts.pkg), note: opts.note?.slice(0, 300) ?? null, author: opts.origin.startsWith("ai") ? "ai" : opts.origin === "import" ? "import" : "user", createdBy: opts.userId })
       .returning({ id: themeVersions.id });
     await tx.update(themes).set({ currentVersionId: v.id }).where(eq(themes.id, t.id));
-    await audit({ restaurantId: opts.restaurantId, userId: opts.userId, action: "theme.create", entityType: "theme", entityId: t.id, data: { name, origin: opts.origin } }, tx);
+    await audit({ restaurantId: opts.restaurantId, userId: opts.userId, action: "theme.create", entityType: "theme", entityId: t.id, data: { name, origin: opts.origin, kind } }, tx);
     return { themeId: t.id, versionId: v.id };
   });
   return { ...res, validation };
@@ -236,6 +258,7 @@ export async function saveThemeVersion(opts: {
 }): Promise<{ versionId: string; number: number; validation: ThemeValidation }> {
   await assertThemeStudio(opts.restaurantId);
   const t = await themeRow(opts.restaurantId, opts.themeId, "write");
+  if (pkgKind(opts.pkg) !== rowKind(t.kind)) throw new AppError("validation", "kind_mismatch");
   const validation = assertValid(opts.pkg);
   const res = await db.transaction(async (tx) => {
     await tx.execute(sql`select id from ${themes} where id = ${t.id} for update`);
@@ -254,11 +277,22 @@ export async function saveThemeVersion(opts: {
 /**
  * Publishes a version and activates the theme for guests (restaurants.themeId = studio:<id>).
  * Only own themes – library themes are duplicated first (duplicateTheme → origin "library").
+ * Print designs (kind "print") are selected for printing instead: settings.print = { themeId, config } (merged,
+ * restaurants.themeId untouched). `config` (print only) = customizer values; omitted → keeps the stored values.
  */
-export async function publishTheme(opts: { restaurantId: string; themeId: string; versionId: string; userId: string }): Promise<void> {
+export async function publishTheme(opts: { restaurantId: string; themeId: string; versionId: string; userId: string; config?: Record<string, unknown> }): Promise<void> {
   await assertThemeStudio(opts.restaurantId);
   const t = await themeRow(opts.restaurantId, opts.themeId, "write");
-  assertValid(await versionPackage(t.id, opts.versionId)); // version belongs to theme + still valid
+  const pkg = await versionPackage(t.id, opts.versionId);
+  assertValid(pkg); // version belongs to theme + still valid
+  if (rowKind(t.kind) === "print") {
+    await db.transaction(async (tx) => {
+      await tx.update(themes).set({ publishedVersionId: opts.versionId, updatedAt: new Date() }).where(eq(themes.id, t.id));
+      await writePrintSelection(tx, opts.restaurantId, t.id, pkg, opts.config);
+      await audit({ restaurantId: opts.restaurantId, userId: opts.userId, action: "print.publish", entityType: "theme", entityId: t.id, data: { versionId: opts.versionId, name: t.name } }, tx);
+    });
+    return;
+  }
   await db.transaction(async (tx) => {
     await tx.update(themes).set({ publishedVersionId: opts.versionId, updatedAt: new Date() }).where(eq(themes.id, t.id));
     await tx.update(restaurants).set({ themeId: studioThemeId(t.id), updatedAt: new Date() }).where(eq(restaurants.id, opts.restaurantId));
@@ -288,7 +322,7 @@ export async function duplicateTheme(opts: { restaurantId: string; themeId: stri
 export async function deleteTheme(restaurantId: string, themeId: string): Promise<void> {
   const r = await restaurantRow(restaurantId);
   const t = await themeRow(restaurantId, themeId, "write");
-  if (parseStudioThemeId(r.themeId) === t.id) throw new AppError("validation", "theme_active");
+  if (parseStudioThemeId(r.themeId) === t.id || r.settings?.print?.themeId === t.id) throw new AppError("validation", "theme_active");
   await db.transaction(async (tx) => {
     await tx.delete(themes).where(and(eq(themes.id, t.id), eq(themes.restaurantId, restaurantId)));
     await audit({ restaurantId, action: "theme.delete", entityType: "theme", entityId: t.id, data: { name: t.name } }, tx);
@@ -308,19 +342,34 @@ export async function getStarterPackages(): Promise<{ key: string; name: string;
  * starter changed since the last seed, a new library version is stored (and published).
  */
 export async function seedStarterThemes(): Promise<{ created: number; updated: number }> {
+  return seedLibrary(STARTER_THEMES, "menu");
+}
+
+/** Idempotent: seeds the print starters (QR table cards, tents, posters) into the library (kind "print"). */
+export async function seedPrintStarters(): Promise<{ created: number; updated: number }> {
+  return seedLibrary(PRINT_STARTERS, "print");
+}
+
+/** Key-order independent JSON (Postgres jsonb does not keep key order). */
+const canonicalJson = (v: unknown): string =>
+  JSON.stringify(v, (_k, x: unknown) =>
+    x && typeof x === "object" && !Array.isArray(x) ? Object.fromEntries(Object.entries(x as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b))) : x,
+  );
+
+async function seedLibrary(starters: { key: string; name: string; description: Record<string, string>; pkg: ThemePackage }[], kind: ThemeKind): Promise<{ created: number; updated: number }> {
   let created = 0;
   let updated = 0;
-  for (const s of STARTER_THEMES) {
+  for (const s of starters) {
     assertValid(s.pkg);
     const description = s.description.de ?? s.description.en ?? null;
     const [existing] = await db
       .select()
       .from(themes)
-      .where(and(isNull(themes.restaurantId), eq(themes.origin, "starter"), eq(themes.name, s.name)))
+      .where(and(isNull(themes.restaurantId), eq(themes.origin, "starter"), eq(themes.kind, kind), eq(themes.name, s.name)))
       .limit(1);
     if (!existing) {
       await db.transaction(async (tx) => {
-        const [t] = await tx.insert(themes).values({ restaurantId: null, name: s.name, description, origin: "starter" }).returning({ id: themes.id });
+        const [t] = await tx.insert(themes).values({ restaurantId: null, kind, name: s.name, description, origin: "starter" }).returning({ id: themes.id });
         const [v] = await tx.insert(themeVersions).values({ themeId: t.id, number: 1, package: s.pkg, note: `Starter ${s.key}`, author: "system" }).returning({ id: themeVersions.id });
         await tx.update(themes).set({ currentVersionId: v.id, publishedVersionId: v.id }).where(eq(themes.id, t.id));
       });
@@ -328,7 +377,7 @@ export async function seedStarterThemes(): Promise<{ created: number; updated: n
       continue;
     }
     const current = existing.currentVersionId ? await versionPackage(existing.id, existing.currentVersionId).catch(() => null) : null;
-    if (current && JSON.stringify(current) === JSON.stringify(s.pkg)) continue;
+    if (current && canonicalJson(current) === canonicalJson(s.pkg)) continue; // jsonb reorders keys
     await db.transaction(async (tx) => {
       const [{ n }] = await tx.select({ n: sql<number>`coalesce(max(${themeVersions.number}), 0)::int` }).from(themeVersions).where(eq(themeVersions.themeId, existing.id));
       const [v] = await tx
@@ -340,4 +389,85 @@ export async function seedStarterThemes(): Promise<{ created: number; updated: n
     updated++;
   }
   return { created, updated };
+}
+
+// ---------------------------------------------------------------- print designs (kind "print") (docs/THEMES.md "Print designs")
+
+export type PrintSelection = { themeId: string; config: Record<string, unknown> };
+export type PrintDesign = { theme: ThemeSummary; versionId: string; pkg: ThemePackage };
+
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+/** settings.print = { themeId, config } – merged into restaurants.settings (other keys untouched). */
+async function writePrintSelection(tx: Tx | typeof db, restaurantId: string, themeId: string, pkg: ThemePackage, config: Record<string, unknown> | undefined) {
+  let raw = config;
+  if (raw === undefined) {
+    const [r] = await tx.select({ settings: restaurants.settings }).from(restaurants).where(eq(restaurants.id, restaurantId)).limit(1);
+    const prev = (r?.settings as RestaurantRow["settings"])?.print;
+    raw = prev?.themeId === themeId ? (prev.config ?? {}) : {};
+  }
+  const value = { themeId, config: resolveSettings(pkg.manifest, raw) };
+  await tx
+    .update(restaurants)
+    .set({ settings: sql`coalesce(${restaurants.settings}, '{}'::jsonb) || jsonb_build_object('print', ${JSON.stringify(value)}::jsonb)`, updatedAt: new Date() })
+    .where(eq(restaurants.id, restaurantId));
+}
+
+/** Version used for printing: explicit (must belong to the theme) → published → latest saved. */
+function printVersionId(t: ThemeRow, versionId?: string | null): string | null {
+  if (versionId) return versionId;
+  return t.publishedVersionId ?? t.currentVersionId;
+}
+
+/** A print design (own or library) with the package that gets printed. Throws notFound for menu themes. */
+export async function getPrintDesign(restaurantId: string, themeId: string, versionId?: string | null): Promise<PrintDesign> {
+  const r = await restaurantRow(restaurantId);
+  const t = await themeRow(restaurantId, themeId, "read");
+  if (rowKind(t.kind) !== "print") throw new AppError("notFound");
+  const vid = printVersionId(t, versionId);
+  if (!vid) throw new AppError("notFound");
+  return { theme: toSummary(t, r), versionId: vid, pkg: await versionPackage(t.id, vid) };
+}
+
+/** All print designs visible to the restaurant (library first in starter order, then own) with their print packages. */
+export async function listPrintDesigns(restaurantId: string): Promise<{ own: PrintDesign[]; library: PrintDesign[] }> {
+  const list = await listThemes(restaurantId, "print");
+  const load = async (s: ThemeSummary): Promise<PrintDesign | null> => {
+    const vid = s.publishedVersionId ?? s.currentVersionId;
+    if (!vid) return null;
+    try {
+      return { theme: s, versionId: vid, pkg: await versionPackage(s.id, vid) };
+    } catch {
+      return null;
+    }
+  };
+  const [own, library] = await Promise.all([Promise.all(list.own.map(load)), Promise.all(list.library.map(load))]);
+  return { own: own.filter((x): x is PrintDesign => !!x), library: library.filter((x): x is PrintDesign => !!x) };
+}
+
+/** Stored print selection (settings.print) – null when none or the design is gone. */
+export async function getPrintSelection(restaurantId: string): Promise<PrintSelection | null> {
+  const r = await restaurantRow(restaurantId);
+  const sel = r.settings?.print;
+  if (!sel?.themeId || !UUID.test(sel.themeId)) return null;
+  return { themeId: sel.themeId, config: sel.config && typeof sel.config === "object" ? sel.config : {} };
+}
+
+/**
+ * Selects a print design (own or library – no Theme Studio plan needed, the owner only customises) and stores its
+ * customizer values: settings.print = { themeId, config } (merged JSON, values validated against the manifest).
+ */
+export async function selectPrintDesign(opts: { restaurantId: string; themeId: string; config?: Record<string, unknown>; userId: string }): Promise<PrintSelection> {
+  const design = await getPrintDesign(opts.restaurantId, opts.themeId);
+  assertValid(design.pkg);
+  await db.transaction(async (tx) => {
+    await writePrintSelection(tx, opts.restaurantId, design.theme.id, design.pkg, opts.config);
+    await audit({ restaurantId: opts.restaurantId, userId: opts.userId, action: "print.select", entityType: "theme", entityId: design.theme.id, data: { name: design.theme.name, config: opts.config !== undefined } }, tx);
+  });
+  return (await getPrintSelection(opts.restaurantId))!;
+}
+
+/** Print starter packages shipped with the app (seeded into the library). */
+export async function getPrintStarterPackages(): Promise<{ key: string; name: string; description: Record<string, string>; pkg: ThemePackage }[]> {
+  return structuredClone(PRINT_STARTERS);
 }

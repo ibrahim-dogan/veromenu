@@ -7,6 +7,8 @@ import { Button, Field, Input, Select } from "@/components/ui";
 import { Dialog } from "@/components/ui/dialog";
 import { MANIFEST_PATH, MENU_TEMPLATE, NEW_FILE_KINDS, pathFor, sortPaths, type NewFileKind } from "../../lib/package";
 
+const ALL_KINDS = Object.keys(NEW_FILE_KINDS) as NewFileKind[];
+
 const icon = (p: string) =>
   p === MANIFEST_PATH ? Settings2 : p.endsWith(".liquid") ? FileCode2 : p.endsWith(".css") ? Paintbrush : p.endsWith(".js") ? Braces : p.startsWith("locales/") ? Languages : FileJson;
 
@@ -25,6 +27,8 @@ export function FileTree({
   onAdd,
   onRename,
   onDelete,
+  mainTemplate = MENU_TEMPLATE,
+  fileKinds = ALL_KINDS,
 }: {
   paths: string[];
   active: string;
@@ -34,6 +38,10 @@ export function FileTree({
   onAdd: (p: string) => void;
   onRename: (from: string, to: string) => void;
   onDelete: (p: string) => void;
+  /** required template of the package kind (templates/menu.liquid or templates/print.liquid) – not removable */
+  mainTemplate?: string;
+  /** file kinds offered when adding (print designs: no JavaScript) */
+  fileKinds?: NewFileKind[];
 }) {
   const t = useTranslations("themeStudio.files");
   const [dialog, setDialog] = useState<{ mode: "add" } | { mode: "rename"; path: string } | null>(null);
@@ -42,7 +50,7 @@ export function FileTree({
 
   const row = (p: string) => {
     const Icon = icon(p);
-    const removable = p !== MENU_TEMPLATE && p !== MANIFEST_PATH;
+    const removable = p !== mainTemplate && p !== MANIFEST_PATH;
     const errs = errorCounts[p] ?? 0;
     return (
       <li key={p} className="group relative">
@@ -99,6 +107,7 @@ export function FileTree({
       <FileDialog
         state={dialog}
         existing={paths}
+        kinds={fileKinds}
         onClose={() => setDialog(null)}
         onSubmit={(p) => {
           if (dialog?.mode === "rename") onRename(dialog.path, p);
@@ -142,7 +151,19 @@ function kindOf(path: string): NewFileKind {
   return "css";
 }
 
-function FileDialog({ state, existing, onClose, onSubmit }: { state: { mode: "add" } | { mode: "rename"; path: string } | null; existing: string[]; onClose: () => void; onSubmit: (path: string) => void }) {
+function FileDialog({
+  state,
+  existing,
+  kinds,
+  onClose,
+  onSubmit,
+}: {
+  state: { mode: "add" } | { mode: "rename"; path: string } | null;
+  existing: string[];
+  kinds: NewFileKind[];
+  onClose: () => void;
+  onSubmit: (path: string) => void;
+}) {
   const t = useTranslations("themeStudio.files");
   const renaming = state?.mode === "rename" ? state.path : null;
   const [kind, setKind] = useState<NewFileKind>("partial");
@@ -191,7 +212,7 @@ function FileDialog({ state, existing, onClose, onSubmit }: { state: { mode: "ad
         {!renaming && (
           <Field label={t("kind")} htmlFor="file-kind">
             <Select id="file-kind" value={kind} onChange={(e) => setKind(e.target.value as NewFileKind)}>
-              {(Object.keys(NEW_FILE_KINDS) as NewFileKind[]).map((k) => (
+              {kinds.map((k) => (
                 <option key={k} value={k}>
                   {t(`kind_${k}`)}
                 </option>

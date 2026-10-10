@@ -4,7 +4,7 @@
  */
 import { THEME_FILE_PATTERNS, THEME_LIMITS, type ThemePackage, type ThemeValidation } from "./types";
 import { manifestSchema } from "./settings";
-import { createEngine, errorLine, errorMessage, MENU_TEMPLATE, PARTIAL_PATH, parseLocaleFile, unknownFilters } from "./liquid";
+import { createEngine, errorLine, errorMessage, MENU_TEMPLATE, PARTIAL_PATH, PRINT_TEMPLATE_PATH, parseLocaleFile, unknownFilters } from "./liquid";
 
 type Err = ThemeValidation["errors"][number];
 type Warn = ThemeValidation["warnings"][number];
@@ -102,6 +102,49 @@ function jsBalanceProblem(src: string): { message: string; line: number } | null
   return null;
 }
 
+/** Minimum printed QR size (mm) before a warning is raised. */
+export const MIN_QR_MM = 30;
+
+const toMm = (n: number, unit: string): number | null => {
+  switch (unit.toLowerCase()) {
+    case "mm":
+      return n;
+    case "cm":
+      return n * 10;
+    case "in":
+      return n * 25.4;
+    case "pt":
+      return (n * 25.4) / 72;
+    case "px":
+      return (n * 25.4) / 96;
+    case "q":
+      return n / 4;
+    default:
+      return null;
+  }
+};
+
+/**
+ * Heuristic: smallest absolute width/height/size declared in rules whose selector (or custom property) mentions
+ * "qr" (e.g. `.qr { width: 38mm }`, `--qr-size: 25mm`, inline `style="width:20mm"` on a qr element).
+ * Relative units (%, var(), calc with %) are ignored → null when nothing measurable was found.
+ */
+export function smallestQrSizeMm(src: string): number | null {
+  let min: number | null = null;
+  const consider = (decls: string) => {
+    for (const m of decls.matchAll(/(?:^|[;{\s"'])((?:max-|min-)?(?:width|height|inline-size|block-size|size)|--[a-z0-9-]*qr[a-z0-9-]*)\s*:\s*([0-9.]+)\s*(mm|cm|in|pt|px|q)\b/gi)) {
+      if (/^max-/i.test(m[1])) continue;
+      const mm = toMm(Number(m[2]), m[3]);
+      if (mm !== null && Number.isFinite(mm) && mm > 0) min = min === null ? mm : Math.min(min, mm);
+    }
+  };
+  const css = src.replace(/\/\*[\s\S]*?\*\//g, "");
+  for (const m of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) if (/qr/i.test(m[1])) consider(m[2]);
+  for (const m of css.matchAll(/--[a-z0-9-]*qr[a-z0-9-]*\s*:\s*[0-9.]+\s*(?:mm|cm|in|pt|px|q)\b/gi)) consider(";" + m[0]);
+  for (const m of src.matchAll(/<[a-z]+[^>]*class\s*=\s*["'][^"']*qr[^"']*["'][^>]*style\s*=\s*["']([^"']*)["']/gi)) consider(";" + m[1]);
+  return min;
+}
+
 export function validatePackage(pkg: ThemePackage): ThemeValidation {
   const errors: Err[] = [];
   const warnings: Warn[] = [];
@@ -136,7 +179,13 @@ export function validatePackage(pkg: ThemePackage): ThemeValidation {
     if (size > THEME_LIMITS.maxFileBytes) errors.push({ file: path, message: `file too large (${size} > ${THEME_LIMITS.maxFileBytes} bytes)` });
   }
   if (total > THEME_LIMITS.maxPackageBytes) errors.push({ message: `package too large (${total} > ${THEME_LIMITS.maxPackageBytes} bytes)` });
-  if (typeof pkg.files[MENU_TEMPLATE] !== "string") errors.push({ file: MENU_TEMPLATE, message: "required template missing" });
+  const kind = pkg.manifest?.kind === "print" ? "print" : "menu";
+  const mainTemplate = kind === "print" ? PRINT_TEMPLATE_PATH : MENU_TEMPLATE;
+  if (typeof pkg.files[mainTemplate] !== "string") errors.push({ file: mainTemplate, message: "required template missing" });
+  if (kind === "print") {
+    if (typeof pkg.files["assets/theme.js"] === "string") errors.push({ file: "assets/theme.js", message: "print designs are static HTML – JavaScript is not allowed (remove assets/theme.js)" });
+    if (typeof pkg.files[MENU_TEMPLATE] === "string") warnings.push({ file: MENU_TEMPLATE, message: "print designs render templates/print.liquid – menu.liquid is ignored" });
+  }
   if (errors.some((e) => /too large|too many/.test(e.message))) return done(); // don't parse huge input
 
   // ---- Liquid
@@ -164,13 +213,26 @@ export function validatePackage(pkg: ThemePackage): ThemeValidation {
       const m = r.re.exec(src);
       if (m) errors.push({ file: path, line: lineOf(src, m.index), message: r.message });
     }
-    for (const r of HTML_WARNINGS) if (r.re.test(src)) warnings.push({ file: path, message: r.message });
+    for (const r of HTML_WARNINGS) if (r.re.test(src)) warnings.push({ file: path, message: kind === "print" ? r.message.replace("menu.liquid renders", "print.liquid renders ONE card –") : r.message });
+    if (kind === "print") {
+      const sm = /<script[\s>]/i.exec(src);
+      if (sm) errors.push({ file: path, line: lineOf(src, sm.index), message: "print designs are static – <script> is not allowed" });
+      const om = /<[a-z][^>]*\son[a-z]+\s*=/i.exec(src);
+      if (om) errors.push({ file: path, line: lineOf(src, om.index), message: "event handler attributes (onclick=…) are not allowed in print designs" });
+      if (/javascript:/i.test(src)) errors.push({ file: path, message: "javascript: URLs are not allowed" });
+    }
     const ext = EXTERNAL_URL.exec(src.replace(/xmlns(:\w+)?="[^"]*"/g, ""));
     if (ext) warnings.push({ file: path, message: `external URL "${ext[0].slice(0, 60)}" will be blocked by the CSP – only platform media/fonts load` });
   }
   for (const p of partials) if (!usedPartials.has(p) && !new RegExp(`["']${p}["']`).test(allTemplates)) warnings.push({ file: `templates/partials/${p}.liquid`, message: "partial is never rendered" });
 
-  if (allTemplates) {
+  if (allTemplates && kind === "print") {
+    if (!/table\.qr_svg/.test(allTemplates)) warnings.push({ message: "table.qr_svg is never rendered – the card has no QR code ({{ table.qr_svg }})" });
+    if (!/table\.(label|number)/.test(allTemplates)) warnings.push({ message: "table.label / table.number is never rendered – guests and staff cannot tell the tables apart" });
+    const qrMm = smallestQrSizeMm(entries.filter(([p, c]) => p.endsWith(".css") && typeof c === "string").map(([, c]) => c as string).join("\n") + "\n" + allTemplates);
+    if (qrMm !== null && qrMm < MIN_QR_MM) warnings.push({ message: `QR code area looks small (~${Math.round(qrMm)} mm) – keep it at least ${MIN_QR_MM} mm (35 mm recommended) so it scans from a table distance` });
+  }
+  if (allTemplates && kind === "menu") {
     if (!/data-vm-item/.test(allTemplates)) warnings.push({ message: "no data-vm-item hook – guests cannot open item details (allergens, variants)" });
     if (!/data-vm-add/.test(allTemplates)) warnings.push({ message: "no data-vm-add hook – items can only be ordered from the item sheet" });
     if (!/image_is_ai/.test(allTemplates) && !/data-vm-ai-label/.test(allTemplates))

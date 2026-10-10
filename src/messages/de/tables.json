@@ -70,9 +70,9 @@
     "done": "{count, plural, =0 {Keine neuen Tische – alle gab es schon.} one {# Tisch angelegt} other {# Tische angelegt}}"
   },
   "print": {
-    "button": "QR-Codes drucken",
-    "title": "QR-Codes drucken",
-    "description": "Lade ein druckfertiges PDF herunter.",
+    "button": "Schnell-PDF",
+    "title": "Schnell-PDF",
+    "description": "Einfaches, sofort druckfertiges PDF im Standardlayout. Für eigene Gestaltung nutze die Druckdesigns oben.",
     "download": "PDF herunterladen",
     "layout": "Format",
     "sheet": "A4-Bogen",

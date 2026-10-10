@@ -1,0 +1,248 @@
+{
+  "apiVersion": 1,
+  "kind": "print",
+  "name": "Klar A6",
+  "version": "1.0.0",
+  "author": "VeroMenu",
+  "description": {
+    "de": "Klare A6-Tischkarte: große Tischnummer, viel Weißraum, großer QR-Code. Vier Karten pro A4-Bogen mit Schnittmarken.",
+    "en": "Clean A6 table card: big table number, lots of white space, large QR code. Four cards per A4 sheet with crop marks.",
+    "tr": "Sade A6 masa kartı: büyük masa numarası, bol boşluk, büyük QR kod. A4 sayfasında kesim işaretli dört kart."
+  },
+  "print": {
+    "format": "a6",
+    "sheet": "a4",
+    "safeMm": 5
+  },
+  "fonts": [],
+  "settings": [
+    {
+      "id": "show_logo",
+      "type": "checkbox",
+      "label": {
+        "de": "Logo anzeigen",
+        "en": "Show logo",
+        "tr": "Logoyu göster"
+      },
+      "default": true
+    },
+    {
+      "id": "show_name",
+      "type": "checkbox",
+      "label": {
+        "de": "Restaurantname anzeigen",
+        "en": "Show restaurant name",
+        "tr": "Restoran adını göster"
+      },
+      "default": true
+    },
+    {
+      "id": "show_table",
+      "type": "checkbox",
+      "label": {
+        "de": "Tischnummer anzeigen",
+        "en": "Show table number",
+        "tr": "Masa numarasını göster"
+      },
+      "default": true
+    },
+    {
+      "id": "show_headline",
+      "type": "checkbox",
+      "label": {
+        "de": "Überschrift anzeigen",
+        "en": "Show headline",
+        "tr": "Başlığı göster"
+      },
+      "default": true
+    },
+    {
+      "id": "headline",
+      "type": "text",
+      "label": {
+        "de": "Überschrift",
+        "en": "Headline",
+        "tr": "Başlık"
+      },
+      "default": "Herzlich willkommen",
+      "maxLength": 60
+    },
+    {
+      "id": "show_scan",
+      "type": "checkbox",
+      "label": {
+        "de": "„Speisekarte scannen“ in allen Sprachen",
+        "en": "“Scan for the menu” in all languages",
+        "tr": "Tüm dillerde “Menüyü okut”"
+      },
+      "default": true
+    },
+    {
+      "id": "show_flags",
+      "type": "checkbox",
+      "label": {
+        "de": "Flaggen der Sprachen",
+        "en": "Language flags",
+        "tr": "Dil bayrakları"
+      },
+      "default": true
+    },
+    {
+      "id": "show_ordering",
+      "type": "checkbox",
+      "label": {
+        "de": "Hinweis „Bestellung direkt am Tisch“",
+        "en": "“Order at your table” hint",
+        "tr": "“Masadan sipariş” notu"
+      },
+      "default": true
+    },
+    {
+      "id": "show_wifi",
+      "type": "checkbox",
+      "label": {
+        "de": "WLAN-Zugang anzeigen",
+        "en": "Show Wi-Fi access",
+        "tr": "Wi-Fi bilgisini göster"
+      },
+      "default": false
+    },
+    {
+      "id": "wifi_ssid",
+      "type": "text",
+      "label": {
+        "de": "WLAN-Name",
+        "en": "Wi-Fi name",
+        "tr": "Wi-Fi adı"
+      },
+      "default": "",
+      "maxLength": 40
+    },
+    {
+      "id": "wifi_password",
+      "type": "text",
+      "label": {
+        "de": "WLAN-Passwort",
+        "en": "Wi-Fi password",
+        "tr": "Wi-Fi şifresi"
+      },
+      "default": "",
+      "maxLength": 40
+    },
+    {
+      "id": "show_website",
+      "type": "checkbox",
+      "label": {
+        "de": "Website anzeigen",
+        "en": "Show website",
+        "tr": "Web sitesini göster"
+      },
+      "default": false
+    },
+    {
+      "id": "show_footer",
+      "type": "checkbox",
+      "label": {
+        "de": "Fußzeile anzeigen",
+        "en": "Show footer note",
+        "tr": "Alt notu göster"
+      },
+      "default": false
+    },
+    {
+      "id": "footer_note",
+      "type": "text",
+      "label": {
+        "de": "Fußzeile",
+        "en": "Footer note",
+        "tr": "Alt not"
+      },
+      "default": "Guten Appetit!",
+      "maxLength": 120
+    },
+    {
+      "id": "color_background",
+      "type": "color",
+      "label": {
+        "de": "Hintergrund",
+        "en": "Background",
+        "tr": "Arka plan"
+      },
+      "default": "#ffffff"
+    },
+    {
+      "id": "color_text",
+      "type": "color",
+      "label": {
+        "de": "Text",
+        "en": "Text",
+        "tr": "Metin"
+      },
+      "default": "#1c1917"
+    },
+    {
+      "id": "color_accent",
+      "type": "color",
+      "label": {
+        "de": "Akzent",
+        "en": "Accent",
+        "tr": "Vurgu"
+      },
+      "default": "#1f6f4a"
+    },
+    {
+      "id": "qr_color",
+      "type": "color",
+      "label": {
+        "de": "QR-Code-Farbe",
+        "en": "QR code colour",
+        "tr": "QR kod rengi"
+      },
+      "default": "#1c1917"
+    },
+    {
+      "id": "qr_background",
+      "type": "color",
+      "label": {
+        "de": "QR-Hintergrund",
+        "en": "QR background",
+        "tr": "QR arka planı"
+      },
+      "default": "#ffffff"
+    },
+    {
+      "id": "qr_size",
+      "type": "range",
+      "label": {
+        "de": "QR-Größe",
+        "en": "QR size",
+        "tr": "QR boyutu"
+      },
+      "default": 46,
+      "min": 35,
+      "max": 54,
+      "step": 1,
+      "unit": "mm"
+    },
+    {
+      "id": "heading_font",
+      "type": "font",
+      "label": {
+        "de": "Schrift Überschriften",
+        "en": "Heading font",
+        "tr": "Başlık yazı tipi"
+      },
+      "default": "space-grotesk"
+    },
+    {
+      "id": "body_font",
+      "type": "font",
+      "label": {
+        "de": "Schrift Text",
+        "en": "Body font",
+        "tr": "Metin yazı tipi"
+      },
+      "default": "inter"
+    }
+  ]
+}

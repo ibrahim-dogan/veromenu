@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
-import { AlertTriangle, ArrowLeft, Bot, ChevronDown, ChevronUp, Code2, Download, Eye, FolderTree, History, PanelLeft, Rocket, Save, SlidersHorizontal, XCircle } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Bot, ChevronDown, ChevronUp, Code2, Download, Eye, FolderTree, History, PanelLeft, Printer, Rocket, Save, SlidersHorizontal, XCircle } from "lucide-react";
 import { cn } from "@/core/utils";
 import { Link } from "@/core/i18n/navigation";
 import { Badge, Button } from "@/components/ui";
@@ -10,11 +10,11 @@ import { Dialog } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
 import { serializePackage, validatePackage, type ThemeMediaRef } from "@/modules/theme-engine";
 import { manifestSchema } from "@/modules/theme-engine/settings";
-import type { ThemeManifest, ThemePackage, ThemeValidation, ThemeView } from "@/modules/theme-engine/types";
+import type { PrintView, ThemeKind, ThemeManifest, ThemePackage, ThemeValidation, ThemeView } from "@/modules/theme-engine/types";
 import { proposeThemeEdit } from "@/modules/theme-ai/actions";
 import { publishThemeAction, renameThemeAction, restoreVersionAction, saveThemeSettingsAction, saveVersionAction } from "../../actions";
 import { downloadText, studioGet, themeStatus } from "../../lib/client";
-import { exportFileName, MANIFEST_PATH, MENU_TEMPLATE, mediaIdsFor, samePackage, sanitizeSettings, settingsDefaults, starterContent, withSettingsAsDefaults } from "../../lib/package";
+import { exportFileName, MANIFEST_PATH, mainTemplate, mediaIdsFor, newFileKindsFor, samePackage, sanitizeSettings, settingsDefaults, starterContent, withSettingsAsDefaults } from "../../lib/package";
 import { StatusBadges } from "../theme-cards";
 import { AiChat, type ChatMessage } from "./ai-chat";
 import { Customizer } from "./customizer";
@@ -23,6 +23,7 @@ import { applyProposal, proposalEntries, type Proposal } from "../../lib/proposa
 import { FileTree } from "./file-tree";
 import { PanelBoundary } from "./panel-boundary";
 import { PreviewPane } from "./preview-pane";
+import { PrintPreviewPane, type PrintPreviewData } from "./print-preview-pane";
 import { VersionsPanel, type VersionRow } from "./versions-panel";
 
 const CodeEditor = dynamic(() => import("./code-editor"), { ssr: false, loading: () => <div className="h-full animate-pulse bg-stone-50" /> });
@@ -62,8 +63,13 @@ export function StudioApp(props: {
   locales: { code: string; label: string }[];
   defaultLocale: string;
   canUseAi: boolean;
+  /** "print" = QR print design (print preview, "Als Druckdesign verwenden", back to the tables page) */
+  kind?: ThemeKind;
 }) {
   const { restaurantId, themeId } = props;
+  const kind: ThemeKind = props.kind ?? "menu";
+  const isPrint = kind === "print";
+  const MAIN = mainTemplate(kind);
   const t = useTranslations("themeStudio.studio");
   const te = useTranslations("errors");
 
@@ -71,7 +77,7 @@ export function StudioApp(props: {
   const [saved, setSaved] = useState<Saved>({ versionId: props.versionId, pkg: props.pkg });
   const [files, setFiles] = useState<Record<string, string>>(props.pkg.files);
   const [manifestText, setManifestText] = useState(() => pretty(props.pkg.manifest));
-  const [activePath, setActivePath] = useState(MENU_TEMPLATE);
+  const [activePath, setActivePath] = useState(MAIN);
   const [jump, setJump] = useState<{ path: string; line: number; nonce: number } | null>(null);
   const [meta, setMeta] = useState<Meta>(props.meta);
   const [panel, setPanel] = useState<Panel>(props.initialPanel);
@@ -254,7 +260,7 @@ export function StudioApp(props: {
       void _gone;
       return rest;
     });
-    if (activePath === p) setActivePath(MENU_TEMPLATE);
+    if (activePath === p) setActivePath(MAIN);
   };
 
   // ---------------------------------------------------------------- customizer
@@ -336,6 +342,7 @@ export function StudioApp(props: {
   const [data, setData] = useState<PreviewData | null>(null);
   const dataCache = useRef(new Map<string, PreviewData>());
   useEffect(() => {
+    if (isPrint) return;
     const key = `${source}:${locale}`;
     const hit = dataCache.current.get(key);
     if (hit) {
@@ -353,7 +360,31 @@ export function StudioApp(props: {
       if (source === "real" && res.data.source === "sample") toast(t("realUnavailable"));
     });
     return () => ac.abort();
-  }, [restaurantId, locale, source, fail, t]);
+  }, [restaurantId, locale, source, fail, t, isPrint]);
+
+  // print designs: real tables (generic card + tables) or the engine's sample cards
+  const [printData, setPrintData] = useState<PrintPreviewData | null>(null);
+  const printCache = useRef(new Map<string, PrintPreviewData>());
+  useEffect(() => {
+    if (!isPrint) return;
+    const hit = printCache.current.get(source);
+    if (hit) {
+      setPrintData(hit);
+      return;
+    }
+    const ac = new AbortController();
+    studioGet<{ views: PrintView[]; source: "real" | "sample"; total: number; locale: string; guestMessages: Record<string, string> }>(
+      `/api/restaurants/${restaurantId}/themes/print-data?source=${source}`,
+      ac.signal,
+    ).then((res) => {
+      if (ac.signal.aborted) return;
+      if (!res.ok) return fail(res);
+      const d = { views: res.data.views, total: res.data.total, locale: res.data.locale, guestMessages: res.data.guestMessages };
+      printCache.current.set(source, d);
+      setPrintData(d);
+    });
+    return () => ac.abort();
+  }, [isPrint, restaurantId, source, fail]);
 
   const [media, setMedia] = useState<Record<string, ThemeMediaRef>>({});
   const mediaKey = mediaIdsFor(uiManifest, effectiveSettings).join(",");
@@ -434,7 +465,7 @@ export function StudioApp(props: {
     setVersionsKey(res.data.versionId);
     setProposal(null);
     // the AI may have deleted the open file – don't keep editing (and thereby resurrecting) it
-    if (activePath !== MANIFEST_PATH && pkg.files[activePath] === undefined) setActivePath(MENU_TEMPLATE);
+    if (activePath !== MANIFEST_PATH && pkg.files[activePath] === undefined) setActivePath(MAIN);
     say("system", t("aiApplied", { number: res.data.number }));
     toast.success(t("aiApplied", { number: res.data.number }));
   }
@@ -479,7 +510,7 @@ export function StudioApp(props: {
     setVersionsKey(res.data.versionId);
     setVersionPreview(null);
     setProposal(null); // a pending AI proposal was built on the old version – applying it would revert the restore
-    if (!res.data.pkg.files[activePath] && activePath !== MANIFEST_PATH) setActivePath(MENU_TEMPLATE);
+    if (!res.data.pkg.files[activePath] && activePath !== MANIFEST_PATH) setActivePath(MAIN);
     toast.success(t("restored", { number: v.number, newNumber: res.data.number }));
   }
 
@@ -499,7 +530,7 @@ export function StudioApp(props: {
       setMeta((m) => ({ ...m, isActive: true, publishedVersionId: res.data.versionId, currentVersionId: base.versionId }));
       setGuestSettings(res.data.settings);
       setPublishOpen(false);
-      toast.success(t("published"));
+      toast.success(isPrint ? t("printSelected") : t("published"));
     } catch {
       crashed();
     } finally {
@@ -541,16 +572,28 @@ export function StudioApp(props: {
     { key: "ai", icon: Bot, label: t("panelAi") },
     { key: "versions", icon: History, label: t("panelVersions") },
   ];
-  const hub = `/dashboard/${restaurantId}/design`;
+  const hub = isPrint ? `/dashboard/${restaurantId}/tables` : `/dashboard/${restaurantId}/design`;
   const statusMeta = { ...meta, currentVersionId: dirty ? "__dirty__" : meta.currentVersionId };
   const clearJump = useCallback(() => setJump(null), []);
+  const previewBanner = versionPreview ? (
+      <div className="flex items-center gap-2 border-b border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-amber-900">
+        <Eye size={13} aria-hidden /> {t("previewingVersion", { number: versionPreview.number })}
+        <button type="button" className="ml-auto font-medium underline" onClick={() => setVersionPreview(null)}>
+          {t("backToWorking")}
+        </button>
+      </div>
+    ) : proposal ? (
+      <div className="flex items-center gap-2 border-b border-violet-200 bg-violet-50 px-3 py-1.5 text-xs text-violet-900">
+        <Bot size={13} aria-hidden /> {t("previewingProposal")}
+      </div>
+    ) : null;
 
   return (
     <div className="fixed inset-x-0 top-14 bottom-0 z-20 flex flex-col bg-white lg:left-[260px]">
       {/* top bar */}
       <div className="flex flex-wrap items-center gap-2 border-b border-stone-200 px-3 py-2">
         {/* unsaved-changes confirm: document-level click guard above */}
-        <Link href={hub} className="focus-ring rounded-md p-1.5 text-stone-500 hover:bg-stone-100" aria-label={t("back")} title={t("back")}>
+        <Link href={hub} className="focus-ring rounded-md p-1.5 text-stone-500 hover:bg-stone-100" aria-label={isPrint ? t("backPrint") : t("back")} title={isPrint ? t("backPrint") : t("back")}>
           <ArrowLeft size={18} />
         </Link>
         <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -579,7 +622,13 @@ export function StudioApp(props: {
             </button>
           )}
           <span className="hidden flex-wrap gap-1 sm:flex">
-            <StatusBadges theme={statusMeta} />
+            {isPrint && (
+              <Badge tone="blue">
+                <Printer size={11} aria-hidden className="mr-1 inline" />
+                {t("kindPrint")}
+              </Badge>
+            )}
+            <StatusBadges theme={statusMeta} kind={kind} />
             {dirty && <Badge tone="yellow">{t("unsaved")}</Badge>}
           </span>
         </div>
@@ -591,7 +640,8 @@ export function StudioApp(props: {
             {!saving && <Save size={15} aria-hidden />} <span className="hidden sm:inline">{t("save")}</span>
           </Button>
           <Button size="sm" onClick={() => setPublishOpen(true)} disabled={errorCount > 0 || publishing || !!publishBlocked} title={publishBlocked ?? undefined}>
-            <Rocket size={15} aria-hidden /> <span className="hidden sm:inline">{meta.isActive ? t("publishUpdate") : t("publish")}</span>
+            {isPrint ? <Printer size={15} aria-hidden /> : <Rocket size={15} aria-hidden />}{" "}
+            <span className="hidden sm:inline">{isPrint ? (meta.isActive ? t("usePrintUpdate") : t("usePrint")) : meta.isActive ? t("publishUpdate") : t("publish")}</span>
           </Button>
         </div>
       </div>
@@ -646,6 +696,8 @@ export function StudioApp(props: {
                   onAdd={addFile}
                   onRename={renameFile}
                   onDelete={deleteFile}
+                  mainTemplate={MAIN}
+                  fileKinds={newFileKindsFor(kind)}
                 />
               )}
               {panel === "customize" && (
@@ -667,6 +719,11 @@ export function StudioApp(props: {
                     toast(t("defaultsApplied"));
                   }}
                   onEditFields={() => openAt(MANIFEST_PATH)}
+                  kind={kind}
+                  onPrintSpec={(spec) => {
+                    if (!parsed.ok) return toast.error(t("manifestInvalid"));
+                    setManifestText(pretty({ ...parsed.manifest, print: spec }));
+                  }}
                 />
               )}
               {panel === "ai" && (
@@ -677,6 +734,7 @@ export function StudioApp(props: {
                   disabled={!props.canUseAi || !!proposal}
                   disabledHint={!props.canUseAi ? t("aiNoPermission") : proposal ? t("aiReviewPending") : dirty ? t("aiWillSave") : undefined}
                   onSend={sendAi}
+                  kind={kind}
                 />
               )}
               {panel === "versions" && (
@@ -750,33 +808,33 @@ export function StudioApp(props: {
         {/* preview */}
         <section className={cn("min-h-0 w-full flex-col border-l border-stone-200 lg:flex lg:w-[42%] lg:max-w-[720px] lg:min-w-[340px]", mobileView === "preview" ? "flex" : "hidden")}>
           <PanelBoundary resetKey={previewPkg}>
-            <PreviewPane
-              pkg={data ? previewPkg : null}
-              view={data?.view ?? null}
-              guestMessages={data?.guestMessages ?? {}}
-              media={media}
-              settings={previewSettings}
-              locale={locale}
-              locales={props.locales}
-              onLocale={setLocale}
-              source={source}
-              onSource={setSource}
-              onRenderErrors={setRenderErrors}
-              banner={
-                versionPreview ? (
-                  <div className="flex items-center gap-2 border-b border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-amber-900">
-                    <Eye size={13} aria-hidden /> {t("previewingVersion", { number: versionPreview.number })}
-                    <button type="button" className="ml-auto font-medium underline" onClick={() => setVersionPreview(null)}>
-                      {t("backToWorking")}
-                    </button>
-                  </div>
-                ) : proposal ? (
-                  <div className="flex items-center gap-2 border-b border-violet-200 bg-violet-50 px-3 py-1.5 text-xs text-violet-900">
-                    <Bot size={13} aria-hidden /> {t("previewingProposal")}
-                  </div>
-                ) : null
-              }
-            />
+            {isPrint ? (
+              <PrintPreviewPane
+                pkg={printData ? previewPkg : null}
+                data={printData}
+                media={media}
+                settings={previewSettings}
+                source={source}
+                onSource={setSource}
+                onRenderErrors={setRenderErrors}
+                banner={previewBanner}
+              />
+            ) : (
+              <PreviewPane
+                pkg={data ? previewPkg : null}
+                view={data?.view ?? null}
+                guestMessages={data?.guestMessages ?? {}}
+                media={media}
+                settings={previewSettings}
+                locale={locale}
+                locales={props.locales}
+                onLocale={setLocale}
+                source={source}
+                onSource={setSource}
+                onRenderErrors={setRenderErrors}
+                banner={previewBanner}
+              />
+            )}
           </PanelBoundary>
         </section>
       </div>
@@ -801,23 +859,23 @@ export function StudioApp(props: {
         open={publishOpen}
         onClose={() => setPublishOpen(false)}
         size="sm"
-        title={t("publishTitle")}
-        description={t("publishDescription")}
+        title={isPrint ? t("usePrintTitle") : t("publishTitle")}
+        description={isPrint ? t("usePrintDescription") : t("publishDescription")}
         footer={
           <>
             <Button variant="secondary" onClick={() => setPublishOpen(false)}>
               {t("cancel")}
             </Button>
             <Button onClick={publish} loading={publishing} disabled={!!publishBlocked}>
-              <Rocket size={15} aria-hidden /> {t("publishConfirm")}
+              {isPrint ? <Printer size={15} aria-hidden /> : <Rocket size={15} aria-hidden />} {isPrint ? t("usePrintConfirm") : t("publishConfirm")}
             </Button>
           </>
         }
       >
         <ul className="space-y-1.5 text-sm text-stone-600">
           {dirty && <li>• {t("publishWillSave")}</li>}
-          <li>• {t("publishSettings")}</li>
-          {themeStatus(meta).includes("active") ? null : <li>• {t("publishActivates")}</li>}
+          <li>• {isPrint ? t("usePrintSettings") : t("publishSettings")}</li>
+          {themeStatus(meta).includes("active") ? null : <li>• {isPrint ? t("usePrintReplaces") : t("publishActivates")}</li>}
         </ul>
       </Dialog>
     </div>

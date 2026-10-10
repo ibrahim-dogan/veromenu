@@ -62,7 +62,16 @@ export const manifestSchema = z.object({
     .record(z.string().regex(/^[a-z0-9_-]{1,40}$/, "asset names: a-z 0-9 _ -"), z.string().regex(UUID, "asset value must be a media id"))
     .refine((a) => Object.keys(a).length <= 20, "max 20 named assets")
     .optional(),
-});
+  /** additive: package kind (default "menu") + print spec (required for kind "print"). */
+  kind: z.enum(["menu", "print"]).optional(),
+  print: z
+    .object({
+      format: z.enum(["a6", "a6-landscape", "a5", "a5-landscape", "a4", "a4-landscape", "tent-a6"]),
+      sheet: z.enum(["card", "a4"]),
+      safeMm: z.number().min(0).max(20).optional(),
+    })
+    .optional(),
+}).refine((m) => m.kind !== "print" || !!m.print, { message: 'kind "print" requires manifest.print { format, sheet }', path: ["print"] });
 
 // ---------------------------------------------------------------- values
 

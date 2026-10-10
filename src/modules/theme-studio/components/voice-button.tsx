@@ -7,7 +7,20 @@ import { useVoiceRecorder } from "@/modules/assistant/components/use-voice-recor
 import { transcribeThemeVoiceAction } from "../actions";
 
 /** Record → 16 kHz WAV → transcript (appended by the caller). */
-export function VoiceButton({ restaurantId, onText, disabled, className }: { restaurantId: string; onText: (text: string) => void; disabled?: boolean; className?: string }) {
+export function VoiceButton({
+  restaurantId,
+  onText,
+  disabled,
+  className,
+  kind,
+}: {
+  restaurantId: string;
+  onText: (text: string) => void;
+  disabled?: boolean;
+  className?: string;
+  /** "print": also allowed with tables.manage (QR print designs) */
+  kind?: "menu" | "print";
+}) {
   const t = useTranslations("themeStudio.voice");
   const te = useTranslations("errors");
   const locale = useLocale();
@@ -17,7 +30,7 @@ export function VoiceButton({ restaurantId, onText, disabled, className }: { res
       rec.setState("processing");
       let res: Awaited<ReturnType<typeof transcribeThemeVoiceAction>>;
       try {
-        res = await transcribeThemeVoiceAction({ restaurantId, wavBase64, uiLocale: locale });
+        res = await transcribeThemeVoiceAction({ restaurantId, wavBase64, uiLocale: locale, kind });
       } catch {
         return toast.error(te("unexpected"));
       } finally {

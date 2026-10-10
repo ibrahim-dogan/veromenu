@@ -45,7 +45,11 @@
     "active": "Active",
     "draft": "Draft",
     "unpublished": "Unpublished changes",
-    "published": "Published"
+    "published": "Published",
+    "print_active": "In use for printing",
+    "print_draft": "Draft",
+    "print_unpublished": "Changes not applied",
+    "print_published": "Applied"
   },
   "upgrade": {
     "badge": "From the Starter plan",
@@ -105,7 +109,8 @@
     "created": "Theme created",
     "cancel": "Cancel",
     "imported": "Theme imported",
-    "importTooLarge": "The file is too large (max. 6 MB)."
+    "importTooLarge": "The file is too large (max. 6 MB).",
+    "importIsPrint": "This file is a print design (QR table card). Import it under “Tables & QR codes”."
   },
   "progress": {
     "title_files": "The AI is designing your theme from your files",
@@ -117,7 +122,16 @@
     "step_layout": "Designing the layout",
     "step_code": "Writing templates and CSS",
     "step_check": "Checking the theme",
-    "elapsed": "{seconds} s"
+    "elapsed": "{seconds} s",
+    "title_printFiles": "The AI is designing your print design from your material",
+    "title_printPrompt": "The AI is designing your print design",
+    "hintBackground": "This usually takes 30–90 seconds. You can close this window – we'll let you know when the design is ready.",
+    "background": "Keep running in the background",
+    "printStep_analyze": "Understanding your input",
+    "printStep_palette": "Choosing colours and fonts",
+    "printStep_layout": "Arranging card, QR code and table number",
+    "printStep_code": "Writing the print template",
+    "printStep_check": "Testing with sample cards"
   },
   "voice": {
     "label": "Speak",
@@ -178,7 +192,17 @@
     "fontCategory_serif": "Serif",
     "fontCategory_sans": "Sans serif",
     "fontCategory_display": "Display",
-    "fontCategory_script": "Handwriting"
+    "fontCategory_script": "Handwriting",
+    "printHintActive": "This is your current print design. “Save for printing” applies the values to all QR cards.",
+    "printHintInactive": "Decide which elements appear on the card. The values only apply to the preview until you click “Use as print design”.",
+    "saveForPrint": "Save for printing",
+    "printFormat": "Format & printing",
+    "format": "Format",
+    "sheet": "Print sheet",
+    "sheet_a4": "On A4 sheets with crop marks",
+    "sheet_card": "One card per page",
+    "sheetOnlyCard": "This format is always printed one per page.",
+    "formatHint": "If you change the format, also adapt the sizes in the CSS – or ask the AI to do it."
   },
   "preview": {
     "title": "Live preview",
@@ -208,7 +232,13 @@
     "suggestion_allergens": "Show allergens as small codes next to the price",
     "placeholder": "What should the AI change? (⌘ + Enter to send)",
     "send": "Send",
-    "thinking": "The AI is working on your theme …"
+    "thinking": "The AI is working on your theme …",
+    "printIntro": "Tell me what to change on your table card – by text or voice. You review the changes in the preview first.",
+    "suggestion_print_bigger_qr": "Bigger QR code and a more prominent table number",
+    "suggestion_print_wifi": "Show the Wi-Fi details at the bottom of the card",
+    "suggestion_print_poster": "Turn it into an A4 poster for the shop window",
+    "suggestion_print_minimal": "Simpler, with more white space",
+    "suggestion_print_tent_back": "Back side with languages and ordering hint"
   },
   "diff": {
     "title": "Review the AI's proposal",
@@ -298,7 +328,17 @@
     "publishActivates": "The currently active design will be replaced – you can switch back at any time.",
     "publishConfirm": "Publish now",
     "published": "Published – guests now see this design",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "backPrint": "Back to tables & QR codes",
+    "kindPrint": "Print design",
+    "usePrint": "Use as print design",
+    "usePrintUpdate": "Update print design",
+    "usePrintTitle": "Use as print design?",
+    "usePrintDescription": "Your QR table cards will be printed with this design from now on.",
+    "usePrintSettings": "The current settings (visible elements, texts, colours) are used for printing.",
+    "usePrintReplaces": "Your previous print design is replaced – the guest menu stays unchanged.",
+    "usePrintConfirm": "Use now",
+    "printSelected": "Saved – your QR cards now use this design"
   },
   "admin": {
     "title": "Theme library",
@@ -334,6 +374,38 @@
     "descriptionLabel": "Description",
     "save": "Save",
     "saved": "Saved",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "kindFilter": "Kind of designs",
+    "kindAll": "All",
+    "kindMenu": "Menu",
+    "kindPrint": "Print"
+  },
+  "formats": {
+    "a6": "A6 table card",
+    "a6-landscape": "A6 landscape",
+    "tent-a6": "Table tent (A6)",
+    "a5": "A5",
+    "a5-landscape": "A5 landscape",
+    "a4": "A4 poster",
+    "a4-landscape": "A4 landscape"
+  },
+  "printPreview": {
+    "title": "Print preview",
+    "formatTitle": "Format of the print design",
+    "sheet": "Print sheet",
+    "sheet_a4": "A4 sheet",
+    "sheet_card": "Single cards",
+    "sheetHint_a4": "Several cards per A4 sheet with crop marks (office printer)",
+    "sheetHint_card": "One card per page (print shop)",
+    "data": "Preview data",
+    "dataReal": "My tables",
+    "dataSample": "Sample cards",
+    "rendering": "Rendering preview",
+    "zoomOut": "Zoom out",
+    "zoomIn": "Zoom in",
+    "fit": "Fit to width",
+    "reload": "Reload preview",
+    "summary": "{cards, plural, one {# card} other {# cards}} · {pages, plural, one {# page} other {# pages}} · {perPage} per page",
+    "truncated": "Preview shows {shown} of {total} cards"
   }
 }

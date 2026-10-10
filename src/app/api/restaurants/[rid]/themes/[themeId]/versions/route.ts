@@ -8,5 +8,5 @@ export async function GET(_req: Request, { params }: RouteContext<"/api/restaura
   return studioRoute(rid, async () => {
     const list = await listThemeVersions(rid, themeId);
     return list.map((v) => ({ ...v, createdAt: v.createdAt.toISOString() }));
-  });
+  }, { themeId });
 }

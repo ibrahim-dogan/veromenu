@@ -12,6 +12,25 @@ export { FONT_LIBRARY, fontStack, fontFaceCss, isFontId, getFont, type FontInfo 
 export { validatePackage } from "./validate";
 export { renderThemeDocument, renderErrorDocument, type RenderThemeOptions, type RenderThemeResult } from "./render";
 export { sampleThemeView } from "./sample";
+export {
+  renderPrintDocument,
+  samplePrintViews,
+  printLayout,
+  printPageCount,
+  printDocumentCsp,
+  printStrings,
+  printTableNumber,
+  qrSvgMarkup,
+  safeQrColors,
+  sanitizePrintMarkup,
+  PRINT_TEMPLATE,
+  PRINT_FORMATS,
+  PRINT_FORMAT_SIZES,
+  PRINT_LIMITS,
+  PRINT_STRINGS,
+  QR_COLOR_SETTINGS,
+  type PrintLayout,
+} from "./print";
 export { buildThemeView } from "./view";
 export { themeFrameCsp, themeFrameHeaders } from "./csp";
 export { bridgeMessageSchema } from "./bridge-schema";

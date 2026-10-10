@@ -1,14 +1,15 @@
 "use client";
 import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Info, RotateCcw, Save, Settings2, Stamp } from "lucide-react";
+import { Info, Printer, RotateCcw, Save, Settings2, Stamp } from "lucide-react";
 import { Button, Field, Input, Select } from "@/components/ui";
 import { Switch } from "@/components/ui/switch";
 import { MediaPicker } from "@/modules/media/components/media-picker";
 import { FONT_LIBRARY, fontFaceCss, fontStack } from "@/modules/theme-engine/fonts";
 import { settingFields } from "@/modules/theme-engine/settings";
-import type { ThemeManifest, ThemeSettingField } from "@/modules/theme-engine/types";
-import { localizedText } from "../../lib/package";
+import { printLayout } from "@/modules/theme-engine";
+import type { PrintSpec, ThemeKind, ThemeManifest, ThemeSettingField } from "@/modules/theme-engine/types";
+import { localizedText, PRINT_FORMAT_OPTIONS } from "../../lib/package";
 
 const CATEGORY_ORDER = ["serif", "sans", "display", "script"] as const;
 
@@ -26,6 +27,8 @@ export function Customizer({
   onSaveAsDefaults,
   onEditFields,
   blocked,
+  kind,
+  onPrintSpec,
 }: {
   restaurantId: string;
   manifest: ThemeManifest;
@@ -40,8 +43,13 @@ export function Customizer({
   onReset: () => void;
   onSaveAsDefaults: () => void;
   onEditFields: () => void;
+  /** "print": hints/labels for print designs + format controls (manifest.print); default: from manifest.kind */
+  kind?: ThemeKind;
+  onPrintSpec?: (spec: PrintSpec) => void;
 }) {
   const t = useTranslations("themeStudio.customizer");
+  // print designs are recognised from the manifest when the caller doesn't say (e.g. the tables page)
+  const isPrint = (kind ?? (manifest.kind === "print" ? "print" : "menu")) === "print";
   const locale = useLocale();
   const fields = useMemo(() => settingFields(manifest), [manifest]);
   const fontIds = useMemo(() => fields.filter((f) => f.type === "font").map((f) => String(values[f.id] ?? f.default)), [fields, values]);
@@ -59,8 +67,9 @@ export function Customizer({
       <div className="flex-1 space-y-5 overflow-y-auto px-3 pb-4">
         <p className="flex gap-2 rounded-lg bg-stone-50 p-2.5 text-xs text-stone-600">
           <Info size={14} className="mt-0.5 shrink-0" aria-hidden />
-          {isActive ? t("hintActive") : t("hintInactive")}
+          {isPrint ? (isActive ? t("printHintActive") : t("printHintInactive")) : isActive ? t("hintActive") : t("hintInactive")}
         </p>
+        {isPrint && manifest.print && onPrintSpec && <PrintSpecControls spec={manifest.print} onChange={onPrintSpec} />}
         {fields.length === 0 ? (
           <p className="text-sm text-stone-500">{t("empty")}</p>
         ) : (
@@ -70,7 +79,7 @@ export function Customizer({
       <div className="space-y-2 border-t border-stone-200 bg-white p-3">
         {isActive && (
           <Button className="w-full" onClick={onSaveForGuests} loading={saving} disabled={!dirty || blocked}>
-            <Save size={14} aria-hidden /> {t("saveForGuests")}
+            <Save size={14} aria-hidden /> {isPrint ? t("saveForPrint") : t("saveForGuests")}
           </Button>
         )}
         <div className="flex gap-2">
@@ -161,4 +170,42 @@ function SettingControl({ restaurantId, field, value, onChange, locale }: { rest
     case "image":
       return <MediaPicker restaurantId={restaurantId} label={label} value={typeof value === "string" ? value : null} onChange={(v) => onChange(v)} />;
   }
+}
+
+/** Format + imposition of a print design (writes manifest.print in the working copy). */
+function PrintSpecControls({ spec, onChange }: { spec: PrintSpec; onChange: (spec: PrintSpec) => void }) {
+  const t = useTranslations("themeStudio.customizer");
+  const tf = useTranslations("themeStudio.formats");
+  const canImpose = printLayout({ ...spec, sheet: "a4" }).slots.length > 1;
+  return (
+    <div className="space-y-3 rounded-lg border border-stone-200 p-3">
+      <p className="flex items-center gap-1.5 text-xs font-semibold text-stone-700">
+        <Printer size={14} aria-hidden /> {t("printFormat")}
+      </p>
+      <Field label={t("format")} htmlFor="print-format">
+        <Select
+          id="print-format"
+          value={spec.format}
+          onChange={(e) => {
+            const format = e.target.value as PrintSpec["format"];
+            const imposable = printLayout({ format, sheet: "a4" }).slots.length > 1;
+            onChange({ ...spec, format, sheet: imposable ? spec.sheet : "card" });
+          }}
+        >
+          {PRINT_FORMAT_OPTIONS.map((f) => (
+            <option key={f} value={f}>
+              {tf(f)}
+            </option>
+          ))}
+        </Select>
+      </Field>
+      <Field label={t("sheet")} htmlFor="print-sheet" hint={canImpose ? undefined : t("sheetOnlyCard")}>
+        <Select id="print-sheet" value={canImpose ? spec.sheet : "card"} disabled={!canImpose} onChange={(e) => onChange({ ...spec, sheet: e.target.value as PrintSpec["sheet"] })}>
+          <option value="a4">{t("sheet_a4")}</option>
+          <option value="card">{t("sheet_card")}</option>
+        </Select>
+      </Field>
+      <p className="text-[11px] text-stone-500">{t("formatHint")}</p>
+    </div>
+  );
 }

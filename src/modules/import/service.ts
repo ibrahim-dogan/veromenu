@@ -1,4 +1,5 @@
 import "server-only";
+import { languageName } from "@/core/i18n/locales";
 import sharp from "sharp";
 import { nanoid } from "nanoid";
 import { and, desc, eq, inArray } from "drizzle-orm";
@@ -163,7 +164,7 @@ async function filesToParts(restaurantId: string, mediaIds: string[]): Promise<C
 }
 
 /** Runs the extraction (30–90 s). Status ends as `ready` or `failed`; never throws for AI failures. */
-export async function runExtraction(restaurantId: string, userId: string, importId: string): Promise<ImportDto> {
+export async function runExtraction(restaurantId: string, userId: string, importId: string, replyLocale?: string): Promise<ImportDto> {
   const row = await getOwnImport(restaurantId, importId);
   if (row.status === "applied" || row.status === "discarded") throw new AppError("validation", "status");
   await db.update(menuImports).set({ status: "processing", error: null, createdAt: new Date() }).where(eq(menuImports.id, importId));
@@ -173,7 +174,7 @@ export async function runExtraction(restaurantId: string, userId: string, import
       "menu_extract",
       {
         messages: [
-          { role: "system", content: EXTRACT_SYSTEM_PROMPT },
+          { role: "system", content: `${EXTRACT_SYSTEM_PROMPT}\nWrite "notes" in ${languageName(replyLocale)} (the owner's dashboard language).` },
           {
             role: "user",
             content: [{ type: "text", text: `Extract the complete menu from these ${parts.length} page(s).` }, ...parts],

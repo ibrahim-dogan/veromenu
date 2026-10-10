@@ -1,30 +1,23 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "@/core/i18n/navigation";
 import { Button, Field, Input } from "@/components/ui";
-import { toast } from "@/components/ui/toast";
-import { useAction } from "@/components/use-action";
-import { resetPassword } from "@/modules/auth/actions";
+import { FormError, useFieldError } from "@/components/auth/form-error";
+import { resetFormAction, type AuthFormState } from "@/modules/auth/actions";
 
 export default function ResetPasswordPage() {
   const t = useTranslations("auth");
   const token = useSearchParams().get("token") ?? "";
-  const router = useRouter();
-  const [password, setPassword] = useState("");
-  const { run, pending } = useAction(resetPassword, {
-    refresh: false,
-    onSuccess: () => {
-      toast.success(t("passwordChanged"));
-      router.replace("/login");
-    },
-  });
+  const [state, formAction, pending] = useActionState(resetFormAction, {} as AuthFormState);
+  const fe = useFieldError(state);
   return (
-    <form className="space-y-5" onSubmit={(e) => (e.preventDefault(), run({ token, password }))}>
+    <form action={formAction} className="space-y-5">
       <h1 className="text-2xl font-semibold">{t("resetTitle")}</h1>
-      <Field label={t("newPassword")} htmlFor="pw" hint={t("passwordHint")}>
-        <Input id="pw" type="password" minLength={8} required autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <FormError state={state} />
+      <input type="hidden" name="token" value={token} />
+      <Field label={t("newPassword")} htmlFor="pw" hint={t("passwordHint")} error={fe("password")}>
+        <Input id="pw" name="password" type="password" minLength={8} required autoComplete="new-password" />
       </Field>
       <Button type="submit" className="w-full" size="lg" loading={pending}>
         {t("setPassword")}

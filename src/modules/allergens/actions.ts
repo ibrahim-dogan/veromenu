@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { getLocale } from "next-intl/server";
 import { assertRestaurantPermission, ForbiddenError, getRestaurantContext } from "@/core/auth/guards";
 import { action } from "@/core/http/action";
 import { confirmItem, detectAllergens, getAllergenState, ITEMS_PER_CALL } from "./service";
@@ -22,7 +23,7 @@ export const loadAllergenState = action(z.object({ restaurantId: rid, itemId: id
 
 export const detectItemAllergens = action(z.object({ restaurantId: rid, itemId: id }), async (input) => {
   const ctx = await assertCanDetect(input.restaurantId);
-  await detectAllergens(input.restaurantId, [input.itemId], ctx.user.id);
+  await detectAllergens(input.restaurantId, [input.itemId], ctx.user.id, await getLocale());
   const state = await getAllergenState(input.restaurantId, input.itemId);
   return { ...state, canConfirm: ctx.can("allergens.review") };
 });
@@ -32,7 +33,7 @@ export const detectAllergensChunk = action(
   z.object({ restaurantId: rid, itemIds: z.array(id).min(1).max(ITEMS_PER_CALL) }),
   async (input) => {
     const ctx = await assertRestaurantPermission(input.restaurantId, "allergens.review");
-    const res = await detectAllergens(input.restaurantId, input.itemIds, ctx.user.id);
+    const res = await detectAllergens(input.restaurantId, input.itemIds, ctx.user.id, await getLocale());
     const values = Object.values(res);
     return { done: values.length, needsReview: values.filter((s) => s.status === "needs_review").length };
   },

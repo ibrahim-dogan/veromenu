@@ -3,6 +3,7 @@ import { z } from "zod";
 import { and, eq, gt, isNull } from "drizzle-orm";
 import { headers } from "next/headers";
 import { getLocale } from "next-intl/server";
+import { redirect as nextIntlRedirect } from "@/core/i18n/navigation";
 import { db } from "@/core/db";
 import { invitations, memberships, restaurants, userTokens, users } from "@/core/db/schema";
 import { action, AppError } from "@/core/http/action";
@@ -189,3 +190,48 @@ export const updateMyLocale = action(z.object({ locale: z.enum(["de", "en", "tr"
   if (user) await db.update(users).set({ locale }).where(eq(users.id, user.id));
   return null;
 });
+
+// ---------------------------------------------------------------------------
+// Progressive-enhancement form actions (<form action={…}> + useActionState).
+// They work before hydration / without JS and never put credentials into the URL.
+
+export type AuthFormState = { error?: string; fieldErrors?: Record<string, string[]>; done?: boolean; values?: Record<string, string> };
+
+const str = (fd: FormData, k: string) => String(fd.get(k) ?? "");
+
+async function go(href: string): Promise<never> {
+  const locale = await getLocale();
+  return nextIntlRedirect({ href, locale });
+}
+
+export async function loginFormAction(_prev: AuthFormState, fd: FormData): Promise<AuthFormState> {
+  const values = { email: str(fd, "email") };
+  const res = await login({ email: values.email, password: str(fd, "password") });
+  if (!res.ok) return { error: res.error, fieldErrors: res.fieldErrors, values };
+  const next = str(fd, "next");
+  return go(next.startsWith("/") && !next.startsWith("//") ? next : res.data.isPlatformAdmin ? "/admin" : "/dashboard");
+}
+
+export async function registerFormAction(_prev: AuthFormState, fd: FormData): Promise<AuthFormState> {
+  const values = { name: str(fd, "name"), email: str(fd, "email"), restaurantName: str(fd, "restaurantName") };
+  const res = await register({ ...values, password: str(fd, "password"), acceptTerms: (fd.get("acceptTerms") === "on") as true });
+  if (!res.ok) return { error: res.error, fieldErrors: res.fieldErrors, values };
+  return go(`/dashboard/${res.data.restaurantId}`);
+}
+
+export async function forgotFormAction(_prev: AuthFormState, fd: FormData): Promise<AuthFormState> {
+  const res = await requestPasswordReset({ email: str(fd, "email") });
+  return res.ok ? { done: true } : { error: res.error, fieldErrors: res.fieldErrors, values: { email: str(fd, "email") } };
+}
+
+export async function resetFormAction(_prev: AuthFormState, fd: FormData): Promise<AuthFormState> {
+  const res = await resetPassword({ token: str(fd, "token"), password: str(fd, "password") });
+  if (!res.ok) return { error: res.error, fieldErrors: res.fieldErrors };
+  return go("/login?reset=1");
+}
+
+export async function inviteFormAction(_prev: AuthFormState, fd: FormData): Promise<AuthFormState> {
+  const res = await acceptInvitation({ token: str(fd, "token"), name: str(fd, "name") || undefined, password: str(fd, "password") || undefined });
+  if (!res.ok) return { error: res.error, fieldErrors: res.fieldErrors, values: { name: str(fd, "name") } };
+  return go(`/dashboard/${res.data.restaurantId}`);
+}

@@ -1,4 +1,5 @@
 import "server-only";
+import { languageName } from "@/core/i18n/locales";
 import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { db, type DbOrTx } from "@/core/db";
 import { agentChangesets, categories, items, itemVariants, menus, restaurants, translations } from "@/core/db/schema";
@@ -574,6 +575,8 @@ export async function planChangeset(opts: {
   userId: string;
   input: string;
   inputKind: "text" | "voice";
+  /** Dashboard UI locale of the owner – summary/clarifications are written in it. */
+  replyLocale?: string;
 }): Promise<PlanResult> {
   const [r] = await db.select({ plan: restaurants.plan, defaultLocale: restaurants.defaultLocale }).from(restaurants).where(eq(restaurants.id, opts.restaurantId)).limit(1);
   if (!r) throw new AppError("notFound");
@@ -583,8 +586,11 @@ export async function planChangeset(opts: {
     "agent",
     {
       messages: [
-        { role: "system", content: AGENT_SYSTEM_PROMPT(r.defaultLocale, DIET_TAGS) },
-        { role: "user", content: `MENU:\n${json}\n\nINSTRUCTION:\n${opts.input}` },
+        { role: "system", content: AGENT_SYSTEM_PROMPT(r.defaultLocale, DIET_TAGS, languageName(opts.replyLocale)) },
+        {
+          role: "user",
+          content: `MENU:\n${json}\n\nINSTRUCTION:\n${opts.input}\n\nREPLY LANGUAGE: write "summary" and every "clarifications" entry in ${languageName(opts.replyLocale)} (dish names stay as on the menu).`,
+        },
       ],
       maxTokens: 6000,
     },

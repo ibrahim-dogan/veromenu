@@ -8,8 +8,11 @@ export async function generateMetadata() {
   return { title: t("login") };
 }
 
-export default async function LoginPage({ params }: PageProps<"/[locale]/login">) {
+export default async function LoginPage({ params, searchParams }: PageProps<"/[locale]/login">) {
   const { locale } = await params;
+  const sp = await searchParams;
   if (await getCurrentUser()) redirect({ href: "/dashboard", locale });
-  return <LoginForm />;
+  const t = await getTranslations("auth");
+  const next = typeof sp.next === "string" ? sp.next : undefined;
+  return <LoginForm notice={sp.reset ? t("passwordChanged") : undefined} next={next} />;
 }

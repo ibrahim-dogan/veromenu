@@ -158,8 +158,9 @@ async function loadItems(restaurantId: string, itemIds: string[]): Promise<ItemW
   return rows.map((r) => ({ ...r.item, categoryName: r.categoryName }));
 }
 
-async function aiDetect(list: ItemWithCategory[], r: typeof restaurants.$inferSelect, ctx: AiContext) {
-  const lang = localeInfo(r.defaultLocale)?.name ?? "German";
+async function aiDetect(list: ItemWithCategory[], r: typeof restaurants.$inferSelect, ctx: AiContext, replyLocale?: string) {
+  // Reasons/questions are read by the person in the dashboard → their UI language (not the menu language).
+  const lang = localeInfo(replyLocale ?? r.defaultLocale)?.name ?? "German";
   const allergenList = ALLERGENS.map((a) => `${a.code} (${a.letter}: ${a.labels.de} / ${a.labels.en})`).join("; ");
   const additiveList = ADDITIVES.map((a) => `${a.code} (${a.letter}: ${a.labels.de})`).join("; ");
   const system = `You are a food-safety assistant helping restaurants in Germany label the 14 allergens of Regulation (EU) 1169/2011 (LMIV, Annex II) and declarable additives (Zusatzstoffe, ZZulV). Your output is only a SUGGESTION that a human will verify – be careful and conservative.
@@ -253,12 +254,12 @@ async function storeSuggestion(restaurantId: string, item: ItemWithCategory, s: 
 }
 
 /** Runs detection for up to ITEMS_PER_CALL items in one AI call. */
-export async function detectAllergens(restaurantId: string, itemIds: string[], userId: string | null) {
+export async function detectAllergens(restaurantId: string, itemIds: string[], userId: string | null, replyLocale?: string) {
   const [r] = await db.select().from(restaurants).where(eq(restaurants.id, restaurantId)).limit(1);
   if (!r) throw new AppError("notFound");
   const list = await loadItems(restaurantId, itemIds.slice(0, ITEMS_PER_CALL));
   if (!list.length) throw new AppError("notFound");
-  const { results, model } = await aiDetect(list, r, { restaurantId, userId });
+  const { results, model } = await aiDetect(list, r, { restaurantId, userId }, replyLocale);
   const out: Record<string, AllergenSuggestion> = {};
   for (const [i, item] of list.entries()) {
     const s = normaliseSuggestion(results[i], item, r.defaultLocale, model);

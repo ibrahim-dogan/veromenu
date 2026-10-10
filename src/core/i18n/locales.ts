@@ -33,5 +33,7 @@ export const CONTENT_LOCALE_CODES = CONTENT_LOCALES.map((l) => l.code);
 export const ALL_LOCALES = Array.from(new Set<string>([...UI_LOCALES, ...CONTENT_LOCALE_CODES]));
 
 export const localeInfo = (code: string) => CONTENT_LOCALES.find((l) => l.code === code);
+/** English language name for prompts, e.g. "tr" → "Turkish". */
+export const languageName = (code: string | null | undefined) => localeInfo(code ?? "")?.name ?? "German";
 export const isRtl = (code: string) => !!localeInfo(code)?.rtl;
 export const isUiLocale = (l: string | undefined | null): l is UiLocale => !!l && (UI_LOCALES as readonly string[]).includes(l);

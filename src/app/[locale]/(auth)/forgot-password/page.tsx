@@ -1,29 +1,28 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useActionState } from "react";
 import { Link } from "@/core/i18n/navigation";
 import { Button, Field, Input } from "@/components/ui";
-import { useAction } from "@/components/use-action";
-import { requestPasswordReset } from "@/modules/auth/actions";
+import { FormError } from "@/components/auth/form-error";
+import { forgotFormAction, type AuthFormState } from "@/modules/auth/actions";
 
 export default function ForgotPasswordPage() {
   const t = useTranslations("auth");
   const tc = useTranslations("common");
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-  const { run, pending } = useAction(requestPasswordReset, { refresh: false, onSuccess: () => setSent(true) });
+  const [state, formAction, pending] = useActionState(forgotFormAction, {} as AuthFormState);
   return (
-    <form className="space-y-5" onSubmit={(e) => (e.preventDefault(), run({ email }))}>
+    <form action={formAction} className="space-y-5">
       <div>
         <h1 className="text-2xl font-semibold">{t("forgotTitle")}</h1>
         <p className="mt-1 text-sm text-stone-500">{t("forgotSubtitle")}</p>
       </div>
-      {sent ? (
+      {state.done ? (
         <p className="rounded-lg bg-brand-50 p-4 text-sm text-brand-800">{t("linkSent")}</p>
       ) : (
         <>
+          <FormError state={state} />
           <Field label={tc("email")} htmlFor="email">
-            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input id="email" name="email" type="email" required autoComplete="email" defaultValue={state.values?.email} />
           </Field>
           <Button type="submit" className="w-full" size="lg" loading={pending}>
             {t("sendLink")}

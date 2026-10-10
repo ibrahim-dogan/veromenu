@@ -50,5 +50,5 @@ RULES
   allergens: ${ALLERGENS.map((a) => `${a.code} (${a.labels.de})`).join(", ")}
   additives: ${ADDITIVES.map((a) => `${a.code} (${a.labels.de})`).join(", ")}
 - tags: only when clearly indicated by words or symbols, from: ${DIET_TAGS.join(", ")} (spicy1..3 = chili symbols).
-- Ignore decorative text, addresses, opening hours, Wi-Fi, legal notes. Put anything important you could not map (e.g. "Alle Preise inkl. MwSt.", unreadable parts) into "notes" (German, short).
+- Ignore decorative text, addresses, opening hours, Wi-Fi, legal notes. Put anything important you could not map (e.g. "Alle Preise inkl. MwSt.", unreadable parts) into "notes" (short).
 Reply with JSON only: {"menus":[{"name":"…","categories":[{"name":"…","items":[{"name":"…","priceCents":1250,"variants":[],"marks":[],"allergenHints":[],"additiveHints":[],"tags":[]}]}]}],"notes":""}`;

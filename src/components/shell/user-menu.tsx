@@ -1,6 +1,6 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { LogOut, Shield, LayoutDashboard } from "lucide-react";
+import { LogOut, Shield, LayoutDashboard, UserRound } from "lucide-react";
 import { Link, useRouter } from "@/core/i18n/navigation";
 import { logout } from "@/modules/auth/actions";
 
@@ -22,6 +22,9 @@ export function UserMenu({ name, email, isPlatformAdmin }: { name: string; email
         <hr className="my-1 border-stone-100" />
         <Link href="/dashboard" className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-stone-100">
           <LayoutDashboard size={16} /> {t("nav.dashboard")}
+        </Link>
+        <Link href="/account" className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-stone-100">
+          <UserRound size={16} /> {t("common.profile")}
         </Link>
         {isPlatformAdmin && (
           <Link href="/admin" className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-stone-100">

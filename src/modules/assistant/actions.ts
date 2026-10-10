@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { getLocale } from "next-intl/server";
 import { aiTranscribe } from "@/core/ai";
 import { assertRestaurantPermission } from "@/core/auth/guards";
 import { action, AppError } from "@/core/http/action";
@@ -31,7 +32,7 @@ export const planChanges = action(
   z.object({ restaurantId: rid, input: z.string().trim().min(2).max(4000), inputKind: z.enum(["text", "voice"]).default("text") }),
   async ({ restaurantId, input, inputKind }) => {
     const ctx = await agentContext(restaurantId, "ai.use");
-    return planChangeset({ restaurantId, userId: ctx.user.id, input, inputKind });
+    return planChangeset({ restaurantId, userId: ctx.user.id, input, inputKind, replyLocale: await getLocale() });
   },
 );
 

@@ -1,34 +1,29 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { useRouter } from "@/core/i18n/navigation";
+import { useActionState } from "react";
 import { Button, Field, Input } from "@/components/ui";
-import { useAction } from "@/components/use-action";
-import { acceptInvitation } from "@/modules/auth/actions";
+import { FormError } from "@/components/auth/form-error";
+import { inviteFormAction, type AuthFormState } from "@/modules/auth/actions";
 
 export function InviteForm({ token, email, hasAccount, loggedIn }: { token: string; email: string; hasAccount: boolean; loggedIn: boolean }) {
   const t = useTranslations("auth");
   const tc = useTranslations("common");
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const { run, pending } = useAction(acceptInvitation, {
-    refresh: false,
-    onSuccess: (d) => router.replace(`/dashboard/${d.restaurantId}`),
-  });
+  const [state, formAction, pending] = useActionState(inviteFormAction, {} as AuthFormState);
   return (
-    <form className="space-y-4" onSubmit={(e) => (e.preventDefault(), run({ token, name, password }))}>
+    <form action={formAction} className="space-y-4">
+      <FormError state={state} />
+      <input type="hidden" name="token" value={token} />
       <Field label={tc("email")}>
-        <Input value={email} disabled />
+        <Input value={email} disabled readOnly />
       </Field>
       {!loggedIn && !hasAccount && (
         <Field label={t("yourName")} htmlFor="name">
-          <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} />
+          <Input id="name" name="name" required defaultValue={state.values?.name} autoComplete="name" />
         </Field>
       )}
       {!loggedIn && (
         <Field label={tc("password")} htmlFor="pw" hint={hasAccount ? undefined : t("passwordHint")}>
-          <Input id="pw" type="password" required minLength={hasAccount ? 1 : 8} value={password} onChange={(e) => setPassword(e.target.value)} />
+          <Input id="pw" name="password" type="password" required minLength={hasAccount ? 1 : 8} autoComplete={hasAccount ? "current-password" : "new-password"} />
         </Field>
       )}
       <Button type="submit" className="w-full" size="lg" loading={pending}>

@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { getLocale } from "next-intl/server";
 import sharp from "sharp";
 import { assertRestaurantPermission } from "@/core/auth/guards";
 import { action, AppError } from "@/core/http/action";
@@ -52,7 +53,7 @@ export const startImport = action(
 /** Runs the AI extraction – may take 30–90 s. */
 export const runImport = action(z.object({ restaurantId: rid, importId: z.uuid() }), async ({ restaurantId, importId }) => {
   const ctx = await importContext(restaurantId);
-  const dto = await runExtraction(restaurantId, ctx.user.id, importId);
+  const dto = await runExtraction(restaurantId, ctx.user.id, importId, await getLocale());
   return { status: dto.status, error: dto.error, itemCount: dto.itemCount };
 });
 

@@ -13,7 +13,8 @@
 | Allergens | AI suggestion (14 EU allergens + additives, questions for the chef) → **human confirmation**; guests only see confirmed data (LMIV) |
 | AI assistant | Text or voice instruction → change set preview (dry run) → apply → undo |
 | AI images | From a prompt or a reference photo; labelled "KI-generiertes Symbolbild" for guests (AI Act) |
-| Guest menu | `/m/{slug}`, 3 plugin themes (classic, modern, bistro), 16 languages (owner decides which), search/filters, cart, order + live status, Impressum |
+| Theme engine v2 | Code themes (Liquid + CSS + JS + settings) in a sandboxed iframe (opaque origin, strict CSP, postMessage bridge only) → LLM/user code can't affect the platform. Theme Studio: code editor, live preview, customizer, versions, publish, import/export (.vmtheme.json), admin library, 5 starters, self-hosted fonts (DSGVO). AI: theme from PDF/photo (design brief → code) or text/voice description, chat edits with diff review + auto-repair. Docs: `docs/THEMES.md` |
+| Guest menu | `/m/{slug}`, 3 built-in React themes + studio themes (classic, modern, bistro), 16 languages (owner decides which), search/filters, cart, order + live status, Impressum |
 | Tables & QR | Generic QR + one per table, PNG/SVG, printable A4 sheet / A6 table tent PDF |
 | Orders | Public order API, manual or automatic acceptance, realtime board (SSE via Postgres LISTEN/NOTIFY), history |
 | Statistics | Restaurant: views, visitors, QR scans per table, top items, languages, peak hours, revenue. Admin: platform KPIs, MRR estimate, AI cost. Cookie-less. |
@@ -49,4 +50,7 @@ Verified end-to-end in the browser: guest menu → cart → order → status pag
 - Deploy updates: `./scripts/deploy.sh` (builds amd64 locally, streams the image over SSH, restarts; migrations run on start).
 - The old Laravel app was removed; backups: `/root/backups/` on the server and `~/Documents/private_coding/veromenu-server-backup/` locally. php8.3-fpm and redis-server were stopped/disabled (packages still installed).
 - No SMTP configured yet → verification / invitation / reset mails only appear in `docker compose logs app`. Set `SMTP_URL` in the server `.env`.
-- Known UX issue: on slow devices, text typed into auth forms before hydration is reset (controlled inputs) – switch those forms to uncontrolled inputs / FormData.
+- Profile page `/account` (name, UI language, password change, sessions). Auth forms use progressive-enhancement form actions.
+- AI texts shown to owners (assistant summary/questions, allergen reasons, import notes, theme summaries) follow the dashboard language.
+- Theme generation: ~40–60 s, ~0.12 $ per theme (Claude Sonnet 5.5, low reasoning, 300 s timeout); chat edit ~0.08 $.
+- Browser automation cannot click inside sandboxed iframes – the bridge was verified by in-frame synthetic clicks; check once on a real phone.

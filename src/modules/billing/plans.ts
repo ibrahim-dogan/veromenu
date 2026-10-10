@@ -61,6 +61,8 @@ export const AI_CREDIT_COST: Record<string, number> = {
   transcribe: 1,
   theme_analyze: 5,
   theme_generate: 20,
+  theme_edit: 8, // chat edit of an existing theme (only changed files)
+  theme_repair: 3, // automatic repair round after validation errors
 };
 
 export const getPlan = (id: string | null | undefined): Plan => PLANS.find((p) => p.id === id) ?? PLANS[0];

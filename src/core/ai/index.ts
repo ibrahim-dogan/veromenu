@@ -15,7 +15,12 @@ export * from "./types";
 export { AI_TASKS, TASK_DEFAULTS, type AiTask } from "./tasks";
 
 /** Who triggered the call – used for usage logging + credit accounting. restaurantId null = platform. */
-export type AiContext = { restaurantId: string | null; userId?: string | null };
+export type AiContext = {
+  restaurantId: string | null;
+  userId?: string | null;
+  /** Log + bill this call under another credit key (e.g. "theme_repair" is cheaper than "theme_generate"). */
+  billAs?: string;
+};
 
 type Resolved = { provider: ProviderConfig; model: string; fallbackModel: string | null; params: { temperature?: number; maxTokens?: number } };
 
@@ -92,14 +97,14 @@ export async function getAiCredits(restaurantId: string) {
 async function assertCredits(task: AiTask, ctx: AiContext) {
   if (!ctx.restaurantId) return;
   const { remaining } = await getAiCredits(ctx.restaurantId);
-  if (remaining < (AI_CREDIT_COST[task] ?? 1)) throw new AppError("aiCreditsExhausted");
+  if (remaining < (AI_CREDIT_COST[ctx.billAs ?? task] ?? 1)) throw new AppError("aiCreditsExhausted");
 }
 
 async function logUsage(task: AiTask, ctx: AiContext, provider: string, model: string, started: number, res: { usage?: ChatResult["usage"] } | null, error?: string) {
   await db.insert(aiUsage).values({
     restaurantId: ctx.restaurantId,
     userId: ctx.userId ?? null,
-    task,
+    task: ctx.billAs ?? task,
     providerName: provider,
     model,
     inputTokens: res?.usage?.inputTokens ?? 0,

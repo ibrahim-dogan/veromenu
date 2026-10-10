@@ -1,0 +1,51 @@
+{
+  "brief": {
+    "title": "Design-Analyse",
+    "intro": "So hat die KI den Stil deiner Unterlagen verstanden:",
+    "mood": "Stimmung",
+    "palette": "Farbpalette",
+    "colors": {
+      "background": "Hintergrund",
+      "surface": "Fläche",
+      "text": "Text",
+      "muted": "Nebentext",
+      "primary": "Primärfarbe",
+      "accent": "Akzent"
+    },
+    "typography": "Typografie",
+    "headlines": "Überschriften",
+    "body": "Fließtext",
+    "accentFont": "Akzentschrift",
+    "layout": "Layout",
+    "ornaments": "Ornamente & Rahmen",
+    "textures": "Texturen",
+    "header": "Kopfbereich",
+    "imagery": "Bildsprache",
+    "logo": "Logo",
+    "notes": "Hinweise",
+    "values": {
+      "single": "Einspaltig",
+      "two": "Zweispaltig",
+      "list": "Liste",
+      "cards": "Karten",
+      "grid": "Raster",
+      "priceRight": "Preis rechts",
+      "priceInline": "Preis im Text",
+      "priceBelow": "Preis darunter",
+      "left": "Linksbündig",
+      "center": "Zentriert",
+      "compact": "Kompakt",
+      "comfortable": "Ausgewogen",
+      "airy": "Luftig",
+      "leaders": "Punktlinien",
+      "uppercase": "Großbuchstaben",
+      "smallCaps": "Kapitälchen"
+    }
+  },
+  "progress": {
+    "analyzing": "KI analysiert deine Unterlagen …",
+    "generating": "KI gestaltet dein Theme – das dauert bis zu zwei Minuten …",
+    "editing": "KI überarbeitet dein Theme …"
+  },
+  "credits": "Kosten: {credits} KI-Credits"
+}

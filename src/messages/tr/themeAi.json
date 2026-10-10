@@ -1,0 +1,51 @@
+{
+  "brief": {
+    "title": "Tasarım analizi",
+    "intro": "Yapay zekâ materyallerinin stilini böyle anladı:",
+    "mood": "Atmosfer",
+    "palette": "Renk paleti",
+    "colors": {
+      "background": "Arka plan",
+      "surface": "Yüzey",
+      "text": "Metin",
+      "muted": "İkincil metin",
+      "primary": "Ana renk",
+      "accent": "Vurgu"
+    },
+    "typography": "Tipografi",
+    "headlines": "Başlıklar",
+    "body": "Gövde metni",
+    "accentFont": "Vurgu yazı tipi",
+    "layout": "Yerleşim",
+    "ornaments": "Süslemeler ve çerçeveler",
+    "textures": "Dokular",
+    "header": "Üst bölüm",
+    "imagery": "Görsel dil",
+    "logo": "Logo",
+    "notes": "Notlar",
+    "values": {
+      "single": "Tek sütun",
+      "two": "İki sütun",
+      "list": "Liste",
+      "cards": "Kartlar",
+      "grid": "Izgara",
+      "priceRight": "Fiyat sağda",
+      "priceInline": "Fiyat metin içinde",
+      "priceBelow": "Fiyat altta",
+      "left": "Sola hizalı",
+      "center": "Ortalı",
+      "compact": "Sıkı",
+      "comfortable": "Dengeli",
+      "airy": "Ferah",
+      "leaders": "Noktalı çizgiler",
+      "uppercase": "Büyük harf",
+      "smallCaps": "Küçük büyük harf"
+    }
+  },
+  "progress": {
+    "analyzing": "Yapay zekâ materyallerini analiz ediyor …",
+    "generating": "Yapay zekâ temanı tasarlıyor – bu iki dakikaya kadar sürebilir …",
+    "editing": "Yapay zekâ temanı düzenliyor …"
+  },
+  "credits": "Maliyet: {credits} yapay zekâ kredisi"
+}

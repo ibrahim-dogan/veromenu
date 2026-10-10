@@ -13,6 +13,10 @@ export type ChatRequest = {
   json?: { name: string; schema: Record<string, unknown> } | true;
   temperature?: number;
   maxTokens?: number;
+  /** Reasoning budget for "thinking" models (OpenRouter `reasoning`, OpenAI `reasoning_effort`). false = off. */
+  reasoning?: { effort: "low" | "medium" | "high" } | false;
+  /** Per-request timeout (default 120 s). Long code generations need more. */
+  timeoutMs?: number;
 };
 
 export type Usage = { inputTokens: number; outputTokens: number; costUsd: number | null };

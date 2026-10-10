@@ -1,0 +1,51 @@
+{
+  "brief": {
+    "title": "Design analysis",
+    "intro": "This is how the AI understood the style of your material:",
+    "mood": "Mood",
+    "palette": "Colour palette",
+    "colors": {
+      "background": "Background",
+      "surface": "Surface",
+      "text": "Text",
+      "muted": "Secondary text",
+      "primary": "Primary",
+      "accent": "Accent"
+    },
+    "typography": "Typography",
+    "headlines": "Headlines",
+    "body": "Body text",
+    "accentFont": "Accent font",
+    "layout": "Layout",
+    "ornaments": "Ornaments & borders",
+    "textures": "Textures",
+    "header": "Header",
+    "imagery": "Imagery",
+    "logo": "Logo",
+    "notes": "Notes",
+    "values": {
+      "single": "Single column",
+      "two": "Two columns",
+      "list": "List",
+      "cards": "Cards",
+      "grid": "Grid",
+      "priceRight": "Price on the right",
+      "priceInline": "Price inline",
+      "priceBelow": "Price below",
+      "left": "Left-aligned",
+      "center": "Centred",
+      "compact": "Compact",
+      "comfortable": "Balanced",
+      "airy": "Airy",
+      "leaders": "Dotted leaders",
+      "uppercase": "Uppercase",
+      "smallCaps": "Small caps"
+    }
+  },
+  "progress": {
+    "analyzing": "The AI is analysing your material …",
+    "generating": "The AI is designing your theme – this takes up to two minutes …",
+    "editing": "The AI is revising your theme …"
+  },
+  "credits": "Cost: {credits} AI credits"
+}

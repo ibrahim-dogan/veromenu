@@ -70,7 +70,11 @@ export function createOpenAICompatibleAdapter(flavour: "generic" | "openrouter")
       if (req.json === true) body.response_format = { type: "json_object" };
       else if (req.json) body.response_format = { type: "json_schema", json_schema: { name: req.json.name, strict: false, schema: req.json.schema } };
       if (flavour === "openrouter") body.usage = { include: true };
-      const r = await post(p, "/chat/completions", body);
+      if (req.reasoning !== undefined) {
+        if (flavour === "openrouter") body.reasoning = req.reasoning === false ? { enabled: false } : { effort: req.reasoning.effort, exclude: true };
+        else if (req.reasoning) body.reasoning_effort = req.reasoning.effort;
+      }
+      const r = await post(p, "/chat/completions", body, req.timeoutMs);
       return { text: r.choices?.[0]?.message?.content ?? "", usage: usageOf(r), model: r.model ?? model };
     },
 

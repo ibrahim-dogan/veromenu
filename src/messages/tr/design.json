@@ -1,6 +1,6 @@
 {
   "title": "Tasarım",
-  "description": "Dijital menün için bir tema seç; renkleri, yazı tiplerini ve düzeni ayarla. Önizleme değişiklikleri anında gösterir.",
+  "description": "Dijital menünün nasıl görüneceğini seç: yerleşik temalar, hazır şablonlar veya kendi tasarımların – yapay zekâ ile oluşturulmuş ya da kodda özgürce düzenlenmiş.",
   "gallery": "Temalar",
   "galleryHint": "Her tema kendi renklerin ve yazı tiplerinle özelleştirilebilir.",
   "active": "Etkin",
@@ -15,5 +15,8 @@
   "previewHint": "Misafirlerin menüyü böyle görür.",
   "openPreview": "Önizlemeyi yeni sekmede aç",
   "devicePhone": "Telefon görünümü",
-  "deviceDesktop": "Masaüstü görünümü"
+  "deviceDesktop": "Masaüstü görünümü",
+  "activate": "Etkinleştir ve kaydet",
+  "studioActiveHint": "Şu anda bir studio teması aktif. Kaydetmek bu yerleşik temayı etkinleştirir.",
+  "unknownTheme": "Bilinmeyen tema"
 }

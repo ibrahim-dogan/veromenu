@@ -1,6 +1,6 @@
 {
   "title": "Design",
-  "description": "Wähle ein Theme für deine digitale Speisekarte und passe Farben, Schriften und Layout an. Die Vorschau zeigt Änderungen sofort.",
+  "description": "Wähle, wie deine digitale Speisekarte aussieht: eingebaute Themes, fertige Vorlagen oder eigene Designs – mit KI erstellt oder frei im Code bearbeitet.",
   "gallery": "Themes",
   "galleryHint": "Jedes Theme lässt sich mit eigenen Farben und Schriften anpassen.",
   "active": "Aktiv",
@@ -15,5 +15,8 @@
   "previewHint": "So sehen deine Gäste die Speisekarte.",
   "openPreview": "Vorschau in neuem Tab öffnen",
   "devicePhone": "Smartphone-Ansicht",
-  "deviceDesktop": "Desktop-Ansicht"
+  "deviceDesktop": "Desktop-Ansicht",
+  "activate": "Aktivieren & speichern",
+  "studioActiveHint": "Gerade ist ein Studio-Theme aktiv. Speichern aktiviert dieses eingebaute Theme.",
+  "unknownTheme": "Unbekanntes Theme"
 }

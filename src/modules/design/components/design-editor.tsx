@@ -15,7 +15,8 @@ type Props = {
   restaurantId: string;
   slug: string;
   manifests: ThemeManifest[];
-  savedThemeId: string;
+  /** Active built-in theme, or null when a studio theme is active (saving then switches back to a built-in). */
+  savedThemeId: string | null;
   savedConfig: ThemeConfig;
 };
 
@@ -25,10 +26,11 @@ export function DesignEditor({ restaurantId, slug, manifests, savedThemeId, save
   const t = useTranslations("design");
   const tt = useTranslations("themes");
   const locale = useLocale();
-  const [saved, setSaved] = useState({ themeId: savedThemeId, config: savedConfig });
-  const [themeId, setThemeId] = useState(savedThemeId);
+  const initialId = savedThemeId ?? manifests[0].id;
+  const [saved, setSaved] = useState<{ themeId: string | null; config: ThemeConfig }>({ themeId: savedThemeId, config: savedConfig });
+  const [themeId, setThemeId] = useState(initialId);
   // drafts per theme, so switching back and forth keeps edits
-  const [drafts, setDrafts] = useState<Record<string, ThemeConfig>>({ [savedThemeId]: savedConfig });
+  const [drafts, setDrafts] = useState<Record<string, ThemeConfig>>(savedThemeId ? { [savedThemeId]: savedConfig } : {});
   const [device, setDevice] = useState<"phone" | "desktop">("phone");
   const manifest = manifests.find((m) => m.id === themeId) ?? manifests[0];
   const config = drafts[manifest.id] ?? defaultConfig(manifest);
@@ -122,19 +124,24 @@ export function DesignEditor({ restaurantId, slug, manifests, savedThemeId, save
             </div>
           </CardBody>
           <div className="flex flex-wrap items-center justify-end gap-3 border-t border-stone-100 bg-stone-50 px-5 py-3">
-            {dirty && <span className="mr-auto text-sm text-amber-700">{t("unsaved")}</span>}
+            {!saved.themeId ? (
+              <span className="mr-auto text-sm text-stone-500">{t("studioActiveHint")}</span>
+            ) : (
+              dirty && <span className="mr-auto text-sm text-amber-700">{t("unsaved")}</span>
+            )}
             <Button
               variant="secondary"
               onClick={() => {
-                setThemeId(saved.themeId);
-                setDrafts((d) => ({ ...d, [saved.themeId]: saved.config }));
+                const back = saved.themeId ?? manifests[0].id;
+                setThemeId(back);
+                setDrafts((d) => ({ ...d, [back]: saved.themeId ? saved.config : defaultConfig(manifests.find((m) => m.id === back) ?? manifests[0]) }));
               }}
-              disabled={!dirty || pending}
+              disabled={!dirty || pending || !saved.themeId}
             >
               {t("discard")}
             </Button>
             <Button onClick={() => run({ restaurantId, themeId: manifest.id, config })} loading={pending} disabled={!dirty}>
-              {t("save")}
+              {saved.themeId === manifest.id ? t("save") : t("activate")}
             </Button>
           </div>
         </Card>

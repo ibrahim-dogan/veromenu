@@ -1,6 +1,6 @@
 {
   "title": "Design",
-  "description": "Choose a theme for your digital menu and adjust colours, fonts and layout. The preview updates instantly.",
+  "description": "Choose how your digital menu looks: built-in themes, ready-made templates or your own designs – created with AI or freely edited in code.",
   "gallery": "Themes",
   "galleryHint": "Every theme can be customised with your own colours and fonts.",
   "active": "Active",
@@ -15,5 +15,8 @@
   "previewHint": "This is how your guests see the menu.",
   "openPreview": "Open preview in a new tab",
   "devicePhone": "Phone view",
-  "deviceDesktop": "Desktop view"
+  "deviceDesktop": "Desktop view",
+  "activate": "Activate & save",
+  "studioActiveHint": "A studio theme is currently active. Saving activates this built-in theme.",
+  "unknownTheme": "Unknown theme"
 }

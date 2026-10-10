@@ -37,5 +37,6 @@ export const ADMIN_NAV: { key: string; href: string; icon: string }[] = [
   { key: "adminRestaurants", href: "restaurants", icon: "Store" },
   { key: "adminUsers", href: "users", icon: "Users" },
   { key: "adminAi", href: "ai", icon: "Bot" },
+  { key: "adminThemes", href: "themes", icon: "Palette" },
   { key: "adminAudit", href: "audit", icon: "ScrollText" },
 ];

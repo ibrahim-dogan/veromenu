@@ -1,0 +1,35 @@
+{
+  "apiVersion": 1,
+  "name": "Café Pastell",
+  "version": "1.0.0",
+  "author": "VeroMenu",
+  "description": {
+    "de": "Sanfte Pastellkarten mit großen Bildern – ideal für Cafés, Bäckereien und Brunch.",
+    "en": "Soft pastel cards with large images – made for cafés, bakeries and brunch.",
+    "tr": "Büyük görselli yumuşak pastel kartlar – kafeler, fırınlar ve brunch için ideal."
+  },
+  "fonts": [],
+  "controls": { "languageSwitcher": "host", "cartButton": "host" },
+  "settings": [
+    { "id": "color_background", "type": "color", "label": { "de": "Hintergrund", "en": "Background", "tr": "Arka plan" }, "default": "#fff8f4" },
+    { "id": "color_text", "type": "color", "label": { "de": "Text", "en": "Text", "tr": "Metin" }, "default": "#4a3b3f" },
+    { "id": "color_primary", "type": "color", "label": { "de": "Hauptfarbe", "en": "Main colour", "tr": "Ana renk" }, "default": "#d9677f" },
+    { "id": "color_accent", "type": "color", "label": { "de": "Zweitfarbe", "en": "Second colour", "tr": "İkinci renk" }, "default": "#5fae9b" },
+    {
+      "id": "palette",
+      "type": "select",
+      "label": { "de": "Kartenfarben", "en": "Card colours", "tr": "Kart renkleri" },
+      "default": "candy",
+      "options": [
+        { "value": "candy", "label": { "de": "Bonbon", "en": "Candy", "tr": "Şeker" } },
+        { "value": "sage", "label": { "de": "Salbei", "en": "Sage", "tr": "Adaçayı" } },
+        { "value": "peach", "label": { "de": "Pfirsich", "en": "Peach", "tr": "Şeftali" } }
+      ]
+    },
+    { "id": "heading_font", "type": "font", "label": { "de": "Schrift Überschriften", "en": "Heading font", "tr": "Başlık yazı tipi" }, "default": "fraunces" },
+    { "id": "body_font", "type": "font", "label": { "de": "Schrift Fließtext", "en": "Body font", "tr": "Metin yazı tipi" }, "default": "nunito" },
+    { "id": "radius", "type": "range", "label": { "de": "Eckenradius", "en": "Corner radius", "tr": "Köşe yuvarlaklığı" }, "default": 22, "min": 6, "max": 32, "step": 2, "unit": "px" },
+    { "id": "show_images", "type": "checkbox", "label": { "de": "Bilder anzeigen", "en": "Show images", "tr": "Görselleri göster" }, "default": true },
+    { "id": "greeting", "type": "text", "label": { "de": "Begrüßung (leer = Standard)", "en": "Greeting (empty = default)", "tr": "Karşılama (boş = varsayılan)" }, "default": "", "maxLength": 80 }
+  ]
+}

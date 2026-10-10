@@ -133,5 +133,9 @@
     "new": "新品",
     "recommended": "推荐",
     "alcohol": "含酒精"
-  }
+  },
+  "info": "信息",
+  "aiImageNotice": "标注为 AI 生成的图片仅供参考，可能与实际菜品有所不同。",
+  "menuFrameTitle": "{name} 的菜单",
+  "themeErrorText": "菜单目前无法显示。请咨询我们的工作人员。"
 }

@@ -1,0 +1,34 @@
+<a class="skip" href="#menu">{{ 'skipToMenu' | t }}</a>
+<header class="masthead">
+  <div class="topline">
+    {%- if table -%}<span class="table">{{ 'table' | t: label: table.label }}</span>{%- endif -%}
+  </div>
+  {%- if restaurant.cuisine -%}<p class="kicker">{{ restaurant.cuisine }}</p>{%- endif -%}
+  <h1 class="sign"><span>{% if settings.sign_text != blank %}{{ settings.sign_text }}{% else %}{{ restaurant.name }}{% endif %}</span></h1>
+  {%- if settings.sign_text != blank -%}<p class="name">{{ restaurant.name }}</p>{%- endif -%}
+  <p class="open">{{ 'cheers' | t }}</p>
+</header>
+
+{% render 'nav' %}
+
+<main id="menu">
+  {%- for menu in menus -%}
+  <section class="menu{% unless menu.active_now %} is-closed{% endunless %}" aria-labelledby="m-{{ menu.id }}">
+    <h2 class="menu-title{% if menus.size == 1 %} sr-only{% endif %}" id="m-{{ menu.id }}">{{ menu.name }}</h2>
+    {%- unless menu.active_now -%}<p class="notice">{{ 'notAvailableNow' | t }}</p>{%- endunless -%}
+    {%- for category in menu.categories -%}
+    <section class="category" id="c-{{ category.id }}" data-category="{{ category.id }}" aria-labelledby="h-{{ category.id }}">
+      <header class="category-head">
+        <h3 id="h-{{ category.id }}">{{ category.name }}</h3>
+        {%- if category.description -%}<p>{{ category.description }}</p>{%- endif -%}
+      </header>
+      <ul class="cards" role="list">
+        {%- for item in category.items -%}{% render 'item', item: item %}{%- endfor -%}
+      </ul>
+    </section>
+    {%- endfor -%}
+  </section>
+  {%- endfor -%}
+</main>
+
+{% render 'footer' %}

@@ -1,0 +1,10 @@
+{%- comment -%} Badges: sold out, tags, unconfirmed allergens. {%- endcomment -%}
+{%- assign has_meta = false -%}
+{%- if item.available == false or item.tags.size > 0 or item.allergens_confirmed == false -%}{%- assign has_meta = true -%}{%- endif -%}
+{%- if has_meta -%}
+<p class="meta">
+  {%- unless item.available -%}<span class="badge badge-soldout">{{ 'soldOut' | t }}</span>{%- endunless -%}
+  {%- for tag in item.tags -%}<span class="badge badge-tag tag-{{ tag }}">{{ 'tags.' | append: tag | t }}</span>{%- endfor -%}
+  {%- unless item.allergens_confirmed -%}<span class="badge badge-unknown">{{ 'allergenUnknown' | t }}</span>{%- endunless -%}
+</p>
+{%- endif -%}

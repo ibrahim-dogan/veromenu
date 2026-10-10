@@ -133,5 +133,9 @@
     "new": "Neu",
     "recommended": "Empfehlung",
     "alcohol": "Enthält Alkohol"
-  }
+  },
+  "info": "Informationen",
+  "aiImageNotice": "Als KI-generiert gekennzeichnete Bilder sind Symbolbilder und können vom servierten Gericht abweichen.",
+  "menuFrameTitle": "Speisekarte von {name}",
+  "themeErrorText": "Die Speisekarte kann gerade nicht angezeigt werden. Bitte frag unser Personal."
 }

@@ -1,0 +1,34 @@
+{
+  "apiVersion": 1,
+  "name": "Atelier",
+  "version": "1.0.0",
+  "author": "VeroMenu",
+  "description": {
+    "de": "Minimalistisch und editorial: große Typografie, viel Weißraum, feine Linien.",
+    "en": "Minimal and editorial: large type, generous white space, fine rules.",
+    "tr": "Minimal ve editoryal: büyük tipografi, bol boşluk, ince çizgiler."
+  },
+  "fonts": [],
+  "controls": { "languageSwitcher": "theme", "cartButton": "host" },
+  "settings": [
+    { "id": "color_background", "type": "color", "label": { "de": "Hintergrund", "en": "Background", "tr": "Arka plan" }, "default": "#f6f4ef" },
+    { "id": "color_text", "type": "color", "label": { "de": "Text", "en": "Text", "tr": "Metin" }, "default": "#161513" },
+    { "id": "color_primary", "type": "color", "label": { "de": "Akzentfarbe", "en": "Accent colour", "tr": "Vurgu rengi" }, "default": "#b4432b" },
+    { "id": "heading_font", "type": "font", "label": { "de": "Schrift Überschriften", "en": "Heading font", "tr": "Başlık yazı tipi" }, "default": "dm-serif-display" },
+    { "id": "body_font", "type": "font", "label": { "de": "Schrift Fließtext", "en": "Body font", "tr": "Metin yazı tipi" }, "default": "dm-sans" },
+    { "id": "title_size", "type": "range", "label": { "de": "Größe des Titels", "en": "Title size", "tr": "Başlık boyutu" }, "default": 64, "min": 40, "max": 96, "step": 4, "unit": "px" },
+    { "id": "tagline", "type": "text", "label": { "de": "Unterzeile", "en": "Tagline", "tr": "Alt başlık" }, "default": "", "maxLength": 120 },
+    { "id": "show_images", "type": "checkbox", "label": { "de": "Bilder anzeigen", "en": "Show images", "tr": "Görselleri göster" }, "default": false },
+    { "id": "show_descriptions", "type": "checkbox", "label": { "de": "Beschreibungen anzeigen", "en": "Show descriptions", "tr": "Açıklamaları göster" }, "default": true },
+    {
+      "id": "density",
+      "type": "select",
+      "label": { "de": "Abstände", "en": "Spacing", "tr": "Aralık" },
+      "default": "comfortable",
+      "options": [
+        { "value": "comfortable", "label": { "de": "Großzügig", "en": "Comfortable", "tr": "Geniş" } },
+        { "value": "compact", "label": { "de": "Kompakt", "en": "Compact", "tr": "Sıkı" } }
+      ]
+    }
+  ]
+}

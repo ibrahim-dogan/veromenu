@@ -1,0 +1,39 @@
+<a class="skip" href="#menu">{{ 'skipToMenu' | t }}</a>
+<header class="hero">
+  <div class="hero-inner">
+    {%- if restaurant.logo_url -%}<img class="logo" src="{{ restaurant.logo_url }}" alt="" width="72" height="72">{%- endif -%}
+    <div>
+      <p class="greeting">{% if settings.greeting != blank %}{{ settings.greeting }}{% else %}{{ 'welcome' | t }}{% endif %}</p>
+      <h1>{{ restaurant.name }}</h1>
+      <p class="sub">
+        {%- if restaurant.cuisine -%}<span>{{ restaurant.cuisine }}</span>{%- endif -%}
+        {%- if table -%}<span class="pill">{{ 'table' | t: label: table.label }}</span>{%- endif -%}
+      </p>
+    </div>
+  </div>
+</header>
+
+{% render 'nav' %}
+
+<main id="menu">
+  {%- for menu in menus -%}
+  <section class="menu{% unless menu.active_now %} is-closed{% endunless %}" aria-labelledby="m-{{ menu.id }}">
+    <h2 class="menu-title{% if menus.size == 1 %} sr-only{% endif %}" id="m-{{ menu.id }}">{{ menu.name }}</h2>
+    {%- if menus.size > 1 and menu.description -%}<p class="menu-desc">{{ menu.description }}</p>{%- endif -%}
+    {%- unless menu.active_now -%}<p class="notice">{{ 'notAvailableNow' | t }}</p>{%- endunless -%}
+    {%- for category in menu.categories -%}
+    <section class="category" id="c-{{ category.id }}" data-category="{{ category.id }}" aria-labelledby="h-{{ category.id }}">
+      <header class="category-head">
+        <h3 id="h-{{ category.id }}">{{ category.name }}</h3>
+        {%- if category.description -%}<p>{{ category.description }}</p>{%- endif -%}
+      </header>
+      <ul class="grid" role="list">
+        {%- for item in category.items -%}{% render 'item', item: item %}{%- endfor -%}
+      </ul>
+    </section>
+    {%- endfor -%}
+  </section>
+  {%- endfor -%}
+</main>
+
+{% render 'footer' %}

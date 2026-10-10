@@ -45,7 +45,20 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: { "/*": ["./src/messages/**/*.json"] },
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      // Everything except the studio theme frame. The frame route (src/app/m/[slug]/frame) sets its own
+      // strict headers (CSP `sandbox allow-scripts`, no network, no-referrer) – Next does NOT let a route
+      // override a header already set here, so the frame must be excluded from the app-wide CSP.
+      { source: "/:path((?!m/[^/]+/frame$).*)", headers: securityHeaders },
+      // Self-hosted theme fonts are loaded from the frame's opaque origin ("null") → CORS needed.
+      {
+        source: "/theme-fonts/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" },
+        ],
+      },
+    ];
   },
   serverExternalPackages: ["@node-rs/argon2", "sharp", "postgres"],
   experimental: {

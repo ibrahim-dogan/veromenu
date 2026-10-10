@@ -1,0 +1,8 @@
+{%- comment -%} Allergen letters + additive numbers (LMIV). Only confirmed data is shown. {%- endcomment -%}
+{%- assign mark_count = item.allergens.size | plus: item.additives.size -%}
+{%- if item.allergens_confirmed and mark_count > 0 -%}
+<span class="marks" title="{{ 'allergens' | t }}: {% for a in item.allergens %}{{ a.label }}{% unless forloop.last %}, {% endunless %}{% endfor %}{% if item.additives.size > 0 %} · {{ 'additives' | t }}: {% for a in item.additives %}{{ a.label }}{% unless forloop.last %}, {% endunless %}{% endfor %}{% endif %}">
+  {%- for a in item.allergens -%}<abbr title="{{ a.label }}">{{ a.letter }}</abbr>{%- endfor -%}
+  {%- for a in item.additives -%}<abbr class="additive" title="{{ a.label }}">{{ a.letter }}</abbr>{%- endfor -%}
+</span>
+{%- endif -%}

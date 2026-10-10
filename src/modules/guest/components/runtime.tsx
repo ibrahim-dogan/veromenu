@@ -24,6 +24,8 @@ export type RuntimeInit = {
   track: boolean;
   items: ClientItem[];
   messages: GuestMessages;
+  /** Studio themes with controls.cartButton = "theme" render their own cart button (default true). */
+  hostCartButton?: boolean;
 };
 
 export type CartLine = { key: string; itemId: string; variantId: string | null; qty: number; note: string | null };
@@ -41,6 +43,9 @@ type Ctx = {
   lineUnitPrice: (l: CartLine) => number;
   openItem: (id: string | null) => void;
   beacon: (type: BeaconType, extra?: { itemId?: string; categoryId?: string; locale?: string }) => void;
+  /** Cart/checkout sheet (opened by the cart bar or a studio theme's data-vm-cart). */
+  cartOpen: boolean;
+  setCartOpen: (open: boolean) => void;
 };
 
 const GuestCtx = createContext<Ctx | null>(null);
@@ -60,6 +65,7 @@ export function GuestRuntime({ init, children }: { init: RuntimeInit; children: 
 
   const [cart, setCart] = useState<CartLine[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [cartOpen, setCartOpen] = useState(false);
   const loaded = useRef(false);
 
   // ---- beacons (cookie-less; server hashes ip+ua with a daily salt)
@@ -168,8 +174,8 @@ export function GuestRuntime({ init, children }: { init: RuntimeInit; children: 
   }, [items, addToCart, openItem, beacon]);
 
   const value = useMemo<Ctx>(
-    () => ({ init, t, price, items, cart, addToCart, setQty, clearCart, lineUnitPrice, openItem, beacon }),
-    [init, t, price, items, cart, addToCart, setQty, clearCart, lineUnitPrice, openItem, beacon],
+    () => ({ init, t, price, items, cart, addToCart, setQty, clearCart, lineUnitPrice, openItem, beacon, cartOpen, setCartOpen }),
+    [init, t, price, items, cart, addToCart, setQty, clearCart, lineUnitPrice, openItem, beacon, cartOpen],
   );
 
   return (

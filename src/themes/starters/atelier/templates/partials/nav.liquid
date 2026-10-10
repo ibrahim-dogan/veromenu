@@ -1,0 +1,11 @@
+{%- assign cat_count = 0 -%}
+{%- for m in menus -%}{%- assign cat_count = cat_count | plus: m.categories.size -%}{%- endfor -%}
+{%- if cat_count > 1 -%}
+<nav class="catnav" data-catnav aria-label="{{ 'categories' | t }}">
+  <ul>
+    {%- for m in menus -%}{%- for c in m.categories -%}
+    <li><a href="#c-{{ c.id }}">{{ c.name }}</a></li>
+    {%- endfor -%}{%- endfor -%}
+  </ul>
+</nav>
+{%- endif -%}

@@ -1,0 +1,35 @@
+{
+  "apiVersion": 1,
+  "name": "Trattoria",
+  "version": "1.0.0",
+  "author": "VeroMenu",
+  "description": {
+    "de": "Warm und rustikal wie eine italienische Trattoria: Papierstruktur, Karo-Tischdecke, handgeschriebene Tipps.",
+    "en": "Warm and rustic like an Italian trattoria: paper texture, gingham tablecloth, handwritten tips.",
+    "tr": "İtalyan trattoriası gibi sıcak ve rustik: kâğıt dokusu, kareli masa örtüsü, el yazısı notlar."
+  },
+  "fonts": ["caveat"],
+  "controls": { "languageSwitcher": "host", "cartButton": "host" },
+  "settings": [
+    { "id": "color_background", "type": "color", "label": { "de": "Papier", "en": "Paper", "tr": "Kâğıt" }, "default": "#f3e9d6" },
+    { "id": "color_text", "type": "color", "label": { "de": "Text", "en": "Text", "tr": "Metin" }, "default": "#3a2a1f" },
+    { "id": "color_primary", "type": "color", "label": { "de": "Tomatenrot", "en": "Tomato red", "tr": "Domates kırmızısı" }, "default": "#a8322d" },
+    { "id": "color_accent", "type": "color", "label": { "de": "Basilikumgrün", "en": "Basil green", "tr": "Fesleğen yeşili" }, "default": "#4f6b3a" },
+    { "id": "heading_font", "type": "font", "label": { "de": "Schrift Überschriften", "en": "Heading font", "tr": "Başlık yazı tipi" }, "default": "playfair-display" },
+    { "id": "body_font", "type": "font", "label": { "de": "Schrift Fließtext", "en": "Body font", "tr": "Metin yazı tipi" }, "default": "eb-garamond" },
+    { "id": "paper_texture", "type": "checkbox", "label": { "de": "Papierstruktur", "en": "Paper texture", "tr": "Kâğıt dokusu" }, "default": true },
+    { "id": "gingham", "type": "checkbox", "label": { "de": "Karo-Bordüre", "en": "Gingham border", "tr": "Kareli bordür" }, "default": true },
+    { "id": "show_images", "type": "checkbox", "label": { "de": "Bilder anzeigen", "en": "Show images", "tr": "Görselleri göster" }, "default": true },
+    { "id": "welcome", "type": "text", "label": { "de": "Begrüßung", "en": "Welcome line", "tr": "Karşılama" }, "default": "Benvenuti!", "maxLength": 80 },
+    {
+      "id": "density",
+      "type": "select",
+      "label": { "de": "Abstände", "en": "Spacing", "tr": "Aralık" },
+      "default": "comfortable",
+      "options": [
+        { "value": "comfortable", "label": { "de": "Großzügig", "en": "Comfortable", "tr": "Geniş" } },
+        { "value": "compact", "label": { "de": "Kompakt", "en": "Compact", "tr": "Sıkı" } }
+      ]
+    }
+  ]
+}

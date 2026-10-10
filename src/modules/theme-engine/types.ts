@@ -112,12 +112,25 @@ export type ThemeView = {
         variants: { id: string; name: string; price: number; price_formatted: string }[];
       }[];
     }[];
+    /** additive: false when the menu has time windows and is currently closed. */
+    active_now?: boolean;
   }[];
   /** Customizer values merged with manifest defaults. */
   settings: Record<string, unknown>;
   /** "preview" inside the studio, "live" for guests. */
   mode: "live" | "preview";
+  // ---- additive (v1.1) – always filled by buildThemeView() / sampleThemeView()
+  /** ISO currency of the prices (used by the `money` filter). Default "EUR". */
+  currency?: string;
+  /** Allergens / additives used by confirmed items on this menu (legend). */
+  legend?: { allergens: ThemeLabel[]; additives: ThemeLabel[] };
+  /** At least one item has unconfirmed allergen info → show the staff notice ('allergenNotice' | t). */
+  has_unconfirmed_allergens?: boolean;
+  /** Plan without custom branding → theme may show 'poweredBy' | t (the host info sheet always shows it). */
+  show_branding?: boolean;
 };
+
+export type ThemeLabel = { code: string; letter: string; label: string };
 
 /**
  * Bridge protocol. Elements with data attributes work without any theme JS:
@@ -137,6 +150,15 @@ export type BridgeMessage =
   | { type: "vm:openCart" }
   | { type: "vm:openInfo" }
   | { type: "vm:track"; event: "item_view" | "category_view"; id: string };
+
+/** Host → frame messages (frame validates `event.source === window.parent`). */
+export type HostMessage = {
+  type: "vm:cart";
+  count: number;
+  totalFormatted: string;
+  /** Height (px) of host UI covering the bottom of the frame (cart bar) – the bridge adds a spacer. */
+  insetBottom?: number;
+};
 
 /** Theme id stored in restaurants.themeId for studio themes. Built-in React themes keep plain ids ("classic"). */
 export const studioThemeId = (themeId: string) => `studio:${themeId}`;

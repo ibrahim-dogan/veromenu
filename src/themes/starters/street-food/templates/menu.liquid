@@ -1,0 +1,42 @@
+<a class="skip" href="#menu">{{ 'skipToMenu' | t }}</a>
+<header class="masthead">
+  <div class="topline">
+    {%- if table -%}<span class="sticker sticker-table">{{ 'table' | t: label: table.label }}</span>{%- endif -%}
+  </div>
+  <h1>{{ restaurant.name }}</h1>
+  {%- if restaurant.cuisine -%}<p class="cuisine"><span>{{ restaurant.cuisine }}</span></p>{%- endif -%}
+</header>
+
+{% render 'nav' %}
+
+<main id="menu">
+  {%- for menu in menus -%}
+  <section class="menu{% unless menu.active_now %} is-closed{% endunless %}" aria-labelledby="m-{{ menu.id }}">
+    <h2 class="menu-title{% if menus.size == 1 %} sr-only{% endif %}" id="m-{{ menu.id }}">{{ menu.name }}</h2>
+    {%- unless menu.active_now -%}<p class="notice">{{ 'notAvailableNow' | t }}</p>{%- endunless -%}
+    {%- for category in menu.categories -%}
+    <section class="category" id="c-{{ category.id }}" data-category="{{ category.id }}" aria-labelledby="h-{{ category.id }}">
+      <header class="category-head">
+        <h3 id="h-{{ category.id }}">{{ category.name }}</h3>
+        {%- if category.description -%}<p>{{ category.description }}</p>{%- endif -%}
+      </header>
+      <ul class="cards" role="list">
+        {%- for item in category.items -%}{% render 'item', item: item %}{%- endfor -%}
+      </ul>
+    </section>
+    {%- endfor -%}
+  </section>
+  {%- endfor -%}
+</main>
+
+{% render 'footer' %}
+
+{%- if ordering.enabled -%}
+<div class="cartbar">
+  <button type="button" data-vm-cart>
+    <span class="cart-count" data-vm-cart-count>0</span>
+    <span class="cart-label">{{ 'viewCart' | t }}</span>
+    <span class="cart-total" data-vm-cart-total></span>
+  </button>
+</div>
+{%- endif -%}

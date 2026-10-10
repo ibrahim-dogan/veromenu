@@ -1,0 +1,31 @@
+<li class="card{% unless item.available %} is-soldout{% endunless %}">
+  {%- if settings.show_images and item.image_url -%}
+  <figure class="photo">
+    <img src="{{ item.image_url_large | default: item.image_url }}" alt="" loading="lazy" decoding="async" width="480" height="300">
+    {%- if item.image_is_ai -%}<figcaption class="ai-label" data-vm-ai-label>{{ 'aiImage' | t }}</figcaption>{%- endif -%}
+  </figure>
+  {%- endif -%}
+  <div class="card-body">
+    <div class="card-head">
+      <h4><button type="button" data-vm-item="{{ item.id }}">{{ item.name }}</button>{% render 'marks', item: item %}</h4>
+      {%- if item.variants.size == 0 -%}
+      <span class="sticker price">{% if item.price %}{{ item.price_formatted }}{% else %}{{ 'priceOnRequest' | t }}{% endif %}</span>
+      {%- endif -%}
+    </div>
+    {%- if item.description -%}<p class="desc">{{ item.description }}</p>{%- endif -%}
+    {% render 'item-meta', item: item %}
+    {%- if item.variants.size > 0 -%}
+    <div class="variants">
+      {%- for v in item.variants -%}
+      {%- if item.orderable -%}
+      <button type="button" class="chip" data-vm-add="{{ item.id }}" data-vm-variant="{{ v.id }}" aria-label="{{ 'quickAdd' | t: name: item.name }} – {{ v.name }}">{{ v.name }} <b>{{ v.price_formatted }}</b> <span aria-hidden="true">+</span></button>
+      {%- else -%}
+      <span class="chip">{{ v.name }} <b>{{ v.price_formatted }}</b></span>
+      {%- endif -%}
+      {%- endfor -%}
+    </div>
+    {%- elsif item.orderable -%}
+    <button type="button" class="add" data-vm-add="{{ item.id }}" aria-label="{{ 'quickAdd' | t: name: item.name }}"><span aria-hidden="true">+</span> {{ 'add' | t }}</button>
+    {%- endif -%}
+  </div>
+</li>

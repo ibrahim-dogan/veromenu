@@ -7,6 +7,7 @@ import { db, sql } from "@/core/db";
 import { users } from "@/core/db/schema";
 import { hashPassword } from "@/core/auth/password";
 import { seedAiDefaults } from "@/core/ai/seed";
+import { seedStarterThemes } from "@/modules/theme-engine/service";
 
 async function main() {
   const email = process.env.ADMIN_EMAIL?.toLowerCase();
@@ -28,6 +29,8 @@ async function main() {
     } else console.log(`• platform admin exists: ${email}`);
   }
   await seedAiDefaults();
+  const themes = await seedStarterThemes();
+  console.log(`✔ starter themes: ${themes.created} created, ${themes.updated} updated`);
   if (process.argv.includes("--demo")) {
     const { seedDemo } = await import("./seed-demo");
     await seedDemo();

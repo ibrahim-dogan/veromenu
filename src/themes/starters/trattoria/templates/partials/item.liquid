@@ -1,0 +1,28 @@
+<li class="dish{% unless item.available %} is-soldout{% endunless %}">
+  {%- if settings.show_images and item.image_url -%}
+  <figure class="photo">
+    <img src="{{ item.image_url }}" alt="" loading="lazy" decoding="async" width="96" height="96">
+    {%- if item.image_is_ai -%}<figcaption class="ai-label" data-vm-ai-label>{{ 'aiImage' | t }}</figcaption>{%- endif -%}
+  </figure>
+  {%- endif -%}
+  <div class="dish-body">
+    <div class="dish-head">
+      <h4><button type="button" data-vm-item="{{ item.id }}">{{ item.name }}</button>{% render 'marks', item: item %}</h4>
+      <span class="dots" aria-hidden="true"></span>
+      {%- if item.variants.size == 0 -%}
+      <span class="price">{% if item.price %}{{ item.price_formatted }}{% else %}<em>{{ 'priceOnRequest' | t }}</em>{% endif %}</span>
+      {%- endif -%}
+    </div>
+    {%- if item.tags contains 'recommended' -%}<p class="chef">{{ 'chefTip' | t }}</p>{%- endif -%}
+    {%- if item.description -%}<p class="desc">{{ item.description }}</p>{%- endif -%}
+    {%- if item.variants.size > 0 -%}
+    <p class="variants">
+      {%- for v in item.variants -%}<span>{{ v.name }} <b>{{ v.price_formatted }}</b></span>{%- endfor -%}
+    </p>
+    {%- endif -%}
+    {% render 'item-meta', item: item %}
+  </div>
+  {%- if item.orderable -%}
+  <button type="button" class="add" data-vm-add="{{ item.id }}" aria-label="{{ 'quickAdd' | t: name: item.name }}"><span aria-hidden="true">+</span></button>
+  {%- endif -%}
+</li>

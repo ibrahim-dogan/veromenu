@@ -1,0 +1,32 @@
+<footer class="site-footer">
+  <div class="notes">
+    <p>{% if currency == 'EUR' %}{{ 'pricesInclVat' | t }}{% else %}{{ 'pricesInclVatGeneric' | t }}{% endif %}</p>
+    {%- if has_unconfirmed_allergens -%}<p>{{ 'allergenNotice' | t }}</p>{%- endif -%}
+  </div>
+  {%- assign legend_count = legend.allergens.size | plus: legend.additives.size -%}
+  {%- if legend_count > 0 -%}
+  <section class="legend" aria-labelledby="vm-legend">
+    <h2 id="vm-legend">{{ 'allergenLegend' | t }}</h2>
+    <dl>
+      {%- for a in legend.allergens -%}<div><dt>{{ a.letter }}</dt><dd>{{ a.label }}</dd></div>{%- endfor -%}
+      {%- for a in legend.additives -%}<div><dt>{{ a.letter }}</dt><dd>{{ a.label }}</dd></div>{%- endfor -%}
+    </dl>
+  </section>
+  {%- endif -%}
+  {%- if restaurant.opening_hours.size > 0 -%}
+  <section class="hours" aria-labelledby="vm-hours">
+    <h2 id="vm-hours">{{ 'openingHours' | t }}</h2>
+    <dl>
+      {%- for h in restaurant.opening_hours -%}<div><dt>{{ h.day_name }}</dt><dd>{{ h.open }}–{{ h.close }}</dd></div>{%- endfor -%}
+    </dl>
+  </section>
+  {%- endif -%}
+  {%- if restaurant.address or restaurant.phone -%}
+  <address>
+    <strong>{{ restaurant.name }}</strong>
+    {%- if restaurant.address -%}<span>{{ restaurant.address }}</span>{%- endif -%}
+    {%- if restaurant.phone -%}<span>{{ restaurant.phone }}</span>{%- endif -%}
+  </address>
+  {%- endif -%}
+  <p class="legal"><button type="button" class="link" data-vm-info>{{ 'imprint' | t }} · {{ 'privacy' | t }}</button>{% if show_branding %}<span class="powered">{{ 'poweredBy' | t }}</span>{% endif %}</p>
+</footer>

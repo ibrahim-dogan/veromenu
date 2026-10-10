@@ -1,39 +1,44 @@
 /**
- * CONTRACT (implemented by the theme-engine engineer). ISOMORPHIC – must run in the browser (studio live
- * preview) and on the server (guest frame). No server-only imports here.
+ * Theme engine v2 – public, ISOMORPHIC API (runs in the browser for the studio live preview and on the
+ * server for the guest frame). No server-only imports here; storage lives in ./service.ts.
+ *
+ * Docs for theme authors (and the theme-ai LLM prompt): docs/THEMES.md
  */
-import type { ThemePackage, ThemeValidation, ThemeView } from "./types";
+import type { ThemePackage } from "./types";
 
 export * from "./types";
 
-/** Self-hosted font library (DSGVO: never load fonts from Google servers). id → display info. */
-export type FontInfo = { id: string; family: string; category: "sans" | "serif" | "display" | "script"; weights: number[] };
-export const FONT_LIBRARY: FontInfo[] = [];
-
-/** Structural + Liquid syntax validation (paths, sizes, manifest shape, parse errors with line numbers). */
-export function validatePackage(_pkg: ThemePackage): ThemeValidation {
-  throw new Error("theme-engine: validatePackage not implemented yet");
-}
-
-/**
- * Renders the full sandbox document (doctype, CSP meta, font CSS, theme CSS, rendered menu.liquid, bridge
- * script, theme JS). `assetBaseUrl` = absolute app origin for media/fonts (the frame has an opaque origin).
- */
-export async function renderThemeDocument(_opts: {
-  pkg: ThemePackage;
-  view: ThemeView;
-  assetBaseUrl: string;
-  guestMessages: Record<string, string>;
-}): Promise<{ html: string; errors: string[] }> {
-  throw new Error("theme-engine: renderThemeDocument not implemented yet");
-}
-
-/** Sample view (realistic German restaurant) for previews without real data and for AI validation. */
-export function sampleThemeView(): ThemeView {
-  throw new Error("theme-engine: sampleThemeView not implemented yet");
-}
+export { FONT_LIBRARY, fontStack, fontFaceCss, isFontId, getFont, type FontInfo } from "./fonts";
+export { validatePackage } from "./validate";
+export { renderThemeDocument, renderErrorDocument, type RenderThemeOptions, type RenderThemeResult } from "./render";
+export { sampleThemeView } from "./sample";
+export { buildThemeView } from "./view";
+export { themeFrameCsp, themeFrameHeaders } from "./csp";
+export { bridgeMessageSchema } from "./bridge-schema";
+export { THEME_FILTERS, contrastColor, type ThemeMediaRef } from "./liquid";
+export {
+  manifestSchema,
+  settingFieldSchema,
+  resolveSettings,
+  defaultSettings,
+  settingCssVar,
+  usedFontIds,
+  HOST_COLOR_SETTINGS,
+  type SettingValue,
+} from "./settings";
 
 /** .vmtheme.json export/import (assets embedded as data URLs on export). */
 export function serializePackage(pkg: ThemePackage): string {
   return JSON.stringify({ format: "vmtheme", apiVersion: 1, ...pkg }, null, 2);
+}
+
+/** Parses a .vmtheme.json export (or a bare { manifest, files } object). Validate the result with validatePackage(). */
+export function parsePackage(json: string): ThemePackage | null {
+  try {
+    const v = JSON.parse(json) as { manifest?: unknown; files?: unknown };
+    if (!v || typeof v !== "object" || !v.manifest || !v.files || typeof v.files !== "object") return null;
+    return { manifest: v.manifest as ThemePackage["manifest"], files: v.files as Record<string, string> };
+  } catch {
+    return null;
+  }
 }

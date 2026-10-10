@@ -133,5 +133,9 @@
     "new": "Yeni",
     "recommended": "Önerilen",
     "alcohol": "Alkol içerir"
-  }
+  },
+  "info": "Bilgiler",
+  "aiImageNotice": "Yapay zekâ ile üretildiği belirtilen görseller temsilidir ve servis edilen yemekten farklı olabilir.",
+  "menuFrameTitle": "{name} menüsü",
+  "themeErrorText": "Menü şu anda görüntülenemiyor. Lütfen personelimize sor."
 }

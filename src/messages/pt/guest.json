@@ -133,5 +133,9 @@
     "new": "Novidade",
     "recommended": "Recomendado",
     "alcohol": "Contém álcool"
-  }
+  },
+  "info": "Informações",
+  "aiImageNotice": "As imagens assinaladas como geradas por IA são ilustrativas e podem diferir do prato servido.",
+  "menuFrameTitle": "Menu de {name}",
+  "themeErrorText": "Não é possível mostrar o menu de momento. Pergunte à nossa equipa."
 }

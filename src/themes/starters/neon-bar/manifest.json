@@ -1,0 +1,26 @@
+{
+  "apiVersion": 1,
+  "name": "Neon Bar",
+  "version": "1.0.0",
+  "author": "VeroMenu",
+  "description": {
+    "de": "Dunkle Cocktailbar mit Neon-Akzenten, leuchtenden Überschriften und dezentem Flackern.",
+    "en": "Dark cocktail bar with neon accents, glowing headings and a subtle flicker.",
+    "tr": "Neon vurgulu, parlayan başlıklı ve hafif titreşimli karanlık kokteyl barı."
+  },
+  "fonts": [],
+  "controls": { "languageSwitcher": "host", "cartButton": "host" },
+  "settings": [
+    { "id": "color_background", "type": "color", "label": { "de": "Hintergrund", "en": "Background", "tr": "Arka plan" }, "default": "#0c0a14" },
+    { "id": "color_surface", "type": "color", "label": { "de": "Karten", "en": "Cards", "tr": "Kartlar" }, "default": "#17132a" },
+    { "id": "color_text", "type": "color", "label": { "de": "Text", "en": "Text", "tr": "Metin" }, "default": "#efeaff" },
+    { "id": "color_primary", "type": "color", "label": { "de": "Neon 1", "en": "Neon 1", "tr": "Neon 1" }, "default": "#ff3ea5" },
+    { "id": "color_accent", "type": "color", "label": { "de": "Neon 2", "en": "Neon 2", "tr": "Neon 2" }, "default": "#2de2e6" },
+    { "id": "heading_font", "type": "font", "label": { "de": "Schrift Überschriften", "en": "Heading font", "tr": "Başlık yazı tipi" }, "default": "righteous" },
+    { "id": "body_font", "type": "font", "label": { "de": "Schrift Fließtext", "en": "Body font", "tr": "Metin yazı tipi" }, "default": "space-grotesk" },
+    { "id": "glow", "type": "range", "label": { "de": "Leuchtstärke", "en": "Glow", "tr": "Parlaklık" }, "default": 14, "min": 0, "max": 28, "step": 2, "unit": "px" },
+    { "id": "flicker", "type": "checkbox", "label": { "de": "Neon-Flackern", "en": "Neon flicker", "tr": "Neon titreşimi" }, "default": true },
+    { "id": "show_images", "type": "checkbox", "label": { "de": "Bilder anzeigen", "en": "Show images", "tr": "Görselleri göster" }, "default": true },
+    { "id": "sign_text", "type": "text", "label": { "de": "Leuchtschrift (leer = Name)", "en": "Neon sign (empty = name)", "tr": "Neon yazı (boş = ad)" }, "default": "", "maxLength": 40 }
+  ]
+}

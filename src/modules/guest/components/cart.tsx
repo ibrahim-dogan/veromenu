@@ -12,17 +12,17 @@ const KNOWN_ERRORS = ["ordering_disabled", "table_required", "item_unavailable",
 
 /** Sticky cart bar + cart/checkout sheet. Only mounted when ordering is enabled. */
 export function CartBar() {
-  const { cart, t, price, lineUnitPrice, init } = useGuest();
-  const [open, setOpen] = useState(false);
+  const { cart, t, price, lineUnitPrice, init, cartOpen: open, setCartOpen: setOpen } = useGuest();
+  const showButton = init.hostCartButton !== false;
   const [lastOrder, setLastOrder] = useState<{ publicId: string; number?: number } | null>(null);
   const count = cart.reduce((s, l) => s + l.qty, 0);
   const total = cart.reduce((s, l) => s + lineUnitPrice(l) * l.qty, 0);
 
   // keep the last menu entries reachable above the fixed bar
   useEffect(() => {
-    document.body.style.paddingBottom = count || lastOrder ? "5.5rem" : "";
+    document.body.style.paddingBottom = (count && showButton) || lastOrder ? "5.5rem" : "";
     return () => void (document.body.style.paddingBottom = "");
-  }, [count, lastOrder]);
+  }, [count, lastOrder, showButton]);
 
   // a recent order (last 4 h) stays reachable from the menu
   useEffect(() => {
@@ -47,7 +47,7 @@ export function CartBar() {
           </a>
         </div>
       )}
-      {count > 0 && (
+      {count > 0 && showButton && (
         <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           <button
             type="button"

@@ -40,12 +40,15 @@ export function GuestFrame({
   vars,
   className,
   children,
+  hostCartButton,
 }: {
   data: GuestMenuData;
   t: GuestT;
   vars: Record<string, string>;
   className?: string;
   children: ReactNode;
+  /** Studio themes with their own cart button hide the host cart bar. */
+  hostCartButton?: boolean;
 }) {
   return (
     <div lang={data.locale} dir={data.dir} style={vars as CSSProperties} className={cn(guestFontVariables, "vm-root bg-g-bg text-g-text font-g-body min-h-dvh", className)}>
@@ -65,6 +68,7 @@ export function GuestFrame({
           track: !data.preview,
           items: toClientItems(data),
           messages: getGuestMessages(data.locale),
+          hostCartButton,
         }}
       >
         {children}

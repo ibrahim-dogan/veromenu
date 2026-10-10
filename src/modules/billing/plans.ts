@@ -10,7 +10,8 @@ export type PlanFeature =
   | "ai_images" // AI image generation
   | "ai_import" // menu import from photos / PDF
   | "custom_branding" // remove "Powered by VeroMenu"
-  | "staff_roles"; // custom roles
+  | "staff_roles" // custom roles
+  | "theme_studio"; // custom code themes (Theme Studio) + AI theme generation
 
 export type Plan = {
   id: "free" | "starter" | "pro";
@@ -39,13 +40,13 @@ export const PLANS: Plan[] = [
     id: "starter",
     priceMonthlyCents: 1490,
     limits: { menus: 3, items: 300, locales: 6, tables: 40, users: 5, aiCredits: 400 },
-    features: ["tables", "ai_import", "ai_images", "custom_branding"],
+    features: ["tables", "ai_import", "ai_images", "custom_branding", "theme_studio"],
   },
   {
     id: "pro",
     priceMonthlyCents: 3490,
     limits: { menus: 20, items: 2000, locales: 16, tables: 200, users: 30, aiCredits: 2500 },
-    features: ["ordering", "tables", "ai_agent", "ai_images", "ai_import", "custom_branding", "staff_roles"],
+    features: ["ordering", "tables", "ai_agent", "ai_images", "ai_import", "custom_branding", "staff_roles", "theme_studio"],
   },
 ];
 
@@ -58,6 +59,8 @@ export const AI_CREDIT_COST: Record<string, number> = {
   image_generate: 8,
   agent: 2,
   transcribe: 1,
+  theme_analyze: 5,
+  theme_generate: 20,
 };
 
 export const getPlan = (id: string | null | undefined): Plan => PLANS.find((p) => p.id === id) ?? PLANS[0];

@@ -11,6 +11,8 @@ export const AI_TASKS = [
   "image_generate",
   "agent",
   "transcribe",
+  "theme_analyze",
+  "theme_generate",
 ] as const;
 export type AiTask = (typeof AI_TASKS)[number];
 
@@ -23,4 +25,8 @@ export const TASK_DEFAULTS: Record<AiTask, { model: string; fallbackModel?: stri
   image_generate: { model: "google/gemini-3.1-flash-image", fallbackModel: "google/gemini-3.1-flash-lite-image", capability: "image-output" },
   agent: { model: "anthropic/claude-haiku-5.5", fallbackModel: "openai/gpt-5.6-luna", temperature: 0.1, capability: "text+json" },
   transcribe: { model: "google/gemini-3.5-flash-lite", fallbackModel: "qwen/qwen3.8-omni-flash", temperature: 0, capability: "audio-input" },
+  // PDF / photo of a printed menu or brand material → structured design brief (palette, fonts, layout).
+  theme_analyze: { model: "google/gemini-3.8-flash", fallbackModel: "anthropic/claude-haiku-5.5", temperature: 0.2, capability: "vision+pdf" },
+  // Writes theme code (Liquid/CSS/JS) – needs a strong coding model.
+  theme_generate: { model: "anthropic/claude-sonnet-5.5", fallbackModel: "google/gemini-3.8-flash", temperature: 0.4, capability: "text" },
 };

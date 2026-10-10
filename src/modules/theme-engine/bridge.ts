@@ -117,6 +117,7 @@ export const BRIDGE_SCRIPT = String.raw`(function () {
   window.addEventListener("message", function (e) {
     if (e.source !== P || !e.data || typeof e.data !== "object") return;
     var m = e.data;
+    if (m.type === "vm:scrollTo") { restoreScroll(m.y); return; }
     if (m.type !== "vm:cart") return;
     acked = true;
     var count = Math.max(0, Math.min(999, Number(m.count) || 0));
@@ -128,6 +129,30 @@ export const BRIDGE_SCRIPT = String.raw`(function () {
     for (var i = 0; i < listeners.length; i++) { try { listeners[i](api.getCart()); } catch (err) {} }
     try { window.dispatchEvent(new CustomEvent("vm:cart", { detail: api.getCart() })); } catch (err) {}
   });
+
+  // studio preview: the host re-renders the whole document on every edit → report the scroll position and accept
+  // vm:scrollTo { y } so the new document opens where the owner was (preview mode only)
+  var restoreY = -1;
+  function applyRestore() {
+    if (restoreY < 0) return;
+    try { window.scrollTo({ top: restoreY, behavior: "instant" }); } catch (err) { window.scrollTo(0, restoreY); }
+  }
+  function restoreScroll(y) {
+    if (D.mode !== "preview") return;
+    restoreY = Math.max(0, Math.min(1e6, Number(y) || 0));
+    applyRestore();
+    // images / fonts change the height → once more after load
+    if (document.readyState !== "complete") window.addEventListener("load", function () { applyRestore(); restoreY = -1; }, { once: true });
+    else restoreY = -1;
+  }
+  function setupScrollReport() {
+    if (D.mode !== "preview") return;
+    var st = 0;
+    window.addEventListener("scroll", function () {
+      if (st) return;
+      st = setTimeout(function () { st = 0; post({ type: "vm:scroll", y: Math.round(window.scrollY || 0) }); }, 120);
+    }, { passive: true });
+  }
 
   // height reporting (studio previews / auto-height embeds)
   var lastH = 0, timer = 0, acked = false;
@@ -242,6 +267,7 @@ export const BRIDGE_SCRIPT = String.raw`(function () {
   function init() {
     a11y(document);
     try { setupCatnav(); } catch (e) {}
+    try { setupScrollReport(); } catch (e) {}
     labelAi(document);
     report();
     if (lastH === 0) post({ type: "vm:ready", height: 0 });

@@ -4,7 +4,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { Eye, History, Loader2, RotateCcw } from "lucide-react";
 import { cn } from "@/core/utils";
 import { Badge, Button } from "@/components/ui";
-import { listVersionsAction } from "../../actions";
+import { studioGet } from "../../lib/client";
 
 export type VersionRow = { id: string; number: number; note: string | null; author: string; createdAt: string };
 
@@ -19,6 +19,7 @@ export function VersionsPanel({
   onPreview,
   onRestore,
   busyId,
+  restoreDisabled,
 }: {
   restaurantId: string;
   themeId: string;
@@ -29,17 +30,20 @@ export function VersionsPanel({
   onPreview: (v: VersionRow) => void;
   onRestore: (v: VersionRow) => void;
   busyId: string | null;
+  /** e.g. while an AI edit runs (the restore server action would queue behind it) */
+  restoreDisabled?: boolean;
 }) {
   const t = useTranslations("themeStudio.versions");
   const f = useFormatter();
   const [rows, setRows] = useState<VersionRow[] | null>(null);
 
   useEffect(() => {
-    let alive = true;
-    listVersionsAction({ restaurantId, themeId }).then((res) => alive && setRows(res.ok ? [...res.data].sort((a, b) => b.number - a.number) : []));
-    return () => {
-      alive = false;
-    };
+    const ac = new AbortController();
+    studioGet<VersionRow[]>(`/api/restaurants/${restaurantId}/themes/${themeId}/versions`, ac.signal).then((res) => {
+      if (ac.signal.aborted) return;
+      setRows(res.ok ? [...res.data].sort((a, b) => b.number - a.number) : []);
+    });
+    return () => ac.abort();
   }, [restaurantId, themeId, refreshKey]);
 
   return (
@@ -73,7 +77,7 @@ export function VersionsPanel({
                     <Eye size={13} aria-hidden /> {t("preview")}
                   </Button>
                   {v.id !== currentVersionId && (
-                    <Button variant="ghost" size="sm" onClick={() => onRestore(v)} loading={busyId === v.id}>
+                    <Button variant="ghost" size="sm" onClick={() => onRestore(v)} loading={busyId === v.id} disabled={restoreDisabled || (!!busyId && busyId !== v.id)}>
                       {busyId !== v.id && <RotateCcw size={13} aria-hidden />} {t("restore")}
                     </Button>
                   )}

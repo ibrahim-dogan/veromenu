@@ -163,7 +163,7 @@ export function PreviewPane({
               className={cn("overflow-hidden bg-white shadow-xl", device === "phone" ? "rounded-[2rem] ring-8 ring-stone-900" : "rounded-lg ring-1 ring-stone-300")}
               style={{ width: size.w, height: frameH, transform: `scale(${scale})`, transformOrigin: "top left" }}
             >
-              <SandboxFrame html={html} title={t("title")} onBridge={onBridge} className="h-full w-full" />
+              <SandboxFrame html={html} title={t("title")} onBridge={onBridge} preserveScroll className="h-full w-full" />
             </div>
           </div>
         ) : (

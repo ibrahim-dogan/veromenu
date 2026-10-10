@@ -75,15 +75,16 @@ function sanitizeValue(f: ThemeSettingField, v: unknown): SettingValue {
     case "font":
       return isFontId(v) ? v : f.default;
     case "select":
-      return typeof v === "string" && f.options.some((o) => o.value === v) ? v : f.default;
+      return typeof v === "string" && Array.isArray(f.options) && f.options.some((o) => o?.value === v) ? v : f.default;
     case "checkbox":
       return typeof v === "boolean" ? v : v === "true" ? true : v === "false" ? false : f.default;
     case "range": {
       const n = typeof v === "number" ? v : typeof v === "string" ? Number(v) : NaN;
-      return Number.isFinite(n) ? Math.min(f.max, Math.max(f.min, n)) : f.default;
+      if (!Number.isFinite(n)) return f.default;
+      return Math.min(Number.isFinite(f.max) ? f.max : n, Math.max(Number.isFinite(f.min) ? f.min : n, n));
     }
     case "text":
-      return typeof v === "string" ? v.slice(0, f.maxLength ?? 500) : f.default;
+      return typeof v === "string" ? v.slice(0, typeof f.maxLength === "number" ? f.maxLength : 500) : f.default;
     case "image":
       return typeof v === "string" && UUID.test(v) ? v : null;
   }
@@ -92,8 +93,17 @@ function sanitizeValue(f: ThemeSettingField, v: unknown): SettingValue {
 /** Customizer values: only known ids, valid values, defaults for the rest. Never trust stored/URL config. */
 export function resolveSettings(manifest: Pick<ThemeManifest, "settings">, raw: unknown): Record<string, SettingValue> {
   const src = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
-  const fields = Array.isArray(manifest.settings) ? manifest.settings : [];
-  return Object.fromEntries(fields.map((f) => [f.id, sanitizeValue(f, src[f.id])]));
+  return Object.fromEntries(settingFields(manifest).map((f) => [f.id, sanitizeValue(f, src[f.id])]));
+}
+
+/**
+ * manifest.settings as field-like objects only. Defensive on purpose: the studio previews manifests that are valid
+ * JSON but not (yet) schema-valid while the owner is typing – these helpers must never throw on them.
+ */
+export function settingFields(manifest: Pick<ThemeManifest, "settings"> | null | undefined): ThemeSettingField[] {
+  const raw = manifest?.settings as unknown;
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((f): f is ThemeSettingField => !!f && typeof f === "object" && typeof (f as { id?: unknown }).id === "string");
 }
 
 export const defaultSettings = (manifest: Pick<ThemeManifest, "settings">) => resolveSettings(manifest, {});
@@ -107,7 +117,7 @@ export const settingCssVar = (id: string) => `--vm-${id.replace(/_/g, "-")}`;
  */
 export function settingsCssVars(manifest: Pick<ThemeManifest, "settings">, values: Record<string, SettingValue>, fontStack: (id: unknown) => string) {
   const decl: string[] = [];
-  for (const f of manifest.settings) {
+  for (const f of settingFields(manifest)) {
     const v = values[f.id];
     if (f.type === "color" && typeof v === "string" && HEX_COLOR.test(v)) decl.push(`${settingCssVar(f.id)}:${v}`);
     else if (f.type === "font") decl.push(`${settingCssVar(f.id)}:${fontStack(v)}`);
@@ -120,7 +130,7 @@ export function settingsCssVars(manifest: Pick<ThemeManifest, "settings">, value
 /** data-setting-* attributes for select / checkbox settings on <html> (CSS: [data-setting-density="compact"]). */
 export function settingsDataAttrs(manifest: Pick<ThemeManifest, "settings">, values: Record<string, SettingValue>): Record<string, string> {
   const out: Record<string, string> = {};
-  for (const f of manifest.settings) {
+  for (const f of settingFields(manifest)) {
     if (f.type === "select" && typeof values[f.id] === "string") out[`data-setting-${f.id.replace(/_/g, "-")}`] = String(values[f.id]);
     if (f.type === "checkbox") out[`data-setting-${f.id.replace(/_/g, "-")}`] = values[f.id] ? "true" : "false";
   }
@@ -129,8 +139,8 @@ export function settingsDataAttrs(manifest: Pick<ThemeManifest, "settings">, val
 
 /** Font ids a package needs: manifest.fonts + every font setting value. */
 export function usedFontIds(manifest: Pick<ThemeManifest, "settings" | "fonts">, values: Record<string, SettingValue>): string[] {
-  const ids = new Set<string>((manifest.fonts ?? []).filter(isFontId));
-  for (const f of manifest.settings ?? []) if (f.type === "font" && isFontId(values[f.id])) ids.add(values[f.id] as string);
+  const ids = new Set<string>((Array.isArray(manifest.fonts) ? manifest.fonts : []).filter(isFontId));
+  for (const f of settingFields(manifest)) if (f.type === "font" && isFontId(values[f.id])) ids.add(values[f.id] as string);
   return [...ids];
 }
 

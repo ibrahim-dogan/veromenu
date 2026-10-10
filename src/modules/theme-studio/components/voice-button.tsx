@@ -15,8 +15,14 @@ export function VoiceButton({ restaurantId, onText, disabled, className }: { res
     maxSeconds: 90,
     onWav: async (wavBase64) => {
       rec.setState("processing");
-      const res = await transcribeThemeVoiceAction({ restaurantId, wavBase64, uiLocale: locale });
-      rec.setState("idle");
+      let res: Awaited<ReturnType<typeof transcribeThemeVoiceAction>>;
+      try {
+        res = await transcribeThemeVoiceAction({ restaurantId, wavBase64, uiLocale: locale });
+      } catch {
+        return toast.error(te("unexpected"));
+      } finally {
+        rec.setState("idle");
+      }
       if (res.ok) {
         if (res.data.text) onText(res.data.text);
         else toast.error(t("empty"));

@@ -13,20 +13,11 @@ import { action, AppError } from "@/core/http/action";
 import { assertRestaurantPermission, type RestaurantContext } from "@/core/auth/guards";
 import { planHas } from "@/modules/billing/plans";
 import { serializePackage, validatePackage } from "@/modules/theme-engine";
-import { parseStudioThemeId, THEME_LIMITS, type ThemePackage, type ThemeValidation } from "@/modules/theme-engine/types";
-import {
-  createTheme,
-  deleteTheme,
-  duplicateTheme,
-  getStarterPackages,
-  getThemeWithPackage,
-  listThemes,
-  listThemeVersions,
-  publishTheme,
-  saveThemeVersion,
-} from "@/modules/theme-engine/service";
+import { parseStudioThemeId, THEME_LIMITS, type ThemePackage, type ThemeSettingField, type ThemeValidation } from "@/modules/theme-engine/types";
+import { settingFields } from "@/modules/theme-engine/settings";
+import { createTheme, deleteTheme, duplicateTheme, getStarterPackages, getThemeWithPackage, listThemes, publishTheme, saveThemeVersion } from "@/modules/theme-engine/service";
 import { blankPackage, exportFileName, parseVmTheme, sanitizeSettings } from "./lib/package";
-import { flatGuestMessages, previewView, renderPreviewHtml, resolvePreviewMedia, writeThemeConfig } from "./service";
+import { previewView, renderPreviewHtml, writeThemeConfig } from "./service";
 
 const rid = z.uuid();
 const tid = z.uuid();
@@ -150,17 +141,9 @@ export const saveVersionAction = action(
   },
 );
 
-export const listVersionsAction = action(z.object({ restaurantId: rid, themeId: tid }), async ({ restaurantId, themeId }) => {
-  await studioContext(restaurantId);
-  const list = await listThemeVersions(restaurantId, themeId);
-  return list.map((v) => ({ ...v, createdAt: v.createdAt.toISOString() }));
-});
-
-export const getVersionAction = action(z.object({ restaurantId: rid, themeId: tid, versionId: z.uuid() }), async ({ restaurantId, themeId, versionId }) => {
-  await studioContext(restaurantId);
-  const res = await getThemeWithPackage(restaurantId, themeId, versionId);
-  return { versionId: res.versionId, pkg: res.pkg };
-});
+// Version list / single version / preview data / media are GET route handlers under
+// src/app/api/restaurants/[rid]/themes/** – server actions are dispatched one at a time per client, so reads
+// must not queue behind a long-running AI edit.
 
 export const restoreVersionAction = action(
   z.object({ restaurantId: rid, themeId: tid, versionId: z.uuid(), note: z.string().max(300) }),
@@ -199,8 +182,14 @@ export const saveThemeSettingsAction = action(
     const ctx = await studioContext(restaurantId);
     if (parseStudioThemeId(ctx.restaurant.themeId) !== themeId) throw new AppError("validation", "theme not active");
     const { theme, pkg } = await getThemeWithPackage(restaurantId, themeId, undefined);
-    const published = theme.publishedVersionId ? (await getThemeWithPackage(restaurantId, themeId, theme.publishedVersionId)).pkg : pkg;
-    const clean = sanitizeSettings(published.manifest, values);
+    const published =
+      theme.publishedVersionId && theme.publishedVersionId !== theme.currentVersionId ? (await getThemeWithPackage(restaurantId, themeId, theme.publishedVersionId)).pkg : pkg;
+    // Published field definitions win (guests render the published version); fields that only exist in the latest
+    // saved version are kept too, so their values are already in place when that version gets published.
+    const fields = new Map<string, ThemeSettingField>();
+    for (const f of settingFields(published.manifest)) fields.set(f.id, f);
+    for (const f of settingFields(pkg.manifest)) if (!fields.has(f.id)) fields.set(f.id, f);
+    const clean = sanitizeSettings({ settings: [...fields.values()] }, values);
     await writeThemeConfig(restaurantId, clean);
     await audit({ restaurantId, userId: ctx.user.id, action: "theme.settings.update", entityType: "theme", entityId: themeId, data: { settings: clean } });
     return { settings: clean };
@@ -214,22 +203,6 @@ export const exportThemeAction = action(z.object({ restaurantId: rid, themeId: t
   const { theme, pkg } = await getThemeWithPackage(restaurantId, themeId, versionId);
   await audit({ restaurantId, userId: ctx.user.id, action: "theme.export", entityType: "theme", entityId: themeId });
   return { fileName: exportFileName(theme.name), json: serializePackage(pkg) };
-});
-
-/** ThemeView + guest strings for the client-side live preview. */
-export const previewDataAction = action(
-  z.object({ restaurantId: rid, locale: z.string().min(2).max(5), source: z.enum(["real", "sample"]) }),
-  async ({ restaurantId, locale, source }) => {
-    const ctx = await studioContext(restaurantId);
-    const res = await previewView(ctx.restaurant, locale, source);
-    return { view: res.view, source: res.source, guestMessages: flatGuestMessages(res.locale) };
-  },
-);
-
-/** Media ids used by image settings / manifest.assets → URLs for the client-side preview. */
-export const resolveMediaAction = action(z.object({ restaurantId: rid, ids: z.array(z.uuid()).max(60) }), async ({ restaurantId, ids }) => {
-  await studioContext(restaurantId);
-  return resolvePreviewMedia(restaurantId, ids);
 });
 
 /** Server-rendered document for the mini previews on theme cards (own + library themes). */

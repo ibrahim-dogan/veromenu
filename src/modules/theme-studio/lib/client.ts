@@ -21,6 +21,26 @@ export function readFileText(file: File): Promise<string> {
   });
 }
 
+/** Same shape as the server actions' ActionResult, so callers handle both the same way. */
+export type StudioResult<T> = { ok: true; data: T } | { ok: false; error: string; detail?: string };
+
+/**
+ * GET a studio read endpoint (/api/restaurants/[rid]/themes/…). Reads deliberately do NOT use server actions:
+ * Next dispatches server actions one at a time per client, so a 30–90 s AI edit would block every preview /
+ * versions request behind it. Never throws; an aborted request resolves to `{ ok: false, error: "aborted" }`.
+ */
+export async function studioGet<T>(path: string, signal?: AbortSignal): Promise<StudioResult<T>> {
+  try {
+    const res = await fetch(path, { signal, cache: "no-store", headers: { accept: "application/json" } });
+    const body = (await res.json().catch(() => null)) as StudioResult<T> | null;
+    if (body && typeof body === "object" && typeof body.ok === "boolean") return body;
+    return { ok: false, error: "unexpected", detail: `HTTP ${res.status}` };
+  } catch (e) {
+    if (signal?.aborted) return { ok: false, error: "aborted" };
+    return { ok: false, error: "unexpected", detail: e instanceof Error ? e.message : String(e) };
+  }
+}
+
 /** Serializable theme summary passed from server pages to client components. */
 export type ThemeCardData = {
   id: string;

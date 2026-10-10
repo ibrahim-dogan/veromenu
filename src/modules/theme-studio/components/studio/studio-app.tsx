@@ -9,26 +9,19 @@ import { Badge, Button } from "@/components/ui";
 import { Dialog } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
 import { serializePackage, validatePackage, type ThemeMediaRef } from "@/modules/theme-engine";
+import { manifestSchema } from "@/modules/theme-engine/settings";
 import type { ThemeManifest, ThemePackage, ThemeValidation, ThemeView } from "@/modules/theme-engine/types";
 import { proposeThemeEdit } from "@/modules/theme-ai/actions";
-import {
-  getVersionAction,
-  previewDataAction,
-  publishThemeAction,
-  renameThemeAction,
-  resolveMediaAction,
-  restoreVersionAction,
-  saveThemeSettingsAction,
-  saveVersionAction,
-} from "../../actions";
-import { downloadText, themeStatus } from "../../lib/client";
-import { exportFileName, MANIFEST_PATH, MENU_TEMPLATE, mediaIdsFor, sanitizeSettings, settingsDefaults, starterContent, withSettingsAsDefaults } from "../../lib/package";
+import { publishThemeAction, renameThemeAction, restoreVersionAction, saveThemeSettingsAction, saveVersionAction } from "../../actions";
+import { downloadText, studioGet, themeStatus } from "../../lib/client";
+import { exportFileName, MANIFEST_PATH, MENU_TEMPLATE, mediaIdsFor, samePackage, sanitizeSettings, settingsDefaults, starterContent, withSettingsAsDefaults } from "../../lib/package";
 import { StatusBadges } from "../theme-cards";
 import { AiChat, type ChatMessage } from "./ai-chat";
 import { Customizer } from "./customizer";
 import { DiffReview } from "./diff-review";
 import { applyProposal, proposalEntries, type Proposal } from "../../lib/proposal";
 import { FileTree } from "./file-tree";
+import { PanelBoundary } from "./panel-boundary";
 import { PreviewPane } from "./preview-pane";
 import { VersionsPanel, type VersionRow } from "./versions-panel";
 
@@ -39,6 +32,7 @@ type MobileView = "panel" | "code" | "preview";
 type Saved = { versionId: string; pkg: ThemePackage };
 type Meta = { name: string; isActive: boolean; currentVersionId: string | null; publishedVersionId: string | null };
 type Problem = { file?: string; line?: number; message: string; level: "error" | "warning" };
+type PreviewData = { view: ThemeView; guestMessages: Record<string, string> };
 
 const pretty = (m: unknown) => JSON.stringify(m, null, 2);
 
@@ -78,25 +72,30 @@ export function StudioApp(props: {
   const [files, setFiles] = useState<Record<string, string>>(props.pkg.files);
   const [manifestText, setManifestText] = useState(() => pretty(props.pkg.manifest));
   const [activePath, setActivePath] = useState(MENU_TEMPLATE);
-  const [jump, setJump] = useState<{ line: number; nonce: number } | null>(null);
+  const [jump, setJump] = useState<{ path: string; line: number; nonce: number } | null>(null);
   const [meta, setMeta] = useState<Meta>(props.meta);
   const [panel, setPanel] = useState<Panel>(props.initialPanel);
   const [mobileView, setMobileView] = useState<MobileView>("panel");
 
   const parsed = useMemo(() => parseManifest(manifestText), [manifestText]);
-  // while the manifest JSON is broken, keep previewing/customizing with the last valid one
+  // Valid JSON is not enough for the UI: while typing, the manifest is often JSON-valid but not schema-valid
+  // ("settings": {}, a color field without default …). Customizer / settings / preview only ever see the last
+  // schema-valid manifest; save + validation use the raw one (the server rejects invalid packages anyway).
+  const schemaOk = useMemo(() => parsed.ok && manifestSchema.safeParse(parsed.manifest).success, [parsed]);
   const [lastGood, setLastGood] = useState<ThemeManifest>(props.pkg.manifest);
-  if (parsed.ok && parsed.manifest !== lastGood) setLastGood(parsed.manifest);
+  if (parsed.ok && schemaOk && parsed.manifest !== lastGood) setLastGood(parsed.manifest);
   const manifest = parsed.ok ? parsed.manifest : lastGood;
+  const uiManifest = parsed.ok && schemaOk ? parsed.manifest : lastGood;
   const workingPkg = useMemo<ThemePackage>(() => ({ manifest, files }), [manifest, files]);
+  const previewWorkingPkg = useMemo<ThemePackage>(() => ({ manifest: uiManifest, files }), [uiManifest, files]);
 
-  const savedManifestText = useMemo(() => pretty(saved.pkg.manifest), [saved.pkg.manifest]);
   const dirtyPaths = useMemo(() => {
     const s = new Set<string>();
-    if (manifestText.trim() !== savedManifestText.trim()) s.add(MANIFEST_PATH);
+    // semantic compare – formatting differences (one-line arrays, indentation) are not "unsaved changes"
+    if (!parsed.ok || JSON.stringify(parsed.manifest) !== JSON.stringify(saved.pkg.manifest)) s.add(MANIFEST_PATH);
     for (const p of new Set([...Object.keys(files), ...Object.keys(saved.pkg.files)])) if (files[p] !== saved.pkg.files[p]) s.add(p);
     return s;
-  }, [files, manifestText, saved.pkg.files, savedManifestText]);
+  }, [files, parsed, saved.pkg]);
   const dirty = dirtyPaths.size > 0;
 
   // ---------------------------------------------------------------- validation
@@ -131,62 +130,86 @@ export function StudioApp(props: {
   const errorLines = useMemo(() => problems.filter((p) => p.level === "error" && p.file === activePath && p.line).map((p) => p.line!), [problems, activePath]);
 
   const openAt = (file: string | undefined, line?: number) => {
-    if (file && (file === MANIFEST_PATH || files[file] !== undefined)) setActivePath(file);
-    if (line) setJump({ line, nonce: Date.now() });
+    const target = file && (file === MANIFEST_PATH || files[file] !== undefined) ? file : activePath;
+    setActivePath(target);
+    if (line) setJump({ path: target, line, nonce: Date.now() });
     setMobileView("code");
   };
 
   // ---------------------------------------------------------------- helpers
   const fail = useCallback(
     (r: { error: string; detail?: string }) => {
+      if (r.error === "aborted") return;
       const msg = te.has(r.error) ? te(r.error) : te("unexpected");
       toast.error(r.detail && (r.error === "validation" || r.error === "unexpected") ? `${msg} (${r.detail.slice(0, 200)})` : msg);
     },
     [te],
   );
+  /** Server action promises reject on network errors / server restarts – never leave a spinner behind. */
+  const crashed = useCallback(() => toast.error(te("unexpected")), [te]);
+
+  // ---------------------------------------------------------------- AI busy
+  // Next dispatches server actions one at a time per client: while proposeThemeEdit runs (30–90 s) every other
+  // action (save, publish, restore, rename, settings) would silently queue behind it → block them in the UI instead.
+  const [aiBusy, setAiBusy] = useState(false);
+  const aiBusyRef = useRef(false);
 
   // ---------------------------------------------------------------- save
   const [saving, setSaving] = useState(false);
-  const savingRef = useRef(false);
+  const savingPromise = useRef<Promise<Saved | null> | null>(null);
   const [versionsKey, setVersionsKey] = useState(props.versionId);
 
   const save = useCallback(
-    async (opts: { silent?: boolean } = {}): Promise<Saved | null> => {
+    async (opts: { silent?: boolean; duringAi?: boolean } = {}): Promise<Saved | null> => {
+      if (aiBusyRef.current && !opts.duringAi) {
+        toast(t("aiBusyBlocked"));
+        return null;
+      }
       if (!parsed.ok) {
         toast.error(t("manifestInvalid"));
         openAt(MANIFEST_PATH, parsed.line);
         return null;
       }
+      // a save is already running (⌘S, publish, AI) → share its result instead of silently returning nothing
+      if (savingPromise.current) return savingPromise.current;
       if (!dirty) return saved;
-      if (savingRef.current) return null;
-      savingRef.current = true;
-      setSaving(true);
       const pkg = workingPkg;
+      const run = (async (): Promise<Saved | null> => {
+        setSaving(true);
+        try {
+          const res = await saveVersionAction({ restaurantId, themeId, pkg: pkg as unknown as { manifest: Record<string, unknown>; files: Record<string, string> }, author: "user" });
+          if (!res.ok) {
+            fail(res);
+            return null;
+          }
+          if (!res.data.saved) {
+            setValidation(res.data.validation);
+            setShowProblems(true);
+            toast.error(t("saveInvalid"));
+            return null;
+          }
+          const next = { versionId: res.data.versionId, pkg };
+          setSaved(next);
+          setMeta((m) => ({ ...m, currentVersionId: res.data.versionId! }));
+          setVersionsKey(res.data.versionId);
+          if (!opts.silent) toast.success(t("savedVersion", { number: res.data.number }));
+          return next;
+        } catch {
+          crashed();
+          return null;
+        } finally {
+          setSaving(false);
+        }
+      })();
+      savingPromise.current = run;
       try {
-        const res = await saveVersionAction({ restaurantId, themeId, pkg: pkg as unknown as { manifest: Record<string, unknown>; files: Record<string, string> }, author: "user" });
-        if (!res.ok) {
-          fail(res);
-          return null;
-        }
-        if (!res.data.saved) {
-          setValidation(res.data.validation);
-          setShowProblems(true);
-          toast.error(t("saveInvalid"));
-          return null;
-        }
-        const next = { versionId: res.data.versionId, pkg };
-        setSaved(next);
-        setMeta((m) => ({ ...m, currentVersionId: res.data.versionId! }));
-        setVersionsKey(res.data.versionId);
-        if (!opts.silent) toast.success(t("savedVersion", { number: res.data.number }));
-        return next;
+        return await run;
       } finally {
-        savingRef.current = false;
-        setSaving(false);
+        if (savingPromise.current === run) savingPromise.current = null;
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [parsed, dirty, saved, workingPkg, restaurantId, themeId, fail, t],
+    [parsed, dirty, saved, workingPkg, restaurantId, themeId, fail, crashed, t],
   );
 
   const saveRef = useRef(save);
@@ -197,27 +220,21 @@ export function StudioApp(props: {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
         e.preventDefault();
-        saveRef.current();
+        void saveRef.current();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
-  useEffect(() => {
-    if (!dirty) return;
-    const h = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    window.addEventListener("beforeunload", h);
-    return () => window.removeEventListener("beforeunload", h);
-  }, [dirty]);
 
   // ---------------------------------------------------------------- file ops
-  const setContent = (v: string) => {
-    if (activePath === MANIFEST_PATH) setManifestText(v);
-    else setFiles((f) => ({ ...f, [activePath]: v }));
-  };
+  const setContent = useCallback(
+    (v: string) => {
+      if (activePath === MANIFEST_PATH) setManifestText(v);
+      else setFiles((f) => ({ ...f, [activePath]: v }));
+    },
+    [activePath],
+  );
   const addFile = (p: string) => {
     setFiles((f) => ({ ...f, [p]: f[p] ?? starterContent(p) }));
     setActivePath(p);
@@ -243,94 +260,167 @@ export function StudioApp(props: {
   // ---------------------------------------------------------------- customizer
   const [settings, setSettings] = useState<Record<string, unknown>>(() => sanitizeSettings(props.pkg.manifest, props.initialSettings));
   const [guestSettings, setGuestSettings] = useState<Record<string, unknown>>(() => sanitizeSettings(props.pkg.manifest, props.initialSettings));
-  const effectiveSettings = useMemo(() => sanitizeSettings(manifest, settings), [manifest, settings]);
-  const settingsDirty = JSON.stringify(effectiveSettings) !== JSON.stringify(sanitizeSettings(manifest, guestSettings));
+  const effectiveSettings = useMemo(() => sanitizeSettings(uiManifest, settings), [uiManifest, settings]);
+  const settingsDirty = useMemo(() => JSON.stringify(effectiveSettings) !== JSON.stringify(sanitizeSettings(uiManifest, guestSettings)), [effectiveSettings, uiManifest, guestSettings]);
   const [savingSettings, setSavingSettings] = useState(false);
 
   async function saveSettingsForGuests() {
+    if (aiBusyRef.current || savingSettings) return;
+    const values = effectiveSettings;
     setSavingSettings(true);
-    const res = await saveThemeSettingsAction({ restaurantId, themeId, values: effectiveSettings });
-    setSavingSettings(false);
-    if (!res.ok) return fail(res);
-    setGuestSettings(res.data.settings);
-    toast.success(t("settingsSaved"));
+    try {
+      const res = await saveThemeSettingsAction({ restaurantId, themeId, values });
+      if (!res.ok) return fail(res);
+      // The server only keeps fields of the published / latest saved version. Values of fields that exist only in
+      // the unsaved working copy are skipped → say so, and don't leave the button "dirty" forever.
+      const kept = res.data.settings;
+      const skipped = Object.keys(values).some((k) => !(k in kept));
+      setGuestSettings(skipped ? { ...values, ...kept } : kept);
+      if (skipped) toast(t("settingsPartlyUnsaved"));
+      else toast.success(t("settingsSaved"));
+    } catch {
+      crashed();
+    } finally {
+      setSavingSettings(false);
+    }
   }
 
-  // ---------------------------------------------------------------- preview data
-  const [locale, setLocale] = useState(props.defaultLocale);
-  const [source, setSource] = useState<"real" | "sample">("real");
-  const [data, setData] = useState<{ view: ThemeView; guestMessages: Record<string, string> } | null>(null);
-  const dataCache = useRef(new Map<string, { view: ThemeView; guestMessages: Record<string, string> }>());
-  useEffect(() => {
-    const key = `${source}:${locale}`;
-    const hit = dataCache.current.get(key);
-    if (hit) return setData(hit);
-    let alive = true;
-    previewDataAction({ restaurantId, locale, source }).then((res) => {
-      if (!alive) return;
-      if (!res.ok) return fail(res);
-      const d = { view: res.data.view as ThemeView, guestMessages: res.data.guestMessages };
-      dataCache.current.set(key, d);
-      setData(d);
-      if (source === "real" && res.data.source === "sample") toast(t("realUnavailable"));
-    });
-    return () => {
-      alive = false;
-    };
-  }, [restaurantId, locale, source, fail, t]);
-
-  const [media, setMedia] = useState<Record<string, ThemeMediaRef>>({});
-  const mediaKey = mediaIdsFor(manifest, effectiveSettings).join(",");
-  useEffect(() => {
-    const ids = mediaKey ? mediaKey.split(",") : [];
-    const missing = ids.filter((i) => !media[i]);
-    if (!missing.length) return;
-    resolveMediaAction({ restaurantId, ids: missing }).then((res) => res.ok && setMedia((m) => ({ ...m, ...res.data })));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mediaKey, restaurantId]);
-
-  // ---------------------------------------------------------------- AI
+  // ---------------------------------------------------------------- AI proposal state
   const [chat, setChat] = useState<ChatMessage[]>([]);
-  const [aiBusy, setAiBusy] = useState(false);
   const [proposal, setProposal] = useState<{ p: Proposal; base: ThemePackage } | null>(null);
   const [accepted, setAccepted] = useState<Set<string>>(new Set());
   const [applying, setApplying] = useState(false);
   const say = (role: ChatMessage["role"], text: string) => setChat((c) => [...c, { id: Date.now() + Math.random(), role, text }]);
   const entries = useMemo(() => (proposal ? proposalEntries(proposal.base, proposal.p) : []), [proposal]);
 
-  async function sendAi(text: string) {
-    say("user", text);
-    const base = await save({ silent: true });
-    if (!base) return say("system", t("aiNeedsValid"));
-    setAiBusy(true);
-    const res = await proposeThemeEdit({ restaurantId, themeId, versionId: base.versionId, instruction: text });
-    setAiBusy(false);
-    if (!res.ok) {
-      fail(res);
-      return say("system", t("aiFailed"));
+  // ---------------------------------------------------------------- unsaved-changes guard
+  const guard = dirty || settingsDirty || !!proposal;
+  const guardRef = useRef(guard);
+  useEffect(() => {
+    guardRef.current = guard;
+  });
+  useEffect(() => {
+    if (!guard) return;
+    const h = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", h);
+    return () => window.removeEventListener("beforeunload", h);
+  }, [guard]);
+  // In-app navigation (sidebar, back arrow, any link): client-side route changes don't fire beforeunload.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (!guardRef.current || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = (e.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!a || (a.target && a.target !== "_self") || a.hasAttribute("download")) return;
+      let url: URL;
+      try {
+        url = new URL(a.href, window.location.href);
+      } catch {
+        return;
+      }
+      if (url.origin !== window.location.origin || (url.pathname === window.location.pathname && url.search === window.location.search)) return;
+      if (!window.confirm(t("leaveConfirm"))) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, [t]);
+
+  // ---------------------------------------------------------------- preview data (GET routes, not server actions)
+  const [locale, setLocale] = useState(props.defaultLocale);
+  const [source, setSource] = useState<"real" | "sample">("real");
+  const [data, setData] = useState<PreviewData | null>(null);
+  const dataCache = useRef(new Map<string, PreviewData>());
+  useEffect(() => {
+    const key = `${source}:${locale}`;
+    const hit = dataCache.current.get(key);
+    if (hit) {
+      setData(hit);
+      return;
     }
-    const p: Proposal = { baseVersionId: base.versionId, summary: res.data.summary, changedFiles: res.data.changedFiles ?? {}, deletedFiles: res.data.deletedFiles ?? [], manifest: res.data.manifest as ThemeManifest | undefined };
-    const list = proposalEntries(base.pkg, p);
-    say("ai", res.data.summary || t("aiDone"));
-    if (!list.length) return say("system", t("aiNoChanges"));
-    setProposal({ p, base: base.pkg });
-    setAccepted(new Set(list.map((e) => e.path)));
-    setMobileView("code");
+    const ac = new AbortController();
+    const qs = new URLSearchParams({ locale, source });
+    studioGet<{ view: ThemeView; source: "real" | "sample"; guestMessages: Record<string, string> }>(`/api/restaurants/${restaurantId}/themes/preview-data?${qs}`, ac.signal).then((res) => {
+      if (ac.signal.aborted) return;
+      if (!res.ok) return fail(res);
+      const d = { view: res.data.view, guestMessages: res.data.guestMessages };
+      dataCache.current.set(key, d);
+      setData(d);
+      if (source === "real" && res.data.source === "sample") toast(t("realUnavailable"));
+    });
+    return () => ac.abort();
+  }, [restaurantId, locale, source, fail, t]);
+
+  const [media, setMedia] = useState<Record<string, ThemeMediaRef>>({});
+  const mediaKey = mediaIdsFor(uiManifest, effectiveSettings).join(",");
+  useEffect(() => {
+    const ids = mediaKey ? mediaKey.split(",") : [];
+    const missing = ids.filter((i) => !media[i]);
+    if (!missing.length) return;
+    const ac = new AbortController();
+    studioGet<Record<string, ThemeMediaRef>>(`/api/restaurants/${restaurantId}/themes/media?ids=${encodeURIComponent(missing.join(","))}`, ac.signal).then((res) => {
+      if (!ac.signal.aborted && res.ok) setMedia((m) => ({ ...m, ...res.data }));
+    });
+    return () => ac.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mediaKey, restaurantId]);
+
+  // ---------------------------------------------------------------- AI
+  async function sendAi(text: string) {
+    if (aiBusyRef.current) return;
+    aiBusyRef.current = true;
+    setAiBusy(true);
+    say("user", text);
+    try {
+      const base = await save({ silent: true, duringAi: true });
+      if (!base) return say("system", t("aiNeedsValid"));
+      const res = await proposeThemeEdit({ restaurantId, themeId, versionId: base.versionId, instruction: text });
+      if (!res.ok) {
+        fail(res);
+        return say("system", t("aiFailed"));
+      }
+      const p: Proposal = { baseVersionId: base.versionId, summary: res.data.summary, changedFiles: res.data.changedFiles ?? {}, deletedFiles: res.data.deletedFiles ?? [], manifest: res.data.manifest as ThemeManifest | undefined };
+      const list = proposalEntries(base.pkg, p);
+      say("ai", res.data.summary || t("aiDone"));
+      if (!list.length) return say("system", t("aiNoChanges"));
+      setProposal({ p, base: base.pkg });
+      setAccepted(new Set(list.map((e) => e.path)));
+      setMobileView("code");
+    } catch {
+      crashed();
+      say("system", t("aiFailed"));
+    } finally {
+      aiBusyRef.current = false;
+      setAiBusy(false);
+    }
   }
 
   async function applyAi(all: boolean) {
-    if (!proposal) return;
+    if (!proposal || applying) return;
+    // The proposal is built on the version saved when the request was sent. If the working copy changed since
+    // (file tree ops, "set as default" …), applying replaces those changes → ask first.
+    if ((!parsed.ok || !samePackage(workingPkg, proposal.base)) && !window.confirm(t("aiDiscardEdits"))) return;
     const acc = all ? new Set(entries.map((e) => e.path)) : accepted;
     const pkg = applyProposal(proposal.base, proposal.p, acc);
     setApplying(true);
-    const res = await saveVersionAction({
-      restaurantId,
-      themeId,
-      pkg: pkg as unknown as { manifest: Record<string, unknown>; files: Record<string, string> },
-      note: (proposal.p.summary || t("aiNote")).slice(0, 300),
-      author: "ai",
-    });
-    setApplying(false);
+    let res: Awaited<ReturnType<typeof saveVersionAction>>;
+    try {
+      res = await saveVersionAction({
+        restaurantId,
+        themeId,
+        pkg: pkg as unknown as { manifest: Record<string, unknown>; files: Record<string, string> },
+        note: (proposal.p.summary || t("aiNote")).slice(0, 300),
+        author: "ai",
+      });
+    } catch {
+      return crashed();
+    } finally {
+      setApplying(false);
+    }
     if (!res.ok) return fail(res);
     if (!res.data.saved) {
       setValidation(res.data.validation);
@@ -343,6 +433,8 @@ export function StudioApp(props: {
     setMeta((m) => ({ ...m, currentVersionId: res.data.versionId! }));
     setVersionsKey(res.data.versionId);
     setProposal(null);
+    // the AI may have deleted the open file – don't keep editing (and thereby resurrecting) it
+    if (activePath !== MANIFEST_PATH && pkg.files[activePath] === undefined) setActivePath(MENU_TEMPLATE);
     say("system", t("aiApplied", { number: res.data.number }));
     toast.success(t("aiApplied", { number: res.data.number }));
   }
@@ -350,27 +442,43 @@ export function StudioApp(props: {
   // ---------------------------------------------------------------- versions
   const [versionPreview, setVersionPreview] = useState<{ id: string; number: number; pkg: ThemePackage } | null>(null);
   const [restoring, setRestoring] = useState<string | null>(null);
+  const versionReq = useRef<AbortController | null>(null);
 
   async function previewVersion(v: VersionRow) {
+    versionReq.current?.abort();
+    versionReq.current = null;
     if (versionPreview?.id === v.id) return setVersionPreview(null);
-    const res = await getVersionAction({ restaurantId, themeId, versionId: v.id });
+    const ac = new AbortController();
+    versionReq.current = ac;
+    const res = await studioGet<{ versionId: string; pkg: ThemePackage }>(`/api/restaurants/${restaurantId}/themes/${themeId}/versions/${v.id}`, ac.signal);
+    if (ac.signal.aborted) return; // a newer click won
+    versionReq.current = null;
     if (!res.ok) return fail(res);
     setVersionPreview({ id: v.id, number: v.number, pkg: res.data.pkg });
     setMobileView("preview");
   }
 
   async function restoreVersion(v: VersionRow) {
-    if (dirty && !window.confirm(t("restoreDiscard"))) return;
+    if (restoring || aiBusyRef.current) return;
+    if ((dirty || proposal) && !window.confirm(t("restoreDiscard"))) return;
     setRestoring(v.id);
-    const res = await restoreVersionAction({ restaurantId, themeId, versionId: v.id, note: t("restoredNote", { number: v.number }) });
-    setRestoring(null);
+    let res: Awaited<ReturnType<typeof restoreVersionAction>>;
+    try {
+      res = await restoreVersionAction({ restaurantId, themeId, versionId: v.id, note: t("restoredNote", { number: v.number }) });
+    } catch {
+      return crashed();
+    } finally {
+      setRestoring(null);
+    }
     if (!res.ok) return fail(res);
+    versionReq.current?.abort();
     setFiles(res.data.pkg.files);
     setManifestText(pretty(res.data.pkg.manifest));
     setSaved({ versionId: res.data.versionId, pkg: res.data.pkg });
     setMeta((m) => ({ ...m, currentVersionId: res.data.versionId }));
     setVersionsKey(res.data.versionId);
     setVersionPreview(null);
+    setProposal(null); // a pending AI proposal was built on the old version – applying it would revert the restore
     if (!res.data.pkg.files[activePath] && activePath !== MANIFEST_PATH) setActivePath(MENU_TEMPLATE);
     toast.success(t("restored", { number: v.number, newNumber: res.data.number }));
   }
@@ -378,7 +486,10 @@ export function StudioApp(props: {
   // ---------------------------------------------------------------- publish / export / rename
   const [publishOpen, setPublishOpen] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  // Publishing always publishes the working copy – never while the preview shows something else.
+  const publishBlocked = aiBusy ? t("aiBusyBlocked") : proposal ? t("publishBlockedProposal") : versionPreview ? t("publishBlockedVersion") : null;
   async function publish() {
+    if (publishing || publishBlocked) return;
     setPublishing(true);
     try {
       const base = await save({ silent: true });
@@ -389,6 +500,8 @@ export function StudioApp(props: {
       setGuestSettings(res.data.settings);
       setPublishOpen(false);
       toast.success(t("published"));
+    } catch {
+      crashed();
     } finally {
       setPublishing(false);
     }
@@ -404,17 +517,21 @@ export function StudioApp(props: {
     setEditingName(false);
     const v = name.trim();
     if (!v || v === meta.name) return;
-    const res = await renameThemeAction({ restaurantId, themeId, name: v });
-    if (!res.ok) return fail(res);
-    setMeta((m) => ({ ...m, name: res.data.name }));
+    try {
+      const res = await renameThemeAction({ restaurantId, themeId, name: v });
+      if (!res.ok) return fail(res);
+      setMeta((m) => ({ ...m, name: res.data.name }));
+    } catch {
+      crashed();
+    }
   }
 
   // ---------------------------------------------------------------- preview package
   const previewPkg = useMemo(() => {
     if (versionPreview) return versionPreview.pkg;
     if (proposal) return applyProposal(proposal.base, proposal.p, accepted);
-    return workingPkg;
-  }, [versionPreview, proposal, accepted, workingPkg]);
+    return previewWorkingPkg;
+  }, [versionPreview, proposal, accepted, previewWorkingPkg]);
   const previewSettings = useMemo(() => sanitizeSettings(previewPkg.manifest, settings), [previewPkg.manifest, settings]);
 
   const content = activePath === MANIFEST_PATH ? manifestText : (files[activePath] ?? "");
@@ -426,20 +543,14 @@ export function StudioApp(props: {
   ];
   const hub = `/dashboard/${restaurantId}/design`;
   const statusMeta = { ...meta, currentVersionId: dirty ? "__dirty__" : meta.currentVersionId };
+  const clearJump = useCallback(() => setJump(null), []);
 
   return (
     <div className="fixed inset-x-0 top-14 bottom-0 z-20 flex flex-col bg-white lg:left-[260px]">
       {/* top bar */}
       <div className="flex flex-wrap items-center gap-2 border-b border-stone-200 px-3 py-2">
-        <Link
-          href={hub}
-          className="focus-ring rounded-md p-1.5 text-stone-500 hover:bg-stone-100"
-          aria-label={t("back")}
-          title={t("back")}
-          onClick={(e) => {
-            if (dirty && !window.confirm(t("leaveConfirm"))) e.preventDefault();
-          }}
-        >
+        {/* unsaved-changes confirm: document-level click guard above */}
+        <Link href={hub} className="focus-ring rounded-md p-1.5 text-stone-500 hover:bg-stone-100" aria-label={t("back")} title={t("back")}>
           <ArrowLeft size={18} />
         </Link>
         <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -457,7 +568,13 @@ export function StudioApp(props: {
               aria-label={t("rename")}
             />
           ) : (
-            <button type="button" onClick={() => setEditingName(true)} className="focus-ring truncate rounded-md px-1 text-sm font-semibold text-stone-900 hover:bg-stone-100" title={t("rename")}>
+            <button
+              type="button"
+              onClick={() => setEditingName(true)}
+              disabled={aiBusy}
+              className="focus-ring truncate rounded-md px-1 text-sm font-semibold text-stone-900 hover:bg-stone-100 disabled:hover:bg-transparent"
+              title={aiBusy ? t("aiBusyBlocked") : t("rename")}
+            >
               {meta.name}
             </button>
           )}
@@ -470,10 +587,10 @@ export function StudioApp(props: {
           <Button variant="ghost" size="sm" onClick={exportTheme} title={t("export")} aria-label={t("export")}>
             <Download size={15} aria-hidden /> <span className="hidden md:inline">{t("export")}</span>
           </Button>
-          <Button variant="secondary" size="sm" onClick={() => save()} loading={saving} disabled={!dirty} title={t("saveShortcut")}>
+          <Button variant="secondary" size="sm" onClick={() => save()} loading={saving} disabled={!dirty || aiBusy} title={aiBusy ? t("aiBusyBlocked") : t("saveShortcut")}>
             {!saving && <Save size={15} aria-hidden />} <span className="hidden sm:inline">{t("save")}</span>
           </Button>
-          <Button size="sm" onClick={() => setPublishOpen(true)} disabled={errorCount > 0 || publishing}>
+          <Button size="sm" onClick={() => setPublishOpen(true)} disabled={errorCount > 0 || publishing || !!publishBlocked} title={publishBlocked ?? undefined}>
             <Rocket size={15} aria-hidden /> <span className="hidden sm:inline">{meta.isActive ? t("publishUpdate") : t("publish")}</span>
           </Button>
         </div>
@@ -515,63 +632,68 @@ export function StudioApp(props: {
             ))}
           </div>
           <div className="min-h-0 flex-1">
-            {panel === "files" && (
-              <FileTree
-                paths={Object.keys(files)}
-                active={activePath}
-                dirtyPaths={dirtyPaths}
-                errorCounts={errorCounts}
-                onOpen={(p) => {
-                  setActivePath(p);
-                  setMobileView("code");
-                }}
-                onAdd={addFile}
-                onRename={renameFile}
-                onDelete={deleteFile}
-              />
-            )}
-            {panel === "customize" && (
-              <Customizer
-                restaurantId={restaurantId}
-                manifest={manifest}
-                values={effectiveSettings}
-                onChange={(id, v) => setSettings((s) => ({ ...s, [id]: v }))}
-                isActive={meta.isActive}
-                dirty={settingsDirty}
-                saving={savingSettings}
-                onSaveForGuests={saveSettingsForGuests}
-                onReset={() => setSettings(settingsDefaults(manifest))}
-                onSaveAsDefaults={() => {
-                  if (!parsed.ok) return toast.error(t("manifestInvalid"));
-                  setManifestText(pretty(withSettingsAsDefaults(parsed.manifest, effectiveSettings)));
-                  toast(t("defaultsApplied"));
-                }}
-                onEditFields={() => openAt(MANIFEST_PATH)}
-              />
-            )}
-            {panel === "ai" && (
-              <AiChat
-                restaurantId={restaurantId}
-                messages={chat}
-                busy={aiBusy}
-                disabled={!props.canUseAi || !!proposal}
-                disabledHint={!props.canUseAi ? t("aiNoPermission") : proposal ? t("aiReviewPending") : dirty ? t("aiWillSave") : undefined}
-                onSend={sendAi}
-              />
-            )}
-            {panel === "versions" && (
-              <VersionsPanel
-                restaurantId={restaurantId}
-                themeId={themeId}
-                currentVersionId={meta.currentVersionId}
-                publishedVersionId={meta.publishedVersionId}
-                previewingId={versionPreview?.id ?? null}
-                refreshKey={versionsKey}
-                onPreview={previewVersion}
-                onRestore={restoreVersion}
-                busyId={restoring}
-              />
-            )}
+            <PanelBoundary resetKey={`${panel}\n${manifestText}`}>
+              {panel === "files" && (
+                <FileTree
+                  paths={Object.keys(files)}
+                  active={activePath}
+                  dirtyPaths={dirtyPaths}
+                  errorCounts={errorCounts}
+                  onOpen={(p) => {
+                    setActivePath(p);
+                    setMobileView("code");
+                  }}
+                  onAdd={addFile}
+                  onRename={renameFile}
+                  onDelete={deleteFile}
+                />
+              )}
+              {panel === "customize" && (
+                <Customizer
+                  restaurantId={restaurantId}
+                  manifest={uiManifest}
+                  values={effectiveSettings}
+                  onChange={(id, v) => setSettings((s) => ({ ...s, [id]: v }))}
+                  isActive={meta.isActive}
+                  dirty={settingsDirty}
+                  saving={savingSettings}
+                  blocked={aiBusy}
+                  onSaveForGuests={saveSettingsForGuests}
+                  onReset={() => setSettings(settingsDefaults(uiManifest))}
+                  onSaveAsDefaults={() => {
+                    if (!parsed.ok) return toast.error(t("manifestInvalid"));
+                    if (!schemaOk) return toast.error(t("manifestSchemaInvalid"));
+                    setManifestText(pretty(withSettingsAsDefaults(parsed.manifest, effectiveSettings)));
+                    toast(t("defaultsApplied"));
+                  }}
+                  onEditFields={() => openAt(MANIFEST_PATH)}
+                />
+              )}
+              {panel === "ai" && (
+                <AiChat
+                  restaurantId={restaurantId}
+                  messages={chat}
+                  busy={aiBusy}
+                  disabled={!props.canUseAi || !!proposal}
+                  disabledHint={!props.canUseAi ? t("aiNoPermission") : proposal ? t("aiReviewPending") : dirty ? t("aiWillSave") : undefined}
+                  onSend={sendAi}
+                />
+              )}
+              {panel === "versions" && (
+                <VersionsPanel
+                  restaurantId={restaurantId}
+                  themeId={themeId}
+                  currentVersionId={meta.currentVersionId}
+                  publishedVersionId={meta.publishedVersionId}
+                  previewingId={versionPreview?.id ?? null}
+                  refreshKey={versionsKey}
+                  onPreview={previewVersion}
+                  onRestore={restoreVersion}
+                  busyId={restoring}
+                  restoreDisabled={aiBusy}
+                />
+              )}
+            </PanelBoundary>
           </div>
         </aside>
 
@@ -604,10 +726,21 @@ export function StudioApp(props: {
                 <Code2 size={14} className="text-stone-400" aria-hidden />
                 <span className="truncate font-mono text-xs text-stone-700">{activePath}</span>
                 {dirtyPaths.has(activePath) && <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-label={t("unsaved")} />}
-                <span className="ml-auto hidden text-[11px] text-stone-400 md:inline">{t("saveShortcut")}</span>
+                <span className="ml-auto hidden text-[11px] text-stone-400 md:inline">{aiBusy ? t("aiBusyBlocked") : t("saveShortcut")}</span>
               </div>
               <div className="min-h-0 flex-1 overflow-hidden">
-                <CodeEditor key={activePath} path={activePath} value={content} onChange={setContent} jump={jump} errorLines={errorLines} ariaLabel={t("editorLabel", { path: activePath })} />
+                {/* read-only while the AI works: its proposal is built on the version saved when the request was sent */}
+                <CodeEditor
+                  key={activePath}
+                  path={activePath}
+                  value={content}
+                  onChange={setContent}
+                  readOnly={aiBusy}
+                  jump={jump}
+                  onJumped={clearJump}
+                  errorLines={errorLines}
+                  ariaLabel={t("editorLabel", { path: activePath })}
+                />
               </div>
             </>
           )}
@@ -616,33 +749,35 @@ export function StudioApp(props: {
 
         {/* preview */}
         <section className={cn("min-h-0 w-full flex-col border-l border-stone-200 lg:flex lg:w-[42%] lg:max-w-[720px] lg:min-w-[340px]", mobileView === "preview" ? "flex" : "hidden")}>
-          <PreviewPane
-            pkg={data ? previewPkg : null}
-            view={data?.view ?? null}
-            guestMessages={data?.guestMessages ?? {}}
-            media={media}
-            settings={previewSettings}
-            locale={locale}
-            locales={props.locales}
-            onLocale={setLocale}
-            source={source}
-            onSource={setSource}
-            onRenderErrors={setRenderErrors}
-            banner={
-              versionPreview ? (
-                <div className="flex items-center gap-2 border-b border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-amber-900">
-                  <Eye size={13} aria-hidden /> {t("previewingVersion", { number: versionPreview.number })}
-                  <button type="button" className="ml-auto font-medium underline" onClick={() => setVersionPreview(null)}>
-                    {t("backToWorking")}
-                  </button>
-                </div>
-              ) : proposal ? (
-                <div className="flex items-center gap-2 border-b border-violet-200 bg-violet-50 px-3 py-1.5 text-xs text-violet-900">
-                  <Bot size={13} aria-hidden /> {t("previewingProposal")}
-                </div>
-              ) : null
-            }
-          />
+          <PanelBoundary resetKey={previewPkg}>
+            <PreviewPane
+              pkg={data ? previewPkg : null}
+              view={data?.view ?? null}
+              guestMessages={data?.guestMessages ?? {}}
+              media={media}
+              settings={previewSettings}
+              locale={locale}
+              locales={props.locales}
+              onLocale={setLocale}
+              source={source}
+              onSource={setSource}
+              onRenderErrors={setRenderErrors}
+              banner={
+                versionPreview ? (
+                  <div className="flex items-center gap-2 border-b border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-amber-900">
+                    <Eye size={13} aria-hidden /> {t("previewingVersion", { number: versionPreview.number })}
+                    <button type="button" className="ml-auto font-medium underline" onClick={() => setVersionPreview(null)}>
+                      {t("backToWorking")}
+                    </button>
+                  </div>
+                ) : proposal ? (
+                  <div className="flex items-center gap-2 border-b border-violet-200 bg-violet-50 px-3 py-1.5 text-xs text-violet-900">
+                    <Bot size={13} aria-hidden /> {t("previewingProposal")}
+                  </div>
+                ) : null
+              }
+            />
+          </PanelBoundary>
         </section>
       </div>
 
@@ -673,7 +808,7 @@ export function StudioApp(props: {
             <Button variant="secondary" onClick={() => setPublishOpen(false)}>
               {t("cancel")}
             </Button>
-            <Button onClick={publish} loading={publishing}>
+            <Button onClick={publish} loading={publishing} disabled={!!publishBlocked}>
               <Rocket size={15} aria-hidden /> {t("publishConfirm")}
             </Button>
           </>

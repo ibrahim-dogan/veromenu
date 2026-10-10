@@ -6,6 +6,7 @@ import { Button, Field, Input, Select } from "@/components/ui";
 import { Switch } from "@/components/ui/switch";
 import { MediaPicker } from "@/modules/media/components/media-picker";
 import { FONT_LIBRARY, fontFaceCss, fontStack } from "@/modules/theme-engine/fonts";
+import { settingFields } from "@/modules/theme-engine/settings";
 import type { ThemeManifest, ThemeSettingField } from "@/modules/theme-engine/types";
 import { localizedText } from "../../lib/package";
 
@@ -24,6 +25,7 @@ export function Customizer({
   onReset,
   onSaveAsDefaults,
   onEditFields,
+  blocked,
 }: {
   restaurantId: string;
   manifest: ThemeManifest;
@@ -32,6 +34,8 @@ export function Customizer({
   isActive: boolean;
   dirty: boolean;
   saving: boolean;
+  /** e.g. while an AI edit runs (server actions would queue behind it) */
+  blocked?: boolean;
   onSaveForGuests: () => void;
   onReset: () => void;
   onSaveAsDefaults: () => void;
@@ -39,13 +43,13 @@ export function Customizer({
 }) {
   const t = useTranslations("themeStudio.customizer");
   const locale = useLocale();
-  const fields = useMemo(() => manifest.settings ?? [], [manifest.settings]);
+  const fields = useMemo(() => settingFields(manifest), [manifest]);
   const fontIds = useMemo(() => fields.filter((f) => f.type === "font").map((f) => String(values[f.id] ?? f.default)), [fields, values]);
-  const origin = typeof window === "undefined" ? "" : window.location.origin;
 
   return (
     <div className="flex h-full flex-col">
-      {fontIds.length > 0 && <style>{fontFaceCss(fontIds, origin)}</style>}
+      {/* relative font URLs (same origin) – identical on server and client, no hydration mismatch */}
+      {fontIds.length > 0 && <style>{fontFaceCss(fontIds, "")}</style>}
       <div className="flex items-center justify-between px-3 py-2">
         <p className="text-xs font-semibold tracking-wide text-stone-500 uppercase">{t("title")}</p>
         <Button variant="ghost" size="sm" onClick={onEditFields} title={t("editFields")}>
@@ -65,7 +69,7 @@ export function Customizer({
       </div>
       <div className="space-y-2 border-t border-stone-200 bg-white p-3">
         {isActive && (
-          <Button className="w-full" onClick={onSaveForGuests} loading={saving} disabled={!dirty}>
+          <Button className="w-full" onClick={onSaveForGuests} loading={saving} disabled={!dirty || blocked}>
             <Save size={14} aria-hidden /> {t("saveForGuests")}
           </Button>
         )}
@@ -88,7 +92,7 @@ function SettingControl({ restaurantId, field, value, onChange, locale }: { rest
   const label = localizedText(field.label, locale) || field.id;
   switch (field.type) {
     case "color": {
-      const v = typeof value === "string" ? value : field.default;
+      const v = typeof value === "string" ? value : typeof field.default === "string" ? field.default : "#000000";
       return (
         <Field label={label} htmlFor={id}>
           <div className="flex items-center gap-2">
@@ -106,7 +110,7 @@ function SettingControl({ restaurantId, field, value, onChange, locale }: { rest
       );
     }
     case "font": {
-      const v = typeof value === "string" ? value : field.default;
+      const v = typeof value === "string" ? value : String(field.default ?? "");
       return (
         <Field label={label} htmlFor={id}>
           <Select id={id} value={v} onChange={(e) => onChange(e.target.value)}>
@@ -130,7 +134,7 @@ function SettingControl({ restaurantId, field, value, onChange, locale }: { rest
       return (
         <Field label={label} htmlFor={id}>
           <Select id={id} value={String(value ?? field.default)} onChange={(e) => onChange(e.target.value)}>
-            {field.options.map((o) => (
+            {(Array.isArray(field.options) ? field.options : []).map((o) => (
               <option key={o.value} value={o.value}>
                 {localizedText(o.label, locale) || o.value}
               </option>
@@ -151,7 +155,7 @@ function SettingControl({ restaurantId, field, value, onChange, locale }: { rest
     case "text":
       return (
         <Field label={label} htmlFor={id}>
-          <Input id={id} value={typeof value === "string" ? value : field.default} maxLength={field.maxLength ?? 500} onChange={(e) => onChange(e.target.value)} />
+          <Input id={id} value={typeof value === "string" ? value : String(field.default ?? "")}maxLength={field.maxLength ?? 500} onChange={(e) => onChange(e.target.value)} />
         </Field>
       );
     case "image":

@@ -3,7 +3,7 @@
  * No server-only imports – runs in the browser (editor, customizer) and on the server (actions).
  */
 import { THEME_API_VERSION, THEME_FILE_PATTERNS, THEME_LIMITS, type ThemeManifest, type ThemePackage, type ThemeSettingField } from "@/modules/theme-engine/types";
-import { resolveSettings } from "@/modules/theme-engine/settings";
+import { resolveSettings, settingFields } from "@/modules/theme-engine/settings";
 
 /** Virtual path for the manifest inside the studio file tree (it is not part of `files`). */
 export const MANIFEST_PATH = "manifest.json";
@@ -72,7 +72,7 @@ export const localizedText = (l: Record<string, string> | undefined, locale: str
 
 export function settingsDefaults(manifest: Pick<ThemeManifest, "settings">): Record<string, unknown> {
   const out: Record<string, unknown> = {};
-  for (const f of manifest.settings ?? []) out[f.id] = f.default;
+  for (const f of settingFields(manifest)) out[f.id] = f.default;
   return out;
 }
 
@@ -83,15 +83,16 @@ export function sanitizeSettings(manifest: Pick<ThemeManifest, "settings">, raw:
 
 /** Media ids a package references with the given settings (image settings + named assets). */
 export function mediaIdsFor(manifest: Pick<ThemeManifest, "settings" | "assets">, settings: Record<string, unknown>): string[] {
-  const ids = Object.values(manifest.assets ?? {});
-  for (const f of manifest.settings ?? []) if (f.type === "image" && typeof settings[f.id] === "string") ids.push(settings[f.id] as string);
+  const assets = manifest.assets && typeof manifest.assets === "object" && !Array.isArray(manifest.assets) ? manifest.assets : {};
+  const ids = Object.values(assets).filter((v): v is string => typeof v === "string");
+  for (const f of settingFields(manifest)) if (f.type === "image" && typeof settings[f.id] === "string") ids.push(settings[f.id] as string);
   return [...new Set(ids)].sort();
 }
 
 /** Writes the given values into the manifest as new defaults ("save as theme default"). */
 export function withSettingsAsDefaults(manifest: ThemeManifest, values: Record<string, unknown>): ThemeManifest {
   const clean = sanitizeSettings(manifest, values);
-  return { ...manifest, settings: manifest.settings.map((f) => ({ ...f, default: clean[f.id] }) as ThemeSettingField) };
+  return { ...manifest, settings: settingFields(manifest).map((f) => ({ ...f, default: clean[f.id] }) as ThemeSettingField) };
 }
 
 // ------------------------------------------------------------------ import / blank

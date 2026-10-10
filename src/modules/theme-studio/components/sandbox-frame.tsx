@@ -14,6 +14,7 @@ export function SandboxFrame({
   style,
   onBridge,
   interactive = true,
+  preserveScroll = false,
 }: {
   html: string;
   title: string;
@@ -21,10 +22,17 @@ export function SandboxFrame({
   style?: React.CSSProperties;
   onBridge?: (msg: BridgeMessage) => void;
   interactive?: boolean;
+  /** Re-open each new document at the previous scroll position (studio live preview re-renders on every edit). */
+  preserveScroll?: boolean;
 }) {
   const ref = useRef<HTMLIFrameElement>(null);
   const cb = useRef(onBridge);
   const acked = useRef(false);
+  const scrollY = useRef(0);
+  const preserve = useRef(preserveScroll);
+  useEffect(() => {
+    preserve.current = preserveScroll;
+  });
   useEffect(() => {
     acked.current = false;
   }, [html]);
@@ -37,10 +45,17 @@ export function SandboxFrame({
       if (!ref.current || e.source !== ref.current.contentWindow) return;
       const d = e.data as BridgeMessage | null;
       if (!d || typeof d !== "object" || typeof d.type !== "string" || !d.type.startsWith("vm:")) return;
+      // Scroll position reports (preview mode only) – host-internal, not forwarded.
+      const raw = d as { type: string; y?: unknown };
+      if (raw.type === "vm:scroll") {
+        scrollY.current = Math.max(0, Number(raw.y) || 0);
+        return;
+      }
       // Acknowledge once like the guest host does, so the bridge stops repeating vm:ready.
       if (d.type === "vm:ready" && !acked.current) {
         acked.current = true;
         ref.current.contentWindow?.postMessage({ type: "vm:cart", count: 0, totalFormatted: "" }, "*");
+        if (preserve.current && scrollY.current > 0) ref.current.contentWindow?.postMessage({ type: "vm:scrollTo", y: scrollY.current }, "*");
       }
       cb.current?.(d);
     }

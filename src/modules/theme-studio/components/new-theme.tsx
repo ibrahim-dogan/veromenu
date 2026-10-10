@@ -22,6 +22,7 @@ const EXAMPLES = ["bistro", "sushi", "cafe", "steakhouse", "vegan", "biergarten"
 
 export function NewTheme({ restaurantId, canUseAi, onTemplates }: { restaurantId: string; canUseAi: boolean; onTemplates: () => void }) {
   const t = useTranslations("themeStudio.new");
+  const te = useTranslations("errors");
   const router = useRouter();
   const [mode, setMode] = useState<Mode>(null);
   const [generating, setGenerating] = useState<"files" | "prompt" | null>(null);
@@ -35,7 +36,11 @@ export function NewTheme({ restaurantId, canUseAi, onTemplates }: { restaurantId
     input.value = "";
     if (!file) return;
     if (file.size > 6_000_000) return toast.error(t("importTooLarge"));
-    await imp.run({ restaurantId, json: await readFileText(file) });
+    try {
+      await imp.run({ restaurantId, json: await readFileText(file) });
+    } catch {
+      toast.error(te("unexpected"));
+    }
   }
 
   const cards = [
@@ -124,6 +129,7 @@ function UploadedList({ items, onRemove }: { items: MediaItem[]; onRemove: (id: 
 
 function FilesDialog({ open, onClose, restaurantId, onStart, onDone }: { open: boolean; onClose: () => void; restaurantId: string; onStart: () => void; onDone: (themeId: string | null) => void }) {
   const t = useTranslations("themeStudio.new");
+  const te = useTranslations("errors");
   const [files, setFiles] = useState<MediaItem[]>([]);
   const [notes, setNotes] = useState("");
   const gen = useAction(generateThemeFromFiles, { success: t("generated"), refresh: false });
@@ -131,7 +137,14 @@ function FilesDialog({ open, onClose, restaurantId, onStart, onDone }: { open: b
   async function start() {
     onClose();
     onStart();
-    const res = await gen.run({ restaurantId, mediaIds: files.map((f) => f.id), notes: notes.trim() || undefined });
+    let res: Awaited<ReturnType<typeof gen.run>>;
+    try {
+      res = await gen.run({ restaurantId, mediaIds: files.map((f) => f.id), notes: notes.trim() || undefined });
+    } catch {
+      // network error / proxy timeout: the server action promise rejects – never leave the progress overlay up
+      toast.error(te("unexpected"));
+      return onDone(null);
+    }
     onDone(res.ok ? res.data.themeId : null);
     if (res.ok) {
       setFiles([]);
@@ -171,6 +184,7 @@ function FilesDialog({ open, onClose, restaurantId, onStart, onDone }: { open: b
 
 function PromptDialog({ open, onClose, restaurantId, onStart, onDone }: { open: boolean; onClose: () => void; restaurantId: string; onStart: () => void; onDone: (themeId: string | null) => void }) {
   const t = useTranslations("themeStudio.new");
+  const te = useTranslations("errors");
   const [prompt, setPrompt] = useState("");
   const [refs, setRefs] = useState<MediaItem[]>([]);
   const gen = useAction(generateThemeFromPrompt, { success: t("generated"), refresh: false });
@@ -178,7 +192,13 @@ function PromptDialog({ open, onClose, restaurantId, onStart, onDone }: { open: 
   async function start() {
     onClose();
     onStart();
-    const res = await gen.run({ restaurantId, prompt: prompt.trim(), referenceMediaIds: refs.length ? refs.map((r) => r.id) : undefined });
+    let res: Awaited<ReturnType<typeof gen.run>>;
+    try {
+      res = await gen.run({ restaurantId, prompt: prompt.trim(), referenceMediaIds: refs.length ? refs.map((r) => r.id) : undefined });
+    } catch {
+      toast.error(te("unexpected"));
+      return onDone(null);
+    }
     onDone(res.ok ? res.data.themeId : null);
     if (res.ok) {
       setPrompt("");

@@ -43,7 +43,7 @@ export async function getOnboarding(r: Restaurant): Promise<OnboardingStep[]> {
     { key: "translations", done: otherLocales.length > 0 && trStats.total > 0 && trStats.pending === 0, href: `${base}/translations` },
     { key: "allergens", done: itemStats.total > 0 && itemStats.unconfirmed === 0, href: `${base}/review` },
     { key: "impressum", done: !!(s.legal?.companyName && s.address?.street && s.address?.city), href: `${base}/settings#legal` },
-    { key: "qr", done: qr.n > 0, href: `${base}/tables` },
+    { key: "qr", done: qr.n > 0, href: `${base}/print` },
     {
       key: "design",
       done: theme.n > 0 || r.themeId !== "classic" || Object.keys(r.themeConfig ?? {}).length > 0,

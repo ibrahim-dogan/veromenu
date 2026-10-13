@@ -93,5 +93,7 @@
   "locked": {
     "title": "Masa başına QR kodlar paketine dahil değil",
     "description": "Masa kodlarıyla her siparişin hangi masadan geldiğini bilirsin. Yukarıdaki genel QR kod yine de çalışır."
-  }
+  },
+  "printDesignsLink": "Masa kartı ve poster tasarla",
+  "printSelected": "{count} masayı yazdır"
 }

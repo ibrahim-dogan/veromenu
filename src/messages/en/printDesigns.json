@@ -57,5 +57,7 @@
     "label": "Print view",
     "print": "Print",
     "hint": "In the print dialog: scale 100%, margins: none, background graphics on."
-  }
+  },
+  "pageTitle": "Print designs",
+  "pageDescription": "Table tents, cards and posters with your QR codes – pick a template or design with AI, choose what's shown and print."
 }

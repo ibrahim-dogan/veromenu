@@ -26,6 +26,7 @@ export const DASHBOARD_NAV: NavItem[] = [
   { key: "translations", href: "translations", icon: "Languages", permission: "translations.manage", group: "quality" },
   { key: "orders", href: "orders", icon: "ConciergeBell", permission: "orders.view", feature: "ordering", group: "operations" },
   { key: "tables", href: "tables", icon: "QrCode", permission: "tables.manage", group: "operations" },
+  { key: "print", href: "print", icon: "Printer", permission: "tables.manage", group: "operations" },
   { key: "stats", href: "stats", icon: "BarChart3", permission: "stats.view", group: "operations" },
   { key: "design", href: "design", icon: "Palette", permission: "theme.manage", group: "settings" },
   { key: "team", href: "team", icon: "Users", permission: "team.manage", group: "settings" },

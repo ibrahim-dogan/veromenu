@@ -486,7 +486,7 @@ function ReviewView({
                     applying={applying === "print"}
                     disabled={!!applying}
                     onApply={() => apply(["print"], "print")}
-                    extraLink={{ href: `/dashboard/${restaurantId}/tables`, label: t("review.print.openTables") }}
+                    extraLink={{ href: `/dashboard/${restaurantId}/print`, label: t("review.print.openTables") }}
                     print
                   />
                 ) : (

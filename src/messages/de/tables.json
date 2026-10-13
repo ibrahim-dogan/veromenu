@@ -93,5 +93,7 @@
   "locked": {
     "title": "QR-Codes pro Tisch sind in deinem Tarif nicht enthalten",
     "description": "Mit eigenen Tisch-Codes weißt du bei jeder Bestellung, von welchem Tisch sie kommt. Der allgemeine QR-Code oben funktioniert trotzdem."
-  }
+  },
+  "printDesignsLink": "Aufsteller & Poster gestalten",
+  "printSelected": "{count, plural, one {# Tisch drucken} other {# Tische drucken}}"
 }

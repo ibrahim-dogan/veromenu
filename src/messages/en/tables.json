@@ -93,5 +93,7 @@
   "locked": {
     "title": "Per-table QR codes are not included in your plan",
     "description": "With table codes you know which table every order comes from. The general QR code above works anyway."
-  }
+  },
+  "printDesignsLink": "Design table cards & posters",
+  "printSelected": "{count, plural, one {Print # table} other {Print # tables}}"
 }

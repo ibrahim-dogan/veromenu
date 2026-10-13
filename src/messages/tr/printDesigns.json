@@ -57,5 +57,7 @@
     "label": "Baskı görünümü",
     "print": "Yazdır",
     "hint": "Yazdırma penceresinde: ölçek %100, kenar boşlukları: yok, arka plan grafikleri açık."
-  }
+  },
+  "pageTitle": "Baskı tasarımları",
+  "pageDescription": "QR kodlu masa kartları, masa standları ve posterler – şablon seç ya da yapay zekâyla tasarla, neyin görüneceğine karar ver ve yazdır."
 }

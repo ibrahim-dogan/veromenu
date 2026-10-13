@@ -57,5 +57,7 @@
     "label": "Druckansicht",
     "print": "Drucken",
     "hint": "Im Druckdialog: Skalierung 100 %, Ränder: keine, Hintergrundgrafiken an."
-  }
+  },
+  "pageTitle": "Druckdesigns",
+  "pageDescription": "Tischaufsteller, Karten und Poster mit deinen QR-Codes – Vorlage wählen oder mit KI gestalten, Inhalte festlegen und drucken."
 }

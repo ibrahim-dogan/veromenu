@@ -65,6 +65,7 @@ export function PrintDesigns({
   canUseTables,
   canUseStudio,
   cardLocale,
+  initialTableIds,
 }: {
   restaurantId: string;
   designs: PrintDesignDto[];
@@ -75,6 +76,8 @@ export function PrintDesigns({
   canUseStudio: boolean;
   /** language of the card texts (restaurant default locale) */
   cardLocale: string;
+  /** tables preselected from the tables page (?tables=…) */
+  initialTableIds?: string[];
 }) {
   const t = useTranslations("printDesigns");
   const router = useRouter();
@@ -157,13 +160,7 @@ export function PrintDesigns({
 
   return (
     <Card>
-      <div className="flex flex-col gap-3 border-b border-stone-100 px-5 py-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h2 className="font-semibold text-stone-900">{t("title")}</h2>
-          <p className="mt-0.5 max-w-2xl text-sm text-stone-500">{t("description")}</p>
-        </div>
-      </div>
-      {/* Full-width row: the entry cards form a 5-column grid (inside the header they overflowed the page). */}
+      {/* The page header (dedicated /print page) already introduces the section. */}
       <div className="min-w-0 border-b border-stone-100 px-5 py-4">
         <NewPrintDesign
           restaurantId={restaurantId}
@@ -203,6 +200,7 @@ export function PrintDesigns({
             canUseTables={canUseTables}
             canUseStudio={canUseStudio}
             cardLocale={cardLocale}
+            initialTableIds={initialTableIds}
           />
         ) : (
           <p className="flex items-center gap-2 rounded-lg border border-dashed border-stone-300 p-4 text-sm text-stone-500">
@@ -236,6 +234,7 @@ function SelectedDesign({
   canUseTables,
   canUseStudio,
   cardLocale,
+  initialTableIds,
 }: {
   restaurantId: string;
   design: PrintDesignDto;
@@ -245,6 +244,7 @@ function SelectedDesign({
   canUseTables: boolean;
   canUseStudio: boolean;
   cardLocale: string;
+  initialTableIds?: string[];
 }) {
   const t = useTranslations("printDesigns");
   const uiLocale = useLocale();
@@ -273,8 +273,11 @@ function SelectedDesign({
   const config = values as Record<string, string | number | boolean | null>;
 
   // ---- print scope
-  const [scope, setScope] = React.useState<"all" | "selected" | "generic">(tablesAvailable ? "all" : "generic");
-  const [picked, setPicked] = React.useState<Set<string>>(new Set());
+  const preselected = (initialTableIds ?? []).filter((id) => tables.some((x) => x.id === id));
+  const [scope, setScope] = React.useState<"all" | "selected" | "generic">(
+    !tablesAvailable ? "generic" : preselected.length ? "selected" : "all",
+  );
+  const [picked, setPicked] = React.useState<Set<string>>(new Set(preselected));
   const [withGeneric, setWithGeneric] = React.useState(false);
   const tableCount = scope === "all" ? activeTables.length : scope === "selected" ? picked.size : 0;
   const cards = tableCount + (scope === "generic" || withGeneric ? 1 : 0);

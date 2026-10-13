@@ -1,11 +1,11 @@
 import {
   LayoutDashboard, BookOpen, Sparkles, FileUp, Images, ShieldCheck, Languages, ConciergeBell, QrCode,
-  BarChart3, Palette, Users, Settings, Store, Bot, ScrollText, Circle, type LucideIcon,
+  BarChart3, Palette, Users, Settings, Store, Bot, ScrollText, Printer, Circle, type LucideIcon,
 } from "lucide-react";
 
 const ICONS: Record<string, LucideIcon> = {
   LayoutDashboard, BookOpen, Sparkles, FileUp, Images, ShieldCheck, Languages, ConciergeBell, QrCode,
-  BarChart3, Palette, Users, Settings, Store, Bot, ScrollText,
+  BarChart3, Palette, Users, Settings, Store, Bot, ScrollText, Printer,
 };
 
 export function NavIcon({ name, size = 18 }: { name: string; size?: number }) {

@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import {
   Download,
   ListPlus,
@@ -26,6 +26,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/toast";
 import { useAction } from "@/components/use-action";
 import { cn } from "@/core/utils";
+import { Link } from "@/core/i18n/navigation";
 import {
   bulkCreateTablesAction,
   createTableAction,
@@ -51,17 +52,14 @@ export function TablesManager({
   restaurantId,
   tables,
   limit,
-  hasLogo,
 }: {
   restaurantId: string;
   tables: TableDto[];
   limit: number;
-  hasLogo: boolean;
 }) {
   const t = useTranslations("tables");
   const [editing, setEditing] = React.useState<Editing>(null);
   const [bulkOpen, setBulkOpen] = React.useState(false);
-  const [printOpen, setPrintOpen] = React.useState(false);
   const [preview, setPreview] = React.useState<TableDto | null>(null);
   const [regen, setRegen] = React.useState<TableDto | null>(null);
   const [remove, setRemove] = React.useState<TableDto | null>(null);
@@ -109,14 +107,12 @@ export function TablesManager({
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setPrintOpen(true)}
-            disabled={!tables.length}
+          <Link
+            href={`/dashboard/${restaurantId}/print${selected.size ? `?tables=${[...selected].join(",")}` : ""}`}
+            className={buttonClass("secondary", "sm")}
           >
-            <Printer size={14} aria-hidden /> {t("print.button")}
-          </Button>
+            <Printer size={14} aria-hidden /> {selected.size ? t("printSelected", { count: selected.size }) : t("printDesignsLink")}
+          </Link>
           <Button
             variant="secondary"
             size="sm"
@@ -319,15 +315,6 @@ export function TablesManager({
         areas={areas}
         remaining={limit - tables.length}
       />
-      {printOpen && (
-        <PrintDialog
-          open={printOpen}
-          onClose={() => setPrintOpen(false)}
-          restaurantId={restaurantId}
-          selected={[...selected]}
-          hasLogo={hasLogo}
-        />
-      )}
       <QrPreviewDialog
         restaurantId={restaurantId}
         table={preview}
@@ -656,142 +643,6 @@ function BulkDialog({
         </p>
         <p className="text-xs text-stone-500">{t("bulk.skipHint")}</p>
       </form>
-    </Dialog>
-  );
-}
-
-function PrintDialog({
-  open,
-  onClose,
-  restaurantId,
-  selected,
-  hasLogo,
-}: {
-  open: boolean;
-  onClose: () => void;
-  restaurantId: string;
-  selected: string[];
-  hasLogo: boolean;
-}) {
-  const t = useTranslations("tables");
-  const tc = useTranslations("common");
-  const locale = useLocale();
-  const [layout, setLayout] = React.useState<"sheet" | "tent">("sheet");
-  const [scope, setScope] = React.useState<"all" | "selected">(
-    selected.length ? "selected" : "all",
-  );
-  const [generic, setGeneric] = React.useState(false);
-  const [logo, setLogo] = React.useState(true);
-
-  const params = new URLSearchParams({
-    layout,
-    tables:
-      scope === "selected" && selected.length ? selected.join(",") : "all",
-    logo: logo ? "1" : "0",
-    locale,
-  });
-  if (generic) params.set("generic", "1");
-  const href = `/api/restaurants/${restaurantId}/qr/pdf?${params}`;
-
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      title={t("print.title")}
-      description={t("print.description")}
-      footer={
-        <>
-          <Button variant="secondary" type="button" onClick={onClose}>
-            {tc("cancel")}
-          </Button>
-          <a
-            href={href}
-            className={buttonClass("primary", "md")}
-            onClick={() => setTimeout(onClose, 300)}
-          >
-            <Download size={16} aria-hidden /> {t("print.download")}
-          </a>
-        </>
-      }
-    >
-      <div className="space-y-5">
-        <fieldset>
-          <legend className="mb-2 text-sm font-medium text-stone-700">
-            {t("print.layout")}
-          </legend>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {(["sheet", "tent"] as const).map((l) => (
-              <label
-                key={l}
-                className={cn(
-                  "flex cursor-pointer flex-col gap-0.5 rounded-xl border p-3 text-sm",
-                  layout === l
-                    ? "border-brand-600 bg-brand-50 ring-1 ring-brand-600"
-                    : "border-stone-200 hover:border-stone-300",
-                )}
-              >
-                <span className="flex items-center gap-2 font-medium text-stone-900">
-                  <input
-                    type="radio"
-                    name="layout"
-                    className="accent-brand-700"
-                    checked={layout === l}
-                    onChange={() => setLayout(l)}
-                  />
-                  {t(`print.${l}`)}
-                </span>
-                <span className="text-xs text-stone-500">
-                  {t(`print.${l}Hint`)}
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
-        <fieldset className="space-y-2">
-          <legend className="mb-2 text-sm font-medium text-stone-700">
-            {t("print.scope")}
-          </legend>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="radio"
-              name="scope"
-              className="accent-brand-700"
-              checked={scope === "all"}
-              onChange={() => setScope("all")}
-            />
-            {t("print.allActive")}
-          </label>
-          <label
-            className={cn(
-              "flex items-center gap-2 text-sm",
-              !selected.length && "opacity-50",
-            )}
-          >
-            <input
-              type="radio"
-              name="scope"
-              className="accent-brand-700"
-              disabled={!selected.length}
-              checked={scope === "selected"}
-              onChange={() => setScope("selected")}
-            />
-            {t("print.selectedOnly", { count: selected.length })}
-          </label>
-        </fieldset>
-        <div className="space-y-3">
-          <Switch
-            checked={generic}
-            onCheckedChange={setGeneric}
-            label={t("print.includeGeneric")}
-          />
-          <Switch
-            checked={logo && hasLogo}
-            disabled={!hasLogo}
-            onCheckedChange={setLogo}
-            label={hasLogo ? t("print.includeLogo") : t("print.noLogo")}
-          />
-        </div>
-      </div>
     </Dialog>
   );
 }

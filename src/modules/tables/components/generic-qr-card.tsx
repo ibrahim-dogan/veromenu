@@ -1,12 +1,12 @@
 "use client";
-import { useTranslations, useLocale } from "next-intl";
-import { Download, ExternalLink, FileText } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Download, ExternalLink, Printer } from "lucide-react";
+import { Link } from "@/core/i18n/navigation";
 import { Card, buttonClass } from "@/components/ui";
 import { CopyButton } from "./copy-button";
 
 export function GenericQrCard({ restaurantId, url }: { restaurantId: string; url: string }) {
   const t = useTranslations("tables");
-  const locale = useLocale();
   const base = `/api/restaurants/${restaurantId}/qr`;
   return (
     <Card className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center">
@@ -37,9 +37,9 @@ export function GenericQrCard({ restaurantId, url }: { restaurantId: string; url
           <a href={`${base}?format=svg&size=1024&download=1`} className={buttonClass("secondary", "sm")}>
             <Download size={14} aria-hidden /> SVG
           </a>
-          <a href={`${base}/pdf?layout=tent&generic=1&locale=${locale}`} className={buttonClass("secondary", "sm")}>
-            <FileText size={14} aria-hidden /> {t("generic.tentPdf")}
-          </a>
+          <Link href={`/dashboard/${restaurantId}/print`} className={buttonClass("secondary", "sm")}>
+            <Printer size={14} aria-hidden /> {t("printDesignsLink")}
+          </Link>
         </div>
       </div>
     </Card>

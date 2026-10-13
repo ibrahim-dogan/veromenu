@@ -572,7 +572,7 @@ export function StudioApp(props: {
     { key: "ai", icon: Bot, label: t("panelAi") },
     { key: "versions", icon: History, label: t("panelVersions") },
   ];
-  const hub = isPrint ? `/dashboard/${restaurantId}/tables` : `/dashboard/${restaurantId}/design`;
+  const hub = isPrint ? `/dashboard/${restaurantId}/print` : `/dashboard/${restaurantId}/design`;
   const statusMeta = { ...meta, currentVersionId: dirty ? "__dirty__" : meta.currentVersionId };
   const clearJump = useCallback(() => setJump(null), []);
   const previewBanner = versionPreview ? (

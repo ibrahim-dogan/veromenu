@@ -8,7 +8,7 @@ import type { ClientItem, GuestMenuData } from "../types";
 import { GuestRuntime } from "./runtime";
 
 export function toClientItems(data: GuestMenuData): ClientItem[] {
-  return data.menus.flatMap((m) =>
+  return (data.allMenus ?? data.menus).flatMap((m) =>
     m.categories.flatMap((c) =>
       c.items.map((i) => ({
         id: i.id,

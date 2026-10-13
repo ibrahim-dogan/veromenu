@@ -23,6 +23,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
   const res = await loadGuestMenu(slug, {
     lang: sp.get("lang"),
     tableToken: sp.get("t"),
+    menuId: sp.get("menu"),
     acceptLanguage: req.headers.get("accept-language"),
     preview: wantsPreview && previewTheme ? { themeId: previewTheme, config: decodeConfigParam(sp.get("config")) } : null,
   });

@@ -142,5 +142,7 @@
   "cancel": "İptal",
   "close": "Kapat",
   "delete": "Sil",
-  "editItemNamed": "„{name}“ düzenle"
+  "editItemNamed": "„{name}“ düzenle",
+  "guestViewMenu": "Misafir görünümü",
+  "multiMenuHint": "Misafirler önce ilk menüyü görür, üstteki menü çubuğundan diğerlerine geçer. Boş menüler gösterilmez."
 }

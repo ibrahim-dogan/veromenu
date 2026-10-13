@@ -15,10 +15,13 @@ import type { GuestImage, GuestItem, GuestMenu, GuestMenuData } from "../types";
 // ---------------------------------------------------------------- links
 
 /** Guest URL that keeps table token, language and (for authorized previews) the preview params. */
-export function guestHref(data: GuestMenuData, opts: { lang?: string; path?: string } = {}) {
+export function guestHref(data: GuestMenuData, opts: { lang?: string; path?: string; menu?: string | null } = {}) {
   const p = new URLSearchParams();
   if (data.tableToken) p.set("t", data.tableToken);
   p.set("lang", opts.lang ?? data.locale);
+  // keep the selected (non-primary) menu across language switches; primary menu = no parameter
+  const menu = opts.menu === undefined ? (data.menuOptions?.find((o) => o.selected && !o.primary)?.id ?? null) : opts.menu;
+  if (menu && !opts.path) p.set("menu", menu);
   if (data.preview) {
     p.set("preview", "1");
     p.set("theme", data.theme.id);
@@ -265,6 +268,82 @@ export function OrderingNotice({ data, t, className }: { data: GuestMenuData; t:
 }
 
 /** All categories of all menus for the nav. */
+/**
+ * Menu switcher (Speisekarte · Getränke · Mittagstisch …) as plain links – no client JS.
+ * Rendered by themes above the category nav; only when more than one menu is visible.
+ */
+export function MenuSwitcher({
+  data,
+  t,
+  className,
+  linkClassName,
+  activeClassName,
+  inactiveClassName,
+}: {
+  data: GuestMenuData;
+  t: GuestT;
+  className?: string;
+  linkClassName?: string;
+  activeClassName?: string;
+  inactiveClassName?: string;
+}) {
+  const options = data.menuOptions ?? [];
+  if (options.length < 2) return null;
+  return (
+    <nav aria-label={t("menus")} className={cn("overflow-x-auto [scrollbar-width:none]", className)}>
+      <ul className="flex gap-2 whitespace-nowrap">
+        {options.map((o) => (
+          <li key={o.id}>
+            <a
+              href={guestHref(data, { menu: o.primary ? null : o.id })}
+              aria-current={o.selected ? "page" : undefined}
+              className={cn(
+                "inline-flex min-h-10 items-center gap-1.5 rounded-full px-4 text-sm font-medium",
+                linkClassName,
+                o.selected ? activeClassName : inactiveClassName,
+                o.scheduled && !o.activeNow && !o.selected && "opacity-70",
+              )}
+            >
+              {o.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+/** Compact menu picker for the studio-theme host controls (<details> popover, like the language switcher). */
+export function MenuPicker({ data, t, buttonClassName }: { data: GuestMenuData; t: GuestT; buttonClassName?: string }) {
+  const options = data.menuOptions ?? [];
+  if (options.length < 2) return null;
+  const current = options.find((o) => o.selected) ?? options[0];
+  return (
+    <details data-vm-popover className="group relative">
+      <summary
+        className={cn("flex h-10 max-w-44 cursor-pointer list-none items-center gap-1.5 rounded-full px-3 text-sm font-medium select-none [&::-webkit-details-marker]:hidden", buttonClassName)}
+        aria-label={`${t("menus")}: ${current.name}`}
+      >
+        <span className="truncate">{current.name}</span>
+        <span aria-hidden>▾</span>
+      </summary>
+      <ul className="bg-g-surface text-g-text border-g-border absolute end-0 top-full z-50 mt-2 max-h-[60vh] w-60 overflow-y-auto rounded-[var(--g-radius)] border py-1 shadow-xl">
+        {options.map((o) => (
+          <li key={o.id}>
+            <a
+              href={guestHref(data, { menu: o.primary ? null : o.id })}
+              aria-current={o.selected ? "page" : undefined}
+              className={cn("hover:bg-g-text/5 flex items-center gap-3 px-4 py-2.5 text-[15px]", o.selected && "font-semibold")}
+            >
+              {o.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
+}
+
 export const navCategories = (data: GuestMenuData) => data.menus.flatMap((m) => m.categories.map((c) => ({ id: c.id, name: c.name })));
 
 /** Allergen options for the filter (all EU-14, localized). */

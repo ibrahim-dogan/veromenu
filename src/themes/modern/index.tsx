@@ -7,24 +7,7 @@ import { FilterBar } from "@/modules/guest/components/filter-bar";
 import { LanguageSwitcher } from "@/modules/guest/components/language-switcher";
 import { LegalFooter } from "@/modules/guest/components/legal-footer";
 import { PdfMenu } from "@/modules/guest/components/pdf-menu";
-import {
-  AllergenMarks,
-  ItemImage,
-  ItemOpenButton,
-  NoResults,
-  OrderingNotice,
-  QuickAddButton,
-  ScheduleNote,
-  SoldOutBadge,
-  TagBadges,
-  UnknownAllergenNote,
-  VariantLine,
-  allergenFilterOptions,
-  categoryAttrs,
-  itemAttrs,
-  navCategories,
-  priceLabel,
-} from "@/modules/guest/components/blocks";
+import { AllergenMarks, ItemImage, ItemOpenButton, NoResults, OrderingNotice, QuickAddButton, ScheduleNote, SoldOutBadge, TagBadges, UnknownAllergenNote, VariantLine, allergenFilterOptions, categoryAttrs, itemAttrs, navCategories, priceLabel, MenuSwitcher } from "@/modules/guest/components/blocks";
 import { commonVars } from "../config";
 import { fontPairingVars } from "../fonts";
 import type { ThemeConfig, ThemeModule, ThemeProps } from "../types";
@@ -146,6 +129,7 @@ function Modern({ data, config, t }: ThemeProps) {
         </main>
       ) : (
         <>
+          <MenuSwitcher data={data} t={t} className="mx-auto max-w-5xl px-4 pt-2 pb-3" activeClassName="bg-g-primary text-white shadow-sm" inactiveClassName="bg-g-surface text-g-text shadow-sm" />
           <CategoryNav
             categories={navCategories(data)}
             className="bg-g-bg/90 mt-3 backdrop-blur-md"

@@ -22,6 +22,7 @@ export default async function MenuPage({ params, searchParams }: PageProps<"/[lo
       restaurantId={rid}
       menus={tree}
       initialMenuId={initialMenuId}
+      guestUrl={`/m/${ctx.restaurant.slug}`}
       menuMode={ctx.restaurant.settings?.menuMode === "pdf" ? "pdf" : "digital"}
       usage={usage}
       limits={{ items: plan.limits.items, menus: plan.limits.menus }}

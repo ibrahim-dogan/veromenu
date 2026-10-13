@@ -92,7 +92,12 @@ export type GuestMenuData = {
   dir: "ltr" | "rtl";
   availableLocales: GuestLocaleOption[];
   menuMode: "digital" | "pdf";
+  /** Menus rendered on this page: only the selected one (?menu=<id>, default = primary menu). */
   menus: GuestMenu[];
+  /** Every visible menu – cart, item sheet and bridge validation need items of all menus. */
+  allMenus: GuestMenu[];
+  /** Switcher entries (primary first). More than one → themes/host show a menu switcher. */
+  menuOptions: { id: string; name: string; primary: boolean; selected: boolean; scheduled: boolean; activeNow: boolean }[];
   pdfPages: GuestPdfPage[];
   table: { id: string; label: string } | null;
   tableToken: string | null;

@@ -19,6 +19,7 @@ export function StudioThemeHost({
   langHrefs,
   showLanguage,
   languageSwitcher,
+  menuSwitcher,
   info,
   hostCartBar,
 }: {
@@ -29,6 +30,8 @@ export function StudioThemeHost({
   showLanguage: boolean;
   /** Server-rendered language switcher (host control). */
   languageSwitcher: ReactNode;
+  /** Server-rendered menu picker (host control) – null when there is only one menu. */
+  menuSwitcher?: ReactNode;
   /** Server-rendered legal info (imprint, prices, allergens, hours …). */
   info: ReactNode;
   /** Host renders the floating cart bar (else the theme has its own data-vm-cart button). */
@@ -166,6 +169,7 @@ export function StudioThemeHost({
         </div>
       )}
       <div className="pointer-events-none fixed end-3 top-[max(0.75rem,env(safe-area-inset-top))] z-30 flex items-center gap-2">
+        {menuSwitcher && <div className="pointer-events-auto">{menuSwitcher}</div>}
         {showLanguage && <div className="pointer-events-auto">{languageSwitcher}</div>}
         <button type="button" onClick={() => setInfoOpen(true)} aria-label={t("info")} className={control}>
           <Info size={20} aria-hidden />

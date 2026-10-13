@@ -44,13 +44,16 @@ export async function selectStudioTheme(data: GuestMenuData, opts: { plan: strin
 export function hostControls(manifest: ThemeManifest, data: GuestMenuData) {
   const language = (manifest.controls?.languageSwitcher ?? "host") === "host" && data.availableLocales.length > 1;
   const cart = (manifest.controls?.cartButton ?? "host") === "host";
-  return { language, cart, insetTopEnd: 12 + 44 + (language ? 72 : 0) };
+  const menus = (data.menuOptions?.length ?? 0) > 1;
+  return { language, cart, insetTopEnd: 12 + 44 + (language ? 72 : 0) + (menus ? 150 : 0) };
 }
 
 /** URL of the sandboxed frame document for a guest request. */
 export function frameSrc(data: GuestMenuData, sel: StudioSelection): string {
   const p = new URLSearchParams({ lang: data.locale });
   if (data.tableToken) p.set("t", data.tableToken);
+  const menu = data.menuOptions?.find((o) => o.selected && !o.primary)?.id;
+  if (menu) p.set("menu", menu);
   if (data.preview) {
     p.set("preview", "1");
     p.set("theme", sel.themeId);

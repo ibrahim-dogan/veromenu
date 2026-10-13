@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { useTranslations } from "next-intl";
-import { BookOpen, FileText, FileUp, LayoutList, Pencil, Plus, Trash2 } from "lucide-react";
+import { BookOpen, ExternalLink, FileText, FileUp, LayoutList, Pencil, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/core/utils";
 import { Link } from "@/core/i18n/navigation";
 import { Badge, Button, buttonClass, EmptyState, Field, Input, PageHeader, Textarea } from "@/components/ui";
@@ -26,10 +26,13 @@ export function MenuEditor({
   usage,
   limits,
   ctx,
+  guestUrl,
 }: {
   restaurantId: string;
   menus: EditorMenu[];
   initialMenuId?: string;
+  /** /m/{slug} – each menu tab links to its guest view (?menu=<id>). */
+  guestUrl?: string;
   menuMode: "digital" | "pdf";
   usage: { items: number; menus: number };
   limits: { items: number; menus: number };
@@ -227,6 +230,11 @@ export function MenuEditor({
                     label={<span className="text-sm text-stone-700">{active.isActive ? t("menuActive") : t("menuInactive")}</span>}
                   />
                   <div className="flex gap-1">
+                    {guestUrl && (
+                      <a href={`${guestUrl}?menu=${active.id}`} target="_blank" rel="noreferrer" className={buttonClass("ghost", "sm")}>
+                        <ExternalLink size={14} aria-hidden /> {t("guestViewMenu")}
+                      </a>
+                    )}
                     <Button variant="ghost" size="sm" onClick={() => setMenuDialog({ mode: "edit", menu: active })}>
                       <Pencil size={14} aria-hidden /> {t("renameMenu")}
                     </Button>
@@ -236,6 +244,7 @@ export function MenuEditor({
                   </div>
                 </div>
               )}
+              {menus.length > 1 && <p className="text-xs text-stone-500">{t("multiMenuHint")}</p>}
               {active.description && <p className="text-sm text-stone-500">{active.description}</p>}
 
               {mode === "pdf" && <PdfMenuSection key={`pdf-${active.id}`} menu={active} ctx={ctx} pdfMode />}

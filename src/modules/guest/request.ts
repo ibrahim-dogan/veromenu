@@ -13,6 +13,7 @@ export async function loadGuestRequest(slug: string, sp: GuestSearchParams) {
   return loadGuestMenu(slug, {
     lang: firstParam(sp.lang),
     tableToken: firstParam(sp.t),
+    menuId: firstParam(sp.menu),
     acceptLanguage: h.get("accept-language"),
     preview: wantsPreview ? { themeId: firstParam(sp.theme), config: decodeConfigParam(firstParam(sp.config)) } : null,
   });

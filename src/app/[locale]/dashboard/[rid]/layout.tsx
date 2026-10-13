@@ -2,7 +2,8 @@ import { getTranslations } from "next-intl/server";
 import { and, eq, sql as dsql } from "drizzle-orm";
 import { ExternalLink } from "lucide-react";
 import { db } from "@/core/db";
-import { orders, reviewTasks } from "@/core/db/schema";
+import { orders } from "@/core/db/schema";
+import { countOpenReviewTasks } from "@/modules/stats/overview";
 import { listUserRestaurants, requireRestaurant } from "@/core/auth/guards";
 import { DASHBOARD_NAV } from "@/core/modules/nav";
 import { planHas } from "@/modules/billing/plans";
@@ -17,7 +18,7 @@ export default async function RestaurantLayout({ children, params }: LayoutProps
   const ctx = await requireRestaurant(rid);
   const t = await getTranslations();
   const [[openReviews], [pendingOrders], mine] = await Promise.all([
-    db.select({ n: dsql<number>`count(*)::int` }).from(reviewTasks).where(and(eq(reviewTasks.restaurantId, rid), eq(reviewTasks.status, "open"))),
+    countOpenReviewTasks(rid).then((n) => [{ n }]),
     db.select({ n: dsql<number>`count(*)::int` }).from(orders).where(and(eq(orders.restaurantId, rid), eq(orders.status, "pending"))),
     listUserRestaurants(ctx.user.id),
   ]);

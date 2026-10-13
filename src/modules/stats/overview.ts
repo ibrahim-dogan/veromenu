@@ -52,11 +52,18 @@ export async function getOnboarding(r: Restaurant): Promise<OnboardingStep[]> {
   ];
 }
 
+/** Open checks = open review tasks + visible dishes whose allergens are not confirmed yet (LMIV). */
 export async function countOpenReviewTasks(restaurantId: string) {
-  const [r] = await db
-    .select({ n: dsql<number>`count(*)::int` })
-    .from(reviewTasks)
-    .where(and(eq(reviewTasks.restaurantId, restaurantId), eq(reviewTasks.status, "open")));
-  return r.n;
+  const [[tasks], [unconfirmed]] = await Promise.all([
+    db
+      .select({ n: dsql<number>`count(*)::int` })
+      .from(reviewTasks)
+      .where(and(eq(reviewTasks.restaurantId, restaurantId), eq(reviewTasks.status, "open"))),
+    db
+      .select({ n: dsql<number>`count(*)::int` })
+      .from(items)
+      .where(and(eq(items.restaurantId, restaurantId), eq(items.isVisible, true), dsql`${items.allergenStatus} <> 'confirmed'`)),
+  ]);
+  return tasks.n + unconfirmed.n;
 }
 

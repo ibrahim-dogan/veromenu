@@ -142,5 +142,7 @@
   "cancel": "Abbrechen",
   "close": "Schließen",
   "delete": "Löschen",
-  "editItemNamed": "„{name}“ bearbeiten"
+  "editItemNamed": "„{name}“ bearbeiten",
+  "guestViewMenu": "Gästeansicht",
+  "multiMenuHint": "Gäste sehen die erste Karte zuerst und wechseln oben über die Karten-Leiste. Leere Karten werden nicht angezeigt."
 }

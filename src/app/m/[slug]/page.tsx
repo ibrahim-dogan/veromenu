@@ -1,3 +1,4 @@
+import { MenuPicker } from "@/modules/guest/components/blocks";
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { after } from "next/server";
@@ -126,10 +127,11 @@ function StudioPage({ data, sel, t }: { data: GuestMenuData; sel: StudioSelectio
       <StudioThemeHost
         src={frameSrc(data, sel)}
         title={t("menuFrameTitle", { name: data.restaurant.name })}
-        categoryIds={data.menus.flatMap((m) => m.categories.map((c) => c.id))}
+        categoryIds={(data.allMenus ?? data.menus).flatMap((m) => m.categories.map((c) => c.id))}
         langHrefs={langHrefs}
         showLanguage={controls.language}
         languageSwitcher={<LanguageSwitcher data={data} t={t} buttonClassName="bg-g-surface/90 text-g-text border-g-border border shadow-md backdrop-blur h-11" />}
+        menuSwitcher={<MenuPicker data={data} t={t} buttonClassName="bg-g-surface/90 text-g-text border-g-border border shadow-md backdrop-blur h-11" />}
         info={<LegalFooter data={data} t={t} className="text-g-muted pt-4" />}
         hostCartBar={controls.cart}
       />

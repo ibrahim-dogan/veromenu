@@ -25,6 +25,8 @@ export type GuestLoadOptions = {
   acceptLanguage?: string | null;
   /** Theme preview from the design page – only honored for users with theme.manage on this restaurant. */
   preview?: { themeId?: string | null; config?: unknown } | null;
+  /** ?menu=<id> – show this menu instead of the primary one. */
+  menuId?: string | null;
 };
 
 const SLUG = /^[a-z0-9][a-z0-9-]{0,63}$/;
@@ -52,7 +54,7 @@ export const getGuestRestaurantRow = cache(async (slug: string) => {
 });
 
 const loadCached = cache(
-  async (slug: string, lang: string, tableToken: string, acceptLanguage: string, previewTheme: string, previewConfig: string): Promise<GuestLoadResult> => {
+  async (slug: string, lang: string, tableToken: string, acceptLanguage: string, previewTheme: string, previewConfig: string, menuParam: string): Promise<GuestLoadResult> => {
     const tokenValid = TOKEN.test(tableToken);
     const [r, tableRow] = await Promise.all([
       getGuestRestaurantRow(slug),
@@ -240,6 +242,16 @@ const loadCached = cache(
       .map((m, idx) => ({ m, rank: m.scheduled && m.activeNow ? 0 : !m.scheduled ? 1 : 2, idx }))
       .sort((a, b) => a.rank - b.rank || a.idx - b.idx)
       .map((x) => x.m);
+    // One menu per page: /m/{slug} = primary (first after sorting), others via ?menu=<id>.
+    const selectedMenu = guestMenus.find((m) => m.id === menuParam) ?? guestMenus[0] ?? null;
+    const menuOptions = guestMenus.map((m, idx) => ({
+      id: m.id,
+      name: m.name,
+      primary: idx === 0,
+      selected: m.id === selectedMenu?.id,
+      scheduled: m.scheduled,
+      activeNow: m.activeNow,
+    }));
 
     const pdfPages: GuestPdfPage[] = pdfIds
       .map((id) => mediaById.get(id))
@@ -284,7 +296,9 @@ const loadCached = cache(
       dir: availableLocales.find((l) => l.code === locale)?.rtl ? "rtl" : "ltr",
       availableLocales,
       menuMode,
-      menus: guestMenus,
+      menus: selectedMenu ? [selectedMenu] : [],
+      allMenus: guestMenus,
+      menuOptions,
       pdfPages,
       table,
       tableToken: table ? tableToken : null,
@@ -319,5 +333,6 @@ export function loadGuestMenu(slug: string, opts: GuestLoadOptions = {}): Promis
     opts.acceptLanguage ?? "",
     opts.preview?.themeId ?? "",
     previewConfig,
+    opts.menuId && /^[0-9a-f-]{36}$/i.test(opts.menuId) ? opts.menuId : "",
   );
 }

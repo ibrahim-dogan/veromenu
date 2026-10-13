@@ -142,5 +142,7 @@
   "cancel": "Cancel",
   "close": "Close",
   "delete": "Delete",
-  "editItemNamed": "Edit “{name}”"
+  "editItemNamed": "Edit “{name}”",
+  "guestViewMenu": "Guest view",
+  "multiMenuHint": "Guests see the first menu first and switch via the menu bar at the top. Empty menus are not shown."
 }

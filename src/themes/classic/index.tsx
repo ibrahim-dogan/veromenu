@@ -7,24 +7,7 @@ import { FilterBar } from "@/modules/guest/components/filter-bar";
 import { LanguageSwitcher } from "@/modules/guest/components/language-switcher";
 import { LegalFooter } from "@/modules/guest/components/legal-footer";
 import { PdfMenu } from "@/modules/guest/components/pdf-menu";
-import {
-  AllergenMarks,
-  ItemImage,
-  ItemOpenButton,
-  NoResults,
-  OrderingNotice,
-  QuickAddButton,
-  ScheduleNote,
-  SoldOutBadge,
-  TagBadges,
-  UnknownAllergenNote,
-  VariantLine,
-  allergenFilterOptions,
-  categoryAttrs,
-  itemAttrs,
-  navCategories,
-  priceLabel,
-} from "@/modules/guest/components/blocks";
+import { AllergenMarks, ItemImage, ItemOpenButton, NoResults, OrderingNotice, QuickAddButton, ScheduleNote, SoldOutBadge, TagBadges, UnknownAllergenNote, VariantLine, allergenFilterOptions, categoryAttrs, itemAttrs, navCategories, priceLabel, MenuSwitcher } from "@/modules/guest/components/blocks";
 import { commonVars } from "../config";
 import { fontPairingVars } from "../fonts";
 import type { ThemeConfig, ThemeModule, ThemeProps } from "../types";
@@ -105,6 +88,7 @@ function Classic({ data, config, t }: ThemeProps) {
         </main>
       ) : (
         <>
+          <MenuSwitcher data={data} t={t} className="mx-auto max-w-2xl px-5 pt-2 pb-3" linkClassName="border" activeClassName="bg-g-primary border-g-primary text-g-bg" inactiveClassName="border-g-border text-g-text" />
           <CategoryNav
             categories={navCategories(data)}
             className="bg-g-bg/95 border-g-border border-y backdrop-blur"

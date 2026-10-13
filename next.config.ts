@@ -42,7 +42,16 @@ const nextConfig: NextConfig = {
   output: "standalone",
   // Messages are read via fs at runtime (src/core/i18n/messages.ts) – make sure they are traced.
   // (The Dockerfile also copies src/messages explicitly.)
-  outputFileTracingIncludes: { "/*": ["./src/messages/**/*.json"] },
+  // pdfjs-dist (PDF page renders, src/modules/documents/pdf.ts) reads standard fonts, CMaps, wasm decoders and ICC
+  // profiles via fs at runtime → not traceable. The pnpm store path is used on purpose: globbing through the
+  // node_modules/pdfjs-dist symlink would clash with the symlink Next copies into the standalone output.
+  // (pdf.mjs, pdf.worker.mjs and the @napi-rs/canvas native binary are traced automatically.)
+  outputFileTracingIncludes: {
+    "/*": [
+      "./src/messages/**/*.json",
+      "./node_modules/.pnpm/pdfjs-dist@*/node_modules/pdfjs-dist/{standard_fonts,cmaps,wasm,iccs}/**/*",
+    ],
+  },
   poweredByHeader: false,
   async headers() {
     return [

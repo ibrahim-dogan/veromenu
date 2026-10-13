@@ -216,7 +216,8 @@ export async function registerFormAction(_prev: AuthFormState, fd: FormData): Pr
   const values = { name: str(fd, "name"), email: str(fd, "email"), restaurantName: str(fd, "restaurantName") };
   const res = await register({ ...values, password: str(fd, "password"), acceptTerms: (fd.get("acceptTerms") === "on") as true });
   if (!res.ok) return { error: res.error, fieldErrors: res.fieldErrors, values };
-  return go(`/dashboard/${res.data.restaurantId}`);
+  // New restaurants start with the guided onboarding (upload the menu once → menu, logo, design, table cards).
+  return go(`/dashboard/${res.data.restaurantId}/onboarding`);
 }
 
 export async function forgotFormAction(_prev: AuthFormState, fd: FormData): Promise<AuthFormState> {

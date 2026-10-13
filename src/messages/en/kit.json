@@ -1,0 +1,142 @@
+{
+  "metaTitle": "Upload your menu",
+  "noPermission": "To upload your menu you need the permissions “Edit menu” and “Use AI”.",
+  "welcome": {
+    "title": "Welcome, {name}!",
+    "titleNoName": "Welcome to VeroMenu!",
+    "lead": "Upload your menu once – we take care of the rest. Nothing goes live before you have seen it.",
+    "planFree": "In your plan: menu & logo",
+    "planPaid": "In your plan: menu & logo + your own design & table tents",
+    "lockedHint": "Included from the Starter plan.",
+    "bullets": {
+      "import": { "title": "Dishes & prices", "hint": "Categories, dishes, prices and allergen marks are captured." },
+      "logo": { "title": "Your logo", "hint": "Cut out of your menu and stored in the settings." },
+      "theme": { "title": "Your own menu design", "hint": "Colours, fonts and style of your printed menu – made for phones." },
+      "print": { "title": "Table tent with QR code", "hint": "Designed to match your menu, ready to print." }
+    }
+  },
+  "upload": {
+    "title": "Your menu",
+    "hint": "PDF or photos of the printed menu – up to {max} files. The sharper, the better.",
+    "limit": "At most {max} files.",
+    "duration": "Usually takes 2–5 minutes. You can leave the page in the meantime.",
+    "start": "Let’s go",
+    "later": "Later",
+    "laterHint": "You can come back to this step any time from the overview and the AI import.",
+    "back": "Back to the result",
+    "useStored": "Use the saved menu",
+    "useStoredButton": "Start with it",
+    "storedHint": "You already uploaded your menu ({count, plural, one {# file} other {# files}}) – no need to upload it again.",
+    "alreadyRunning": "Your menu is already being processed."
+  },
+  "progress": {
+    "title": "We’re getting everything ready for you …",
+    "hint": "You can close this page – we keep working in the background and you’ll find the result on the overview.",
+    "elapsed": "Elapsed time",
+    "leave": "Go to the overview"
+  },
+  "steps": {
+    "sources": "Saving files",
+    "pages": "Preparing pages",
+    "import": "Capturing dishes & prices",
+    "logo": "Finding the logo",
+    "brief": "Analysing your menu’s style",
+    "theme": "Designing the menu theme",
+    "print": "Designing the table tent"
+  },
+  "status": {
+    "pending": "Waiting",
+    "running": "Running …",
+    "done": "Done",
+    "failed": "Failed",
+    "skipped": "Skipped"
+  },
+  "errors": {
+    "dependency": "Not possible because an earlier step failed.",
+    "interrupted": "Interrupted (e.g. by a restart). Simply try again.",
+    "notAvailable": "This feature is not available right now.",
+    "noSources": "No files are stored – please upload your menu.",
+    "importEmpty": "We found no dishes in the files. Are the photos sharp and complete?",
+    "aiCreditsExhausted": "Your AI credits for this month are used up. The other steps still continue.",
+    "aiFailed": "The AI could not finish this step. Please try again.",
+    "aiNotConfigured": "AI is not set up yet.",
+    "unexpected": "Unexpected error. Please try again."
+  },
+  "retry": "Try again",
+  "retryAll": "Retry failed steps",
+  "review": {
+    "title": "Done! Take a look at the result",
+    "titlePartial": "Almost done – a few steps need you",
+    "lead": "Nothing is live yet. Check each part or apply everything with one click.",
+    "leadDone": "Everything applied – your digital menu is ready.",
+    "applyAll": "Apply everything",
+    "appliedAll": "Applied!",
+    "applied": "Applied",
+    "openGuest": "Open guest view",
+    "notAvailable": "Not available yet.",
+    "draftHint": "Draft – only visible to guests once you apply it.",
+    "openStudio": "Open in the studio",
+    "newUpload": "Upload a new menu",
+    "toOverview": "Go to the overview",
+    "allergens": {
+      "title": "Allergens & additives",
+      "hint": "{count, plural, one {# dish has} other {# dishes have}} marks on your menu.",
+      "suggest": "Create them as suggestions to review (recommended)",
+      "suggestHint": "You confirm the details afterwards in the review list. Until then guests see “Allergen info from staff”.",
+      "confirm": "Take over the allergen details from our menu – we have checked them",
+      "confirmHint": "The recognised details are stored as confirmed right away and shown to guests."
+    },
+    "import": {
+      "title": "Menu",
+      "found": "Found {items, plural, one {# dish} other {# dishes}} in {categories, plural, one {# category} other {# categories}}.",
+      "apply": "Apply menu",
+      "edit": "Check & edit the preview",
+      "openMenu": "Go to the menu",
+      "appliedToast": "Your dishes have been created."
+    },
+    "logo": {
+      "title": "Logo",
+      "found": "Taken from your menu. You can change it any time in the settings.",
+      "current": "Your current logo. You can change it any time in the settings.",
+      "notFound": "We found no logo on your menu. Do you have one as a file?",
+      "failed": "The logo could not be recognised.",
+      "none": "No logo yet.",
+      "other": "Choose another file",
+      "saved": "Logo saved."
+    },
+    "theme": {
+      "title": "Menu design",
+      "apply": "Activate as design",
+      "active": "Active",
+      "appliedToast": "Your new design is active."
+    },
+    "print": {
+      "title": "Table tent",
+      "apply": "Use as print design",
+      "selected": "Used for printing",
+      "openTables": "Go to tables & QR codes",
+      "appliedToast": "Your table tent is selected as print design."
+    },
+    "upsell": {
+      "title": "Your own menu design & table tents",
+      "hint": "With the Starter or Pro plan we also create a design in the style of your menu and matching table tents from the same file."
+    }
+  },
+  "card": {
+    "title": "Upload your menu – we take care of the rest",
+    "hintFree": "A PDF or photos of your menu are enough: we capture dishes, prices and your logo.",
+    "hintPaid": "A PDF or photos of your menu are enough: we capture dishes, prices and your logo and design your menu theme and table tents.",
+    "cta": "Upload now",
+    "running": "Your menu is being processed … ({done} of {total} steps)",
+    "runningCta": "View progress",
+    "ready": "Your results are ready – take a look.",
+    "readyCta": "View results"
+  },
+  "stored": {
+    "title": "Use the saved menu",
+    "hint": "We use the menu you already uploaded – no need to upload it again.",
+    "hintBrief": "The style analysis of your menu is already done – this is faster.",
+    "use": "Use saved menu",
+    "or": "or upload new files"
+  }
+}

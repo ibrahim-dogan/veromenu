@@ -31,6 +31,8 @@ export const extractionSchema = z.preprocess(
         categories: z.array(z.object({ name: z.string(), description: z.string().optional(), items: z.array(extractedItem) })),
       }),
     ),
+    /** The printed key of the footnote marks ("A = Glutenhaltiges Getreide"), [] if none is printed. */
+    legend: z.array(z.object({ mark: z.string(), meaning: z.string(), code: z.string().optional() })).optional(),
     notes: z.string().optional(),
   }),
 );
@@ -45,10 +47,14 @@ RULES
 - priceCents: integer cents incl. VAT ("12,50 €" → 1250, "8.-" → 800). omit when no price is printed.
 - Several sizes/prices for one item ("0,3 l 3,50 | 0,5 l 4,90", "klein/groß") → variants [{"name":"0,3 l","priceCents":350},{"name":"0,5 l","priceCents":490}] and priceCents = the lowest price.
 - description: the printed description/side dishes of the item (omit if none). Do not copy the price or footnote marks into name or description.
-- marks: allergen/additive footnote marks printed next to the item exactly as printed (e.g. ["A","C","G","1","3"]), else [].
-- allergenHints / additiveHints: ONLY when the menu prints a legend explaining those marks, map the item's marks to these codes, otherwise []:
-  allergens: ${ALLERGENS.map((a) => `${a.code} (${a.labels.de})`).join(", ")}
-  additives: ${ADDITIVES.map((a) => `${a.code} (${a.labels.de})`).join(", ")}
+- marks: allergen/additive footnote marks printed next to the item, one entry per mark exactly as printed (e.g. "A,C,G 1,3" → ["A","C","G","1","3"]), else [].
+- legend: if the menu prints a key explaining the marks (often at the bottom or on the last page, e.g. "A = glutenhaltiges Getreide, 1 = mit Farbstoff"), list EVERY entry as {"mark":"A","meaning":"glutenhaltiges Getreide","code":"gluten"} – meaning as printed, code from the catalog below (omit code if the entry is not in the catalog, e.g. "S = Schweinefleisch"). No printed key → [].
+- allergenHints / additiveHints: the catalog codes of the item's marks.
+  · With a printed legend: follow the legend.
+  · Without a legend, ONLY if the marks clearly follow the German standard scheme (letters = allergens, numbers 1–14 = additives, exactly as listed below; sub marks like "A1" = Weizen belong to A): map accordingly.
+  · Other or unclear systems (only numbers without legend, letters like I/K/S/V, symbols) → [] and keep only the raw marks.
+  allergens (letter code label): ${ALLERGENS.map((a) => `${a.letter} ${a.code} (${a.labels.de})`).join(", ")}
+  additives (number code label): ${ADDITIVES.map((a) => `${a.letter} ${a.code} (${a.labels.de})`).join(", ")}
 - tags: only when clearly indicated by words or symbols, from: ${DIET_TAGS.join(", ")} (spicy1..3 = chili symbols).
 - Ignore decorative text, addresses, opening hours, Wi-Fi, legal notes. Put anything important you could not map (e.g. "Alle Preise inkl. MwSt.", unreadable parts) into "notes" (short).
-Reply with JSON only: {"menus":[{"name":"…","categories":[{"name":"…","items":[{"name":"…","priceCents":1250,"variants":[],"marks":[],"allergenHints":[],"additiveHints":[],"tags":[]}]}]}],"notes":""}`;
+Reply with JSON only: {"menus":[{"name":"…","categories":[{"name":"…","items":[{"name":"…","priceCents":1250,"variants":[],"marks":[],"allergenHints":[],"additiveHints":[],"tags":[]}]}]}],"legend":[],"notes":""}`;

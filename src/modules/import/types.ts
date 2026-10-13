@@ -1,4 +1,7 @@
 /** Shared (client + server) types of the AI menu import. */
+import type { LegendEntry, MarkScheme } from "./marks";
+
+export type { LegendEntry, MarkScheme };
 
 export type DraftVariant = { name: string; priceCents: number };
 
@@ -10,7 +13,10 @@ export type DraftItem = {
   variants: DraftVariant[];
   /** Footnote marks exactly as printed ("A", "C", "1"). */
   marks: string[];
-  /** Catalog codes (modules/allergens/catalog.ts) – suggestions only, never confirmed automatically. */
+  /**
+   * Catalog codes (modules/allergens/catalog.ts) derived from the printed marks (legend or German standard
+   * scheme, see marks.ts). Editable in the preview; confirmed only when the owner ticks "wir haben sie geprüft".
+   */
   allergenHints: string[];
   additiveHints: string[];
   tags: string[];
@@ -26,7 +32,15 @@ export type DraftMenu = {
   categories: DraftCategory[];
 };
 
-export type ImportDraft = { menus: DraftMenu[]; notes: string | null; model: string | null };
+export type ImportDraft = {
+  menus: DraftMenu[];
+  notes: string | null;
+  model: string | null;
+  /** Printed key of the footnote marks (absent in drafts created before 2026-10). */
+  legend?: LegendEntry[];
+  /** How the marks were mapped to codes: printed legend, German standard scheme, or not at all (ambiguous). */
+  markScheme?: MarkScheme;
+};
 
 export type ImportStatus = "processing" | "ready" | "applied" | "failed" | "discarded";
 
@@ -41,4 +55,14 @@ export type ImportDto = {
   itemCount: number;
 };
 
-export type ApplyImportResult = { menus: number; categories: number; items: number; reviewTasks: number };
+export type ApplyImportResult = {
+  menus: number;
+  categories: number;
+  items: number;
+  reviewTasks: number;
+  /** Items whose allergens/additives were taken over as confirmed (owner ticked "wir haben sie geprüft"). */
+  allergensConfirmed: number;
+};
+
+/** A stored menu source document (restaurants.settings.sources) offered for re-import. */
+export type SourceFile = { id: string; mime: string; name: string | null; url: string; thumb: string | null };

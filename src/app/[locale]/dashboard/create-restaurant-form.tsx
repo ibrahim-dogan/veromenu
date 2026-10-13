@@ -10,7 +10,7 @@ export function CreateRestaurantForm() {
   const t = useTranslations();
   const router = useRouter();
   const [name, setName] = useState("");
-  const { run, pending } = useAction(createRestaurantForMe, { refresh: false, onSuccess: (d) => router.push(`/dashboard/${d.restaurantId}`) });
+  const { run, pending } = useAction(createRestaurantForMe, { refresh: false, onSuccess: (d) => router.push(`/dashboard/${d.restaurantId}/onboarding`) });
   return (
     <form className="flex gap-2" onSubmit={(e) => (e.preventDefault(), run({ name }))}>
       <Input required minLength={2} value={name} onChange={(e) => setName(e.target.value)} placeholder={t("auth.restaurantName")} />

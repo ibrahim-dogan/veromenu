@@ -1,0 +1,142 @@
+{
+  "metaTitle": "Speisekarte hochladen",
+  "noPermission": "Zum Hochladen der Speisekarte brauchst du die Rechte „Speisekarte bearbeiten“ und „KI nutzen“.",
+  "welcome": {
+    "title": "Willkommen, {name}!",
+    "titleNoName": "Willkommen bei VeroMenu!",
+    "lead": "Lade deine Speisekarte einmal hoch – wir erledigen den Rest. Nichts geht live, bevor du es dir angesehen hast.",
+    "planFree": "In deinem Tarif: Speisekarte & Logo",
+    "planPaid": "In deinem Tarif: Speisekarte & Logo + eigenes Design & Tischaufsteller",
+    "lockedHint": "Ab dem Starter-Tarif enthalten.",
+    "bullets": {
+      "import": { "title": "Gerichte & Preise", "hint": "Kategorien, Gerichte, Preise und Allergen-Kennzeichnungen werden erfasst." },
+      "logo": { "title": "Dein Logo", "hint": "Wird aus der Karte ausgeschnitten und in den Einstellungen hinterlegt." },
+      "theme": { "title": "Eigenes Menü-Design", "hint": "Farben, Schriften und Stil deiner gedruckten Karte – fürs Handy." },
+      "print": { "title": "Tischaufsteller mit QR-Code", "hint": "Passend zu deiner Karte gestaltet, fertig zum Ausdrucken." }
+    }
+  },
+  "upload": {
+    "title": "Deine Speisekarte",
+    "hint": "PDF oder Fotos der gedruckten Karte – bis zu {max} Dateien. Je schärfer, desto besser.",
+    "limit": "Maximal {max} Dateien.",
+    "duration": "Dauert meist 2–5 Minuten. Du kannst die Seite währenddessen verlassen.",
+    "start": "Los geht’s",
+    "later": "Später",
+    "laterHint": "Du findest diesen Schritt jederzeit auf der Übersicht und beim KI-Import.",
+    "back": "Zurück zum Ergebnis",
+    "useStored": "Gespeicherte Speisekarte verwenden",
+    "useStoredButton": "Damit starten",
+    "storedHint": "Du hast deine Karte schon hochgeladen ({count, plural, one {# Datei} other {# Dateien}}) – kein erneutes Hochladen nötig.",
+    "alreadyRunning": "Deine Speisekarte wird bereits verarbeitet."
+  },
+  "progress": {
+    "title": "Wir bereiten alles für dich vor …",
+    "hint": "Du kannst diese Seite schließen – wir arbeiten im Hintergrund weiter und du findest das Ergebnis auf der Übersicht.",
+    "elapsed": "Vergangene Zeit",
+    "leave": "Zur Übersicht"
+  },
+  "steps": {
+    "sources": "Dateien speichern",
+    "pages": "Seiten aufbereiten",
+    "import": "Gerichte & Preise erfassen",
+    "logo": "Logo erkennen",
+    "brief": "Stil deiner Karte analysieren",
+    "theme": "Menü-Design gestalten",
+    "print": "Tischaufsteller gestalten"
+  },
+  "status": {
+    "pending": "Wartet",
+    "running": "Läuft …",
+    "done": "Fertig",
+    "failed": "Fehlgeschlagen",
+    "skipped": "Übersprungen"
+  },
+  "errors": {
+    "dependency": "Nicht möglich, weil ein vorheriger Schritt fehlgeschlagen ist.",
+    "interrupted": "Unterbrochen (z. B. durch einen Neustart). Versuche es einfach noch einmal.",
+    "notAvailable": "Diese Funktion ist gerade nicht verfügbar.",
+    "noSources": "Es sind keine Dateien gespeichert – bitte lade deine Karte hoch.",
+    "importEmpty": "Auf den Dateien haben wir keine Gerichte gefunden. Sind die Fotos scharf und vollständig?",
+    "aiCreditsExhausted": "Deine KI-Credits für diesen Monat sind aufgebraucht. Die übrigen Schritte laufen trotzdem weiter.",
+    "aiFailed": "Die KI konnte diesen Schritt nicht abschließen. Versuche es noch einmal.",
+    "aiNotConfigured": "KI ist noch nicht eingerichtet.",
+    "unexpected": "Unerwarteter Fehler. Versuche es noch einmal."
+  },
+  "retry": "Erneut versuchen",
+  "retryAll": "Fehlgeschlagene wiederholen",
+  "review": {
+    "title": "Fertig! Schau dir das Ergebnis an",
+    "titlePartial": "Fast fertig – ein paar Schritte brauchen dich",
+    "lead": "Noch ist nichts live. Prüfe alles einzeln oder übernimm es mit einem Klick.",
+    "leadDone": "Alles übernommen – deine digitale Speisekarte ist bereit.",
+    "applyAll": "Alles übernehmen",
+    "appliedAll": "Übernommen!",
+    "applied": "Übernommen",
+    "openGuest": "Gast-Ansicht öffnen",
+    "notAvailable": "Noch nicht verfügbar.",
+    "draftHint": "Entwurf – erst nach dem Übernehmen für Gäste sichtbar.",
+    "openStudio": "Im Studio öffnen",
+    "newUpload": "Neue Speisekarte hochladen",
+    "toOverview": "Zur Übersicht",
+    "allergens": {
+      "title": "Allergene & Zusatzstoffe",
+      "hint": "{count, plural, one {Bei # Gericht} other {Bei # Gerichten}} stehen Kennzeichnungen auf deiner Karte.",
+      "suggest": "Als Vorschläge zur Prüfung anlegen (empfohlen)",
+      "suggestHint": "Du bestätigst die Angaben danach in der Prüfliste. Gäste sehen bis dahin „Allergen-Infos beim Personal“.",
+      "confirm": "Allergen-Angaben aus unserer Karte übernehmen – wir haben sie geprüft",
+      "confirmHint": "Die erkannten Angaben werden direkt als bestätigt gespeichert und Gästen angezeigt."
+    },
+    "import": {
+      "title": "Speisekarte",
+      "found": "{items, plural, one {# Gericht} other {# Gerichte}} in {categories, plural, one {# Kategorie} other {# Kategorien}} erkannt.",
+      "apply": "Speisekarte übernehmen",
+      "edit": "Vorschau prüfen & bearbeiten",
+      "openMenu": "Zur Speisekarte",
+      "appliedToast": "Deine Gerichte sind angelegt."
+    },
+    "logo": {
+      "title": "Logo",
+      "found": "Aus deiner Karte übernommen. Du kannst es jederzeit in den Einstellungen ändern.",
+      "current": "Dein aktuelles Logo. Du kannst es jederzeit in den Einstellungen ändern.",
+      "notFound": "Wir haben auf deiner Karte kein Logo gefunden. Hast du eines als Datei?",
+      "failed": "Das Logo konnte nicht erkannt werden.",
+      "none": "Noch kein Logo.",
+      "other": "Andere Datei wählen",
+      "saved": "Logo gespeichert."
+    },
+    "theme": {
+      "title": "Menü-Design",
+      "apply": "Als Design aktivieren",
+      "active": "Aktiv",
+      "appliedToast": "Dein neues Design ist aktiv."
+    },
+    "print": {
+      "title": "Tischaufsteller",
+      "apply": "Als Druckdesign verwenden",
+      "selected": "Wird gedruckt",
+      "openTables": "Zu Tische & QR-Codes",
+      "appliedToast": "Dein Tischaufsteller ist als Druckdesign ausgewählt."
+    },
+    "upsell": {
+      "title": "Eigenes Menü-Design & Tischaufsteller",
+      "hint": "Mit dem Starter- oder Pro-Tarif gestalten wir aus derselben Datei auch ein Design im Stil deiner Karte und passende Tischaufsteller."
+    }
+  },
+  "card": {
+    "title": "Speisekarte hochladen – wir erledigen den Rest",
+    "hintFree": "Ein PDF oder Fotos deiner Karte genügen: Wir erfassen Gerichte, Preise und dein Logo.",
+    "hintPaid": "Ein PDF oder Fotos deiner Karte genügen: Wir erfassen Gerichte, Preise und dein Logo und gestalten Menü-Design und Tischaufsteller.",
+    "cta": "Jetzt hochladen",
+    "running": "Deine Speisekarte wird verarbeitet … ({done} von {total} Schritten)",
+    "runningCta": "Fortschritt ansehen",
+    "ready": "Deine Ergebnisse sind fertig – schau sie dir an.",
+    "readyCta": "Ergebnisse ansehen"
+  },
+  "stored": {
+    "title": "Gespeicherte Speisekarte verwenden",
+    "hint": "Wir nehmen deine bereits hochgeladene Karte – kein erneutes Hochladen nötig.",
+    "hintBrief": "Die Stil-Analyse deiner Karte ist schon fertig – das geht schneller.",
+    "use": "Gespeicherte Karte verwenden",
+    "or": "oder neue Dateien hochladen"
+  }
+}

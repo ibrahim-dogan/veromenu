@@ -12,12 +12,15 @@ import { mediaUrl } from "@/core/storage";
 import { mediaSrc, readMediaBuffer } from "@/core/storage/media";
 import { ADDITIVE_CODES, ALLERGEN_CODES, DIET_TAGS } from "@/modules/allergens/catalog";
 import * as menu from "@/modules/menu/service";
+import { setSourceDocuments } from "@/modules/documents";
+import { cleanLegend, detectScheme, mapMarks, splitMarks } from "./marks";
 import { EXTRACT_SYSTEM_PROMPT, extractionSchema, type Extraction } from "./schema";
 import type { ApplyImportResult, DraftMenu, ImportDraft, ImportDto, ImportStatus } from "./types";
 
 /**
  * AI menu import: photos / PDFs of the paper menu → `menu_extract` → editable draft → menu service.
- * Allergen marks only ever become suggestions (review tasks), never confirmed allergens.
+ * Printed allergen marks are mapped to catalog codes (legend or German standard scheme, see marks.ts). They are
+ * only stored as CONFIRMED when the owner explicitly states they checked them; otherwise they become review tasks.
  */
 
 export const MAX_IMPORT_FILES = 10;
@@ -37,8 +40,17 @@ const clean = (s: string | null | undefined, max: number) => {
   return t ? t.slice(0, max) : null;
 };
 
-/** Normalizes the model output into an editable draft (keys for React, codes filtered to the catalog). */
+const codesOf = (xs: string[] | undefined, allowed: Set<string>) => [...new Set((xs ?? []).map((s) => s.trim().toLowerCase()))].filter((c) => allowed.has(c));
+
+/**
+ * Normalizes the model output into an editable draft (keys for React, codes filtered to the catalog).
+ * Allergen/additive codes are derived deterministically from the printed marks: printed legend → legend,
+ * else the German standard scheme when it is evident for the whole menu, else nothing (raw marks only).
+ */
 export function toDraft(x: Extraction, model: string | null): ImportDraft {
+  const legend = cleanLegend(x.legend ?? []);
+  const allMarks = x.menus.flatMap((m) => m.categories.flatMap((c) => c.items.flatMap((i) => i.marks ?? [])));
+  const markScheme = detectScheme(allMarks, legend);
   const menus: DraftMenu[] = x.menus
     .map((m) => ({
       key: nanoid(8),
@@ -58,15 +70,20 @@ export function toDraft(x: Extraction, model: string | null): ImportDraft {
                 .slice(0, 20);
               let priceCents = sanePrice(i.priceCents);
               if (priceCents == null && variants.length) priceCents = Math.min(...variants.map((v) => v.priceCents));
+              const marks = splitMarks(i.marks ?? []).slice(0, 30);
+              let codes = mapMarks(marks, markScheme, legend);
+              // Legend printed but the item's marks were not in it → fall back to the model's legend-based mapping.
+              if (markScheme === "legend" && marks.length && !codes.allergens.length && !codes.additives.length)
+                codes = { allergens: codesOf(i.allergenHints, ALLERGEN_SET), additives: codesOf(i.additiveHints, ADDITIVE_SET) };
               return {
                 key: nanoid(8),
                 name: clean(i.name, 200)!,
                 description: clean(i.description, 1000),
                 priceCents,
                 variants,
-                marks: [...new Set((i.marks ?? []).map((s) => s.trim()).filter(Boolean))].slice(0, 30),
-                allergenHints: [...new Set((i.allergenHints ?? []).map((s) => s.trim().toLowerCase()))].filter((c) => ALLERGEN_SET.has(c)),
-                additiveHints: [...new Set((i.additiveHints ?? []).map((s) => s.trim().toLowerCase()))].filter((c) => ADDITIVE_SET.has(c)),
+                marks,
+                allergenHints: codes.allergens,
+                additiveHints: codes.additives,
                 tags: [...new Set((i.tags ?? []).map((s) => s.trim().toLowerCase()))].filter((t) => TAG_SET.has(t)),
               };
             }),
@@ -74,7 +91,7 @@ export function toDraft(x: Extraction, model: string | null): ImportDraft {
         .filter((c) => c.items.length),
     }))
     .filter((m) => m.categories.length);
-  return { menus, notes: clean(x.notes, 1000), model };
+  return { menus, notes: clean(x.notes, 1000), model, legend, markScheme };
 }
 
 export const countDraftItems = (d: ImportDraft | null) => d?.menus.reduce((n, m) => n + m.categories.reduce((k, c) => k + c.items.length, 0), 0) ?? 0;
@@ -128,6 +145,8 @@ export async function createImport(restaurantId: string, userId: string, mediaId
     .where(and(inArray(media.id, unique), eq(media.restaurantId, restaurantId)));
   if (rows.length !== unique.length) throw new AppError("notFound");
   const [row] = await db.insert(menuImports).values({ restaurantId, mediaIds: unique, createdBy: userId, status: "processing" }).returning();
+  // The uploaded menu becomes the restaurant's source document set (reused for logo, themes, print designs, re-imports).
+  await setSourceDocuments(restaurantId, unique, "replace");
   return row.id;
 }
 
@@ -211,17 +230,37 @@ export async function discardImport(restaurantId: string, importId: string) {
 
 // ------------------------------------------------------------------ apply
 
-export async function applyImport(opts: { restaurantId: string; userId: string; importId: string; menus: DraftMenu[] }): Promise<ApplyImportResult> {
+/**
+ * Creates the menus/categories/items of the draft. `confirmAllergens` = the owner ticked "Allergen-Angaben aus
+ * unserer Karte übernehmen – wir haben sie geprüft": items with codes are stored as confirmed (by this user);
+ * items whose marks could not be mapped get a review task; items without marks stay "unknown".
+ * Without the tick every item with marks/codes gets a review task (suggestions only).
+ */
+export async function applyImport(opts: {
+  restaurantId: string;
+  userId: string;
+  importId: string;
+  menus: DraftMenu[];
+  confirmAllergens?: boolean;
+}): Promise<ApplyImportResult> {
   const { restaurantId, userId } = opts;
+  const confirm = opts.confirmAllergens === true;
   const row = await getOwnImport(restaurantId, opts.importId);
   if (row.status !== "ready") throw new AppError("validation", "status");
-  const draft: ImportDraft = { menus: opts.menus, notes: (row.result as ImportDraft | null)?.notes ?? null, model: (row.result as ImportDraft | null)?.model ?? null };
+  const prev = (row.result as ImportDraft | null) ?? null;
+  const draft: ImportDraft = {
+    menus: opts.menus,
+    notes: prev?.notes ?? null,
+    model: prev?.model ?? null,
+    legend: prev?.legend ?? [],
+    markScheme: prev?.markScheme ?? "none",
+  };
   const total = countDraftItems(draft);
   if (!total) throw new AppError("validation", "empty");
   await menu.assertItemLimit(restaurantId, total);
 
   return db.transaction(async (tx) => {
-    const result: ApplyImportResult = { menus: 0, categories: 0, items: 0, reviewTasks: 0 };
+    const result: ApplyImportResult = { menus: 0, categories: 0, items: 0, reviewTasks: 0, allergensConfirmed: 0 };
     let firstMenuId: string | null = null;
     for (const m of draft.menus) {
       const cats = m.categories.filter((c) => c.items.length);
@@ -253,7 +292,11 @@ export async function applyImport(opts: { restaurantId: string; userId: string; 
           result.items++;
           const allergenHints = i.allergenHints.filter((x) => ALLERGEN_SET.has(x));
           const additiveHints = i.additiveHints.filter((x) => ADDITIVE_SET.has(x));
-          if (allergenHints.length || additiveHints.length || i.marks.length) {
+          if (confirm && (allergenHints.length || additiveHints.length)) {
+            // The owner confirmed the printed declaration in the preview (LMIV: human decision, recorded with who/when).
+            await menu.setItemAllergens(restaurantId, it.id, { allergens: allergenHints, additives: additiveHints, status: "confirmed", userId }, tx);
+            result.allergensConfirmed++;
+          } else if (allergenHints.length || additiveHints.length || i.marks.length) {
             // Suggestions only – a human confirms allergens in the review queue (LMIV).
             await tx.insert(reviewTasks).values({
               restaurantId,
@@ -274,7 +317,14 @@ export async function applyImport(opts: { restaurantId: string; userId: string; 
       .set({ status: "applied", appliedAt: new Date(), result: draft, targetMenuId: firstMenuId })
       .where(eq(menuImports.id, row.id));
     await audit(
-      { restaurantId, userId, action: "ai.import.apply", entityType: "menu_import", entityId: row.id, data: { ...result } },
+      {
+        restaurantId,
+        userId,
+        action: "ai.import.apply",
+        entityType: "menu_import",
+        entityId: row.id,
+        data: { ...result, allergensConfirmedByOwner: confirm, markScheme: draft.markScheme },
+      },
       tx,
     );
     return result;

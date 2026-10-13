@@ -12,6 +12,8 @@ import { Dropzone } from "@/modules/media/components/dropzone";
 import { Thumb } from "@/modules/media/components/media-picker";
 import type { MediaItem } from "@/modules/media/components/media-client";
 import { generateThemeFromFiles, generateThemeFromPrompt } from "@/modules/theme-ai/actions";
+import { generateFromStoredSourcesAction } from "@/modules/kit/actions";
+import { StoredSourcesOption } from "@/modules/kit/components/stored-sources";
 import { createBlankThemeAction, importThemeAction } from "../actions";
 import { readFileText } from "../lib/client";
 import { AiProgress } from "./ai-progress";
@@ -144,13 +146,17 @@ function FilesDialog({ open, onClose, restaurantId, onStart, onDone }: { open: b
   const [files, setFiles] = useState<MediaItem[]>([]);
   const [notes, setNotes] = useState("");
   const gen = useAction(generateThemeFromFiles, { success: t("generated"), refresh: false });
+  // "Gespeicherte Speisekarte verwenden": the stored menu (+ the kit's design brief) instead of a new upload
+  const genStored = useAction(generateFromStoredSourcesAction, { success: t("generated"), refresh: false });
 
-  async function start() {
+  async function start(stored = false) {
     onClose();
     onStart();
-    let res: Awaited<ReturnType<typeof gen.run>>;
+    let res: { ok: true; data: { themeId: string } } | { ok: false };
     try {
-      res = await gen.run({ restaurantId, mediaIds: files.map((f) => f.id), notes: notes.trim() || undefined });
+      res = stored
+        ? await genStored.run({ restaurantId, kind: "menu", notes: notes.trim() || undefined })
+        : await gen.run({ restaurantId, mediaIds: files.map((f) => f.id), notes: notes.trim() || undefined });
     } catch {
       // network error / proxy timeout: the server action promise rejects – never leave the progress overlay up
       toast.error(te("unexpected"));
@@ -175,13 +181,14 @@ function FilesDialog({ open, onClose, restaurantId, onStart, onDone }: { open: b
           <Button variant="secondary" onClick={onClose}>
             {t("cancel")}
           </Button>
-          <Button onClick={start} disabled={!files.length} className="bg-violet-600 hover:bg-violet-700">
+          <Button onClick={() => start()} disabled={!files.length} className="bg-violet-600 hover:bg-violet-700">
             {t("generate")}
           </Button>
         </>
       }
     >
       <div className="space-y-4">
+        <StoredSourcesOption restaurantId={restaurantId} kind="menu" open={open} onUse={() => start(true)} />
         <Dropzone restaurantId={restaurantId} accept="any" multiple onUploaded={(m) => setFiles((l) => (l.length >= 6 ? l : [...l, m]))} />
         <UploadedList items={files} onRemove={(id) => setFiles((l) => l.filter((x) => x.id !== id))} />
         <p className="text-xs text-stone-500">{t("filesLimit", { count: 6 })}</p>

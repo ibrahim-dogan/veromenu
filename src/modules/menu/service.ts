@@ -1,7 +1,7 @@
 import "server-only";
 import { and, asc, eq, inArray, sql as dsql } from "drizzle-orm";
 import { db, type DbOrTx } from "@/core/db";
-import { categories, items, itemVariants, menus, restaurants } from "@/core/db/schema";
+import { categories, items, itemVariants, menus, restaurants, type AllergenStatus } from "@/core/db/schema";
 import { AppError } from "@/core/http/errors";
 import { getPlan } from "@/modules/billing/plans";
 import { onEntityDeleted, onSourceTextChanged } from "@/modules/translations/hooks";
@@ -229,15 +229,31 @@ export async function confirmAllergens(
   input: { allergens: string[]; additives: string[]; userId: string },
   tx: DbOrTx = db,
 ) {
+  return setItemAllergens(restaurantId, itemId, { ...input, status: "confirmed" }, tx);
+}
+
+/**
+ * Sets allergens/additives with an explicit status. "confirmed" requires the confirming user (LMIV: a human
+ * decision, recorded with who + when); any other status clears the confirmation fields.
+ * Used e.g. by the menu import when the owner states the printed allergen marks were checked.
+ */
+export async function setItemAllergens(
+  restaurantId: string,
+  itemId: string,
+  input: { allergens: string[]; additives: string[]; status: AllergenStatus; userId?: string | null },
+  tx: DbOrTx = db,
+) {
   await getItem(restaurantId, itemId, tx);
+  const confirmed = input.status === "confirmed";
+  if (confirmed && !input.userId) throw new AppError("validation", "confirmedBy");
   const [it] = await tx
     .update(items)
     .set({
-      allergens: input.allergens,
-      additives: input.additives,
-      allergenStatus: "confirmed",
-      allergenConfirmedBy: input.userId,
-      allergenConfirmedAt: new Date(),
+      allergens: [...new Set(input.allergens)],
+      additives: [...new Set(input.additives)],
+      allergenStatus: input.status,
+      allergenConfirmedBy: confirmed ? input.userId! : null,
+      allergenConfirmedAt: confirmed ? new Date() : null,
       updatedAt: new Date(),
     })
     .where(eq(items.id, itemId))

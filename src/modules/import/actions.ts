@@ -101,9 +101,9 @@ const draftMenus = z
   .max(20);
 
 export const applyMenuImport = action(
-  z.object({ restaurantId: rid, importId: z.uuid(), menus: draftMenus }),
-  async ({ restaurantId, importId, menus }) => {
+  z.object({ restaurantId: rid, importId: z.uuid(), menus: draftMenus, confirmAllergens: z.boolean().default(false) }),
+  async ({ restaurantId, importId, menus, confirmAllergens }) => {
     const ctx = await importContext(restaurantId);
-    return applyImport({ restaurantId, userId: ctx.user.id, importId, menus });
+    return applyImport({ restaurantId, userId: ctx.user.id, importId, menus, confirmAllergens });
   },
 );

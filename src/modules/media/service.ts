@@ -52,6 +52,8 @@ export async function listMedia(restaurantId: string, opts: { type?: MediaFilter
   if (opts.type === "image") conds.push(dsql`${media.mime} like 'image/%'`);
   if (opts.type === "pdf") conds.push(eq(media.mime, "application/pdf"));
   if (opts.kind) conds.push(eq(media.kind, opts.kind));
+  // Internal page renders of uploaded PDFs (documents module) are not user content → hidden from library/picker.
+  conds.push(dsql`not (${media.sourceMediaId} is not null and ${media.alt} like 'Seite %')`);
   return db
     .select()
     .from(media)

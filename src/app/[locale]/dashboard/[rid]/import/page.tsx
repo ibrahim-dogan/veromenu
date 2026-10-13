@@ -6,6 +6,7 @@ import { FeatureGate } from "@/components/shell/feature-gate";
 import { getPlan, planHas } from "@/modules/billing/plans";
 import { getMenuTree } from "@/modules/menu/service";
 import { listImports } from "@/modules/import/service";
+import { listSourceDocuments } from "@/modules/documents";
 import { ImportClient } from "@/modules/import/components/import-client";
 
 export async function generateMetadata() {
@@ -24,7 +25,7 @@ export default async function ImportPage({ params }: PageProps<"/[locale]/dashbo
   if (enabled && !canEdit) {
     body = <p className="rounded-xl border border-stone-200 bg-white px-4 py-6 text-center text-sm text-stone-600">{t("noEditPermission")}</p>;
   } else if (enabled) {
-    const [imports, tree] = await Promise.all([listImports(rid, 10), getMenuTree(rid)]);
+    const [imports, tree, sources] = await Promise.all([listImports(rid, 10), getMenuTree(rid), listSourceDocuments(rid)]);
     const active = imports.find((i) => i.status === "processing" || i.status === "ready" || i.status === "failed") ?? null;
     const plan = getPlan(ctx.restaurant.plan);
     const itemsUsed = tree.reduce((n, m) => n + m.categories.reduce((k, c) => k + c.items.length, 0), 0);
@@ -35,6 +36,7 @@ export default async function ImportPage({ params }: PageProps<"/[locale]/dashbo
         history={imports}
         menus={tree.map((m) => ({ id: m.id, name: m.name, itemCount: m.categories.reduce((k, c) => k + c.items.length, 0) }))}
         limits={{ items: plan.limits.items, itemsUsed, menus: plan.limits.menus }}
+        sources={sources}
       />
     );
   }

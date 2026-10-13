@@ -3,7 +3,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import {
   AlertTriangle,
+  BookmarkCheck,
   CheckCircle2,
+  ChevronDown,
   FileText,
   FileUp,
   ImageIcon,
@@ -22,7 +24,7 @@ import { toast } from "@/components/ui/toast";
 import { ADDITIVES, ALLERGENS, catalogLabel } from "@/modules/allergens/catalog";
 import { useBusyAction } from "@/modules/ai/components/use-busy-action";
 import { applyMenuImport, discardMenuImport, runImport, startImport, uploadImportFile } from "../actions";
-import type { ApplyImportResult, DraftItem, DraftMenu, ImportDto } from "../types";
+import type { ApplyImportResult, DraftItem, DraftMenu, ImportDto, SourceFile } from "../types";
 
 const MAX_FILES = 10;
 const ACCEPT = "image/jpeg,image/png,image/webp,image/heic,application/pdf";
@@ -34,6 +36,8 @@ type Props = {
   history: ImportDto[];
   menus: MenuOption[];
   limits: { items: number; itemsUsed: number; menus: number };
+  /** Stored menu documents (settings.sources) – can be re-imported without uploading again. */
+  sources: SourceFile[];
 };
 
 export function ImportClient(props: Props) {
@@ -49,7 +53,8 @@ export function ImportClient(props: Props) {
       ) : (
         <>
           {active?.status === "failed" && <FailedCard restaurantId={restaurantId} imp={active} />}
-          <UploadCard restaurantId={restaurantId} />
+          <UploadCard restaurantId={restaurantId} sources={props.sources} />
+          <KitHint restaurantId={restaurantId} />
           <PdfOnlyHint restaurantId={restaurantId} />
         </>
       )}
@@ -60,7 +65,7 @@ export function ImportClient(props: Props) {
 
 // ------------------------------------------------------------------ upload
 
-function UploadCard({ restaurantId }: { restaurantId: string }) {
+function UploadCard({ restaurantId, sources }: { restaurantId: string; sources: SourceFile[] }) {
   const t = useTranslations("import");
   const [files, setFiles] = useState<File[]>([]);
   const [phase, setPhase] = useState<"idle" | "uploading" | "extracting">("idle");
@@ -93,6 +98,17 @@ function UploadCard({ restaurantId }: { restaurantId: string }) {
       ids.push(res.data.mediaId);
       setProgress(i + 1);
     }
+    await extract(ids);
+  }
+
+  /** Re-reads the stored menu documents – nothing is uploaded again. */
+  async function useStored() {
+    setPhase("uploading");
+    setProgress(0);
+    await extract(sources.map((f) => f.id));
+  }
+
+  async function extract(ids: string[]) {
     const created = await create.run({ restaurantId, mediaIds: ids });
     if (!created.ok) return setPhase("idle");
     setPhase("extracting");
@@ -109,6 +125,37 @@ function UploadCard({ restaurantId }: { restaurantId: string }) {
     <Card>
       <CardHeader title={t("uploadTitle")} description={t("uploadHint", { max: MAX_FILES })} />
       <CardBody className="space-y-4">
+        {sources.length > 0 && (
+          <div className="rounded-xl border border-brand-200 bg-brand-50/60 p-3 sm:p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-start gap-3">
+                <BookmarkCheck size={20} className="mt-0.5 shrink-0 text-brand-700" />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-stone-900">{t("storedTitle")}</p>
+                  <p className="text-sm text-stone-600">{t("storedHint", { count: sources.length })}</p>
+                </div>
+              </div>
+              <Button variant="secondary" onClick={useStored} disabled={phase !== "idle"} loading={phase !== "idle" && !files.length} className="w-full shrink-0 sm:w-auto">
+                <ScanText size={16} /> {t("storedCta")}
+              </Button>
+            </div>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {sources.map((f) => (
+                <li key={f.id}>
+                  <a href={f.url} target="_blank" rel="noreferrer" title={f.name ?? t("openSource")} className="flex h-14 w-11 items-center justify-center overflow-hidden rounded-md border border-stone-200 bg-white shadow-sm">
+                    {f.thumb ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={f.thumb} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <FileText size={18} className="text-stone-400" />
+                    )}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-xs text-stone-500">{t("storedOrUpload")}</p>
+          </div>
+        )}
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
@@ -151,8 +198,8 @@ function UploadCard({ restaurantId }: { restaurantId: string }) {
           </ul>
         )}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-stone-500">{phase === "uploading" ? t("uploading", { done: progress, total: files.length }) : t("privacyHint")}</p>
-          <Button size="lg" onClick={start} disabled={!files.length} loading={phase !== "idle"} className="w-full sm:w-auto">
+          <p className="text-xs text-stone-500">{phase === "uploading" && files.length > 0 ? t("uploading", { done: progress, total: files.length }) : t("privacyHint")}</p>
+          <Button size="lg" onClick={start} disabled={!files.length} loading={phase !== "idle" && files.length > 0} className="w-full sm:w-auto">
             {phase === "idle" && <ScanText size={18} />}
             {t("start")}
           </Button>
@@ -252,6 +299,22 @@ function FailedCard({ restaurantId, imp }: { restaurantId: string; imp: ImportDt
   );
 }
 
+/** One upload → menu, logo, design and table cards (menu kit / onboarding). */
+function KitHint({ restaurantId }: { restaurantId: string }) {
+  const t = useTranslations("import");
+  return (
+    <div className="flex flex-col gap-3 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p className="text-sm font-medium text-brand-900">{t("kitTitle")}</p>
+        <p className="text-sm text-brand-800/80">{t("kitHint")}</p>
+      </div>
+      <Link href={`/dashboard/${restaurantId}/onboarding?new=1`} className={buttonClass("primary", "sm", "shrink-0")}>
+        {t("kitCta")}
+      </Link>
+    </div>
+  );
+}
+
 function PdfOnlyHint({ restaurantId }: { restaurantId: string }) {
   const t = useTranslations("import");
   return (
@@ -280,6 +343,7 @@ function AppliedBanner({ restaurantId, result, onClose }: { restaurantId: string
           <div className="flex-1">
             <p className="font-medium text-stone-900">{t("appliedTitle")}</p>
             <p className="text-sm text-stone-700">{t("appliedSummary", { items: result.items, categories: result.categories })}</p>
+            {result.allergensConfirmed > 0 && <p className="mt-1 text-sm text-emerald-800">{t("appliedConfirmed", { count: result.allergensConfirmed })}</p>}
             {result.reviewTasks > 0 && <p className="mt-1 text-sm text-amber-800">{t("appliedReview", { count: result.reviewTasks })}</p>}
           </div>
           <button type="button" onClick={onClose} className="text-stone-400 hover:text-stone-700" aria-label="close">
@@ -345,7 +409,15 @@ function DraftEditor({
   const total = state.reduce((n, m) => n + m.categories.reduce((k, c) => k + c.items.length, 0), 0);
   const remaining = Math.max(0, limits.items - limits.itemsUsed);
   const overLimit = total > remaining;
-  const hintCount = state.reduce((n, m) => n + m.categories.reduce((k, c) => k + c.items.filter((i) => i.marks.length || i.allergenHints.length || i.additiveHints.length).length, 0), 0);
+  const countItems = (fn: (i: EditItem) => boolean) => state.reduce((n, m) => n + m.categories.reduce((k, c) => k + c.items.filter(fn).length, 0), 0);
+  const markedCount = countItems((i) => i.marks.length > 0);
+  const codedCount = countItems((i) => i.allergenHints.length > 0 || i.additiveHints.length > 0);
+  const legend = active.draft?.legend ?? [];
+  const scheme = active.draft?.markScheme ?? "none";
+  // Default ON when the card prints allergen marks – the owner declares they checked them (LMIV).
+  const [confirmAllergens, setConfirmAllergens] = useState(() =>
+    active.draft!.menus.some((m) => m.categories.some((c) => c.items.some((i) => i.marks.length > 0))),
+  );
 
   const invalid = useMemo(() => {
     const bad = new Set<string>();
@@ -390,7 +462,7 @@ function DraftEditor({
           })),
         })),
     }));
-    await apply.run({ restaurantId, importId: active.id, menus: payload });
+    await apply.run({ restaurantId, importId: active.id, menus: payload, confirmAllergens });
   }
 
   return (
@@ -417,10 +489,43 @@ function DraftEditor({
         <CardBody className="space-y-2 text-sm">
           <p className="text-stone-700">{t("found", { items: total, categories: state.reduce((n, m) => n + m.categories.length, 0) })}</p>
           {active.draft?.notes && <p className="rounded-lg bg-stone-50 px-3 py-2 text-stone-600">{active.draft.notes}</p>}
-          {hintCount > 0 && (
-            <p className="flex gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900">
-              <ShieldAlert size={16} className="mt-0.5 shrink-0" /> {t("allergenNotice", { count: hintCount })}
-            </p>
+          {(markedCount > 0 || codedCount > 0) && (
+            <div className="space-y-2.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-amber-950">
+              <p className="flex gap-2">
+                <ShieldAlert size={16} className="mt-0.5 shrink-0" />
+                <span>
+                  {t("allergenFound", { count: codedCount })}{" "}
+                  {scheme === "standard" && t("schemeStandard")}
+                  {scheme === "legend" && t("schemeLegend")}
+                  {scheme === "none" && markedCount > 0 && t("schemeNone")}
+                </span>
+              </p>
+              {legend.length > 0 && (
+                <div>
+                  <p className="mb-1 text-xs font-medium text-amber-900">{t("legendTitle")}</p>
+                  <ul className="flex flex-wrap gap-1.5">
+                    {legend.map((e) => (
+                      <li key={e.mark} className="rounded-md border border-amber-200 bg-white px-1.5 py-0.5 text-xs text-stone-700">
+                        <span className="font-mono font-semibold">{e.mark}</span> {e.label}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <label className="flex cursor-pointer items-start gap-2.5 rounded-md bg-white/70 px-2.5 py-2">
+                <input
+                  type="checkbox"
+                  checked={confirmAllergens}
+                  onChange={(e) => setConfirmAllergens(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-emerald-700"
+                />
+                <span>
+                  <span className="font-medium text-stone-900">{t("allergenConfirmLabel")}</span>
+                  <span className="mt-0.5 block text-xs text-stone-600">{t("allergenConfirmHint")}</span>
+                </span>
+              </label>
+              <p className="text-xs text-amber-900">{confirmAllergens ? t("allergenConfirmOn", { count: codedCount }) : t("allergenConfirmOff")}</p>
+            </div>
           )}
           {overLimit && (
             <p className="flex gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-red-800">
@@ -544,10 +649,18 @@ function ItemRow({
   const t = useTranslations("import");
   const locale = useLocale();
   const [showDesc, setShowDesc] = useState(!!item.description);
-  const hintLabels = [
-    ...item.allergenHints.map((c) => ALLERGENS.find((a) => a.code === c)).filter((x) => !!x).map((a) => catalogLabel(a, locale)),
-    ...item.additiveHints.map((c) => ADDITIVES.find((a) => a.code === c)).filter((x) => !!x).map((a) => catalogLabel(a, locale)),
+  const [editCodes, setEditCodes] = useState(false);
+  const chosen = [
+    ...ALLERGENS.filter((a) => item.allergenHints.includes(a.code)).map((a) => ({ ...a, kind: "allergen" as const })),
+    ...ADDITIVES.filter((a) => item.additiveHints.includes(a.code)).map((a) => ({ ...a, kind: "additive" as const })),
   ];
+  const toggle = (kind: "allergen" | "additive", code: string) =>
+    onChange((i) => {
+      const list = kind === "allergen" ? i.allergenHints : i.additiveHints;
+      const at = list.indexOf(code);
+      if (at >= 0) list.splice(at, 1);
+      else list.push(code);
+    });
   return (
     <li className={cn("rounded-lg border bg-white p-2.5", invalid ? "border-red-300" : "border-stone-200")}>
       <div className="flex items-start gap-2">
@@ -627,14 +740,73 @@ function ItemRow({
             {tag}
           </Badge>
         ))}
-        {(item.marks.length > 0 || hintLabels.length > 0) && (
-          <span className="inline-flex items-center gap-1 text-xs text-amber-800" title={t("hintsTooltip")}>
-            <ShieldAlert size={13} />
-            {item.marks.length > 0 && <span className="font-mono">{item.marks.join(", ")}</span>}
-            {hintLabels.length > 0 && <span>→ {hintLabels.join(", ")}</span>}
-          </span>
-        )}
+        <button
+          type="button"
+          onClick={() => setEditCodes((v) => !v)}
+          aria-expanded={editCodes}
+          className="inline-flex items-center gap-0.5 text-xs text-brand-700 hover:underline"
+        >
+          {editCodes ? t("allergensDone") : chosen.length || item.marks.length ? t("allergensEdit") : `+ ${t("allergensAdd")}`}
+          <ChevronDown size={12} className={cn("transition-transform", editCodes && "rotate-180")} />
+        </button>
       </div>
+      {(item.marks.length > 0 || chosen.length > 0) && (
+        <div className="mt-1.5 flex flex-wrap items-center gap-1">
+          {item.marks.length > 0 && (
+            <span className="mr-1 text-xs text-stone-500" title={t("marksTooltip")}>
+              {t("printedMarks")} <span className="font-mono text-stone-700">{item.marks.join(", ")}</span>
+            </span>
+          )}
+          {chosen.map((c) => (
+            <span
+              key={c.code}
+              title={catalogLabel(c, locale)}
+              className={cn(
+                "inline-flex max-w-[15rem] items-center gap-1 rounded-full border px-2 py-0.5 text-xs",
+                c.kind === "allergen" ? "border-amber-300 bg-amber-50 text-amber-900" : "border-stone-300 bg-stone-50 text-stone-700",
+              )}
+            >
+              <span className="font-mono font-semibold">{c.letter}</span>
+              <span className="truncate">{catalogLabel(c, locale)}</span>
+            </span>
+          ))}
+          {item.marks.length > 0 && chosen.length === 0 && <span className="text-xs text-amber-800">{t("marksUnmapped")}</span>}
+        </div>
+      )}
+      {editCodes && (
+        <div className="mt-2 space-y-2 rounded-lg border border-stone-200 bg-stone-50 p-2">
+          {(["allergen", "additive"] as const).map((kind) => (
+            <div key={kind}>
+              <p className="mb-1 text-xs font-medium text-stone-500">{t(kind === "allergen" ? "allergensLabel" : "additivesLabel")}</p>
+              <div className="flex flex-wrap gap-1">
+                {(kind === "allergen" ? ALLERGENS : ADDITIVES).map((a) => {
+                  const on = (kind === "allergen" ? item.allergenHints : item.additiveHints).includes(a.code);
+                  return (
+                    <button
+                      key={a.code}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => toggle(kind, a.code)}
+                      title={catalogLabel(a, locale)}
+                      className={cn(
+                        "focus-ring inline-flex max-w-[15rem] items-center gap-1 rounded-full border px-2 py-0.5 text-xs transition-colors",
+                        on
+                          ? kind === "allergen"
+                            ? "border-amber-400 bg-amber-100 text-amber-950"
+                            : "border-stone-500 bg-stone-200 text-stone-900"
+                          : "border-stone-200 bg-white text-stone-500 hover:border-stone-400",
+                      )}
+                    >
+                      <span className="font-mono font-semibold">{a.letter}</span>
+                      <span className="truncate">{catalogLabel(a, locale)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </li>
   );
 }

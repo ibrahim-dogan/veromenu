@@ -10,6 +10,9 @@ import { getKpis } from "@/modules/stats/service";
 import { countOpenReviewTasks, getOnboarding } from "@/modules/stats/overview";
 import { countOpenOrders } from "@/modules/ordering/service";
 import { KpiGrid } from "@/modules/stats/components/kpi-grid";
+import { KitOverviewCard } from "@/modules/kit/components/kit-overview-card";
+import { canStartKit } from "@/modules/kit/plan";
+import { getKitOverview } from "@/modules/kit/service";
 
 export default async function OverviewPage({ params }: PageProps<"/[locale]/dashboard/[rid]">) {
   const { rid } = await params;
@@ -24,13 +27,17 @@ export default async function OverviewPage({ params }: PageProps<"/[locale]/dash
   const canAi = ctx.can("ai.use");
   const canSetup = ctx.can("menu.edit") || ctx.can("settings.manage");
 
-  const [kpis, onboarding, reviews, openOrders, credits] = await Promise.all([
+  const [kpis, onboarding, reviews, openOrders, credits, kit] = await Promise.all([
     canStats ? getKpis(rid, r.timezone, 7) : null,
     canSetup ? getOnboarding(r) : null,
     canReview ? countOpenReviewTasks(rid) : null,
     canOrders ? countOpenOrders(rid) : null,
     canAi ? getAiCredits(rid).catch(() => null) : null,
+    canStartKit(ctx) ? getKitOverview(rid).catch(() => null) : null,
   ]);
+  // Menu kit card: running job / results waiting, or the upload prompt while nothing ran yet or the menu is empty.
+  const menuEmpty = onboarding ? !onboarding.find((s) => s.key === "items")?.done : false;
+  const kitCard = kit && (kit.state !== "finished" ? kit : menuEmpty ? ({ state: "none" } as const) : null);
 
   const hour = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hour12: false, timeZone: r.timezone }).format(new Date()));
   const greetingKey = hour < 11 ? "morning" : hour < 17 ? "day" : "evening";
@@ -59,6 +66,8 @@ export default async function OverviewPage({ params }: PageProps<"/[locale]/dash
           )}
         </div>
       </div>
+
+      {kitCard && <KitOverviewCard restaurantId={rid} initial={kitCard} designs={planHas(r.plan, "theme_studio")} />}
 
       {(openOrders || reviews != null || credits) && (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

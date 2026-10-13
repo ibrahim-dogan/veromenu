@@ -25,6 +25,8 @@ import { PrintCardPreview } from "@/modules/theme-studio/components/print-frame"
 import { VoiceButton } from "@/modules/theme-studio/components/voice-button";
 import { readFileText, studioGet } from "@/modules/theme-studio/lib/client";
 import { localizedText } from "@/modules/theme-studio/lib/package";
+import { generateFromStoredSourcesAction } from "@/modules/kit/actions";
+import { StoredSourcesOption } from "@/modules/kit/components/stored-sources";
 import { generatePrintFromFiles, generatePrintFromPrompt } from "../actions";
 
 type Mode = "templates" | "files" | "prompt" | "blank" | null;
@@ -150,6 +152,7 @@ export function NewPrintDesign({ restaurantId, canUseAi, onCreated }: { restaura
         onClose={() => setMode(null)}
         restaurantId={restaurantId}
         onStart={(input) => runAi("printFiles", () => generatePrintFromFiles({ restaurantId, ...input }))}
+        onStartStored={(input) => runAi("printFiles", () => generateFromStoredSourcesAction({ restaurantId, kind: "print", ...input }))}
       />
       <PromptDialog
         open={mode === "prompt"}
@@ -359,19 +362,23 @@ function FilesDialog({
   onClose,
   restaurantId,
   onStart,
+  onStartStored,
 }: {
   open: boolean;
   onClose: () => void;
   restaurantId: string;
   onStart: (input: { mediaIds: string[]; format: PrintFormat; notes?: string }) => Promise<boolean>;
+  /** "Gespeicherte Speisekarte verwenden": the stored menu (+ the kit's design brief) instead of a new upload. */
+  onStartStored: (input: { format: PrintFormat; notes?: string }) => Promise<boolean>;
 }) {
   const t = useTranslations("themeAi.print");
   const [files, setFiles] = useState<MediaItem[]>([]);
   const [notes, setNotes] = useState("");
   const [format, setFormat] = useState<PrintFormat>("a6");
 
-  async function start() {
-    const ok = await onStart({ mediaIds: files.map((f) => f.id), format, notes: notes.trim() || undefined });
+  async function start(stored = false) {
+    const input = { format, notes: notes.trim() || undefined };
+    const ok = stored ? await onStartStored(input) : await onStart({ mediaIds: files.map((f) => f.id), ...input });
     if (ok) {
       setFiles([]);
       setNotes("");
@@ -390,17 +397,19 @@ function FilesDialog({
           <Button variant="secondary" onClick={onClose}>
             {t("cancel")}
           </Button>
-          <Button onClick={start} disabled={!files.length} className="bg-violet-600 hover:bg-violet-700">
+          <Button onClick={() => start()} disabled={!files.length} className="bg-violet-600 hover:bg-violet-700">
             <Sparkles size={15} aria-hidden /> {t("generate")}
           </Button>
         </>
       }
     >
       <div className="space-y-4">
+        {/* format first: it also applies to "Gespeicherte Speisekarte verwenden" */}
+        <PrintFormatPicker value={format} onChange={setFormat} idPrefix="print-files-format" />
+        <StoredSourcesOption restaurantId={restaurantId} kind="print" open={open} onUse={() => start(true)} />
         <Dropzone restaurantId={restaurantId} accept="any" multiple onUploaded={(m) => setFiles((l) => (l.length >= 6 ? l : [...l, m]))} />
         <UploadedList items={files} onRemove={(id) => setFiles((l) => l.filter((x) => x.id !== id))} />
         <p className="text-xs text-stone-500">{t("filesLimit", { count: 6 })}</p>
-        <PrintFormatPicker value={format} onChange={setFormat} idPrefix="print-files-format" />
         <Field label={t("notesLabel")} hint={t("notesHint")} htmlFor="print-ai-notes">
           <Textarea id="print-ai-notes" value={notes} onChange={(e) => setNotes(e.target.value)} maxLength={2000} rows={3} placeholder={t("notesPlaceholder")} />
         </Field>

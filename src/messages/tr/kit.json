@@ -1,0 +1,142 @@
+{
+  "metaTitle": "Menünü yükle",
+  "noPermission": "Menünü yüklemek için „Menüyü düzenle“ ve „Yapay zekâ kullan“ yetkilerine ihtiyacın var.",
+  "welcome": {
+    "title": "Hoş geldin, {name}!",
+    "titleNoName": "VeroMenu’ye hoş geldin!",
+    "lead": "Menünü bir kez yükle – gerisini biz hallederiz. Sen görmeden hiçbir şey yayına girmez.",
+    "planFree": "Paketinde: menü ve logo",
+    "planPaid": "Paketinde: menü ve logo + kendi tasarımın ve masa kartları",
+    "lockedHint": "Starter paketinden itibaren dahil.",
+    "bullets": {
+      "import": { "title": "Yemekler ve fiyatlar", "hint": "Kategoriler, yemekler, fiyatlar ve alerjen işaretleri aktarılır." },
+      "logo": { "title": "Logon", "hint": "Menünden kesilip ayarlara kaydedilir." },
+      "theme": { "title": "Kendi menü tasarımın", "hint": "Basılı menünün renkleri, yazı tipleri ve tarzı – telefona uygun." },
+      "print": { "title": "QR kodlu masa kartı", "hint": "Menüne uygun tasarlanır, yazdırmaya hazır." }
+    }
+  },
+  "upload": {
+    "title": "Menün",
+    "hint": "Basılı menünün PDF’i veya fotoğrafları – en fazla {max} dosya. Ne kadar net, o kadar iyi.",
+    "limit": "En fazla {max} dosya.",
+    "duration": "Genellikle 2–5 dakika sürer. Bu sırada sayfadan ayrılabilirsin.",
+    "start": "Başlayalım",
+    "later": "Sonra",
+    "laterHint": "Bu adımı istediğin zaman genel bakıştan ve yapay zekâ içe aktarımından açabilirsin.",
+    "back": "Sonuca geri dön",
+    "useStored": "Kayıtlı menüyü kullan",
+    "useStoredButton": "Bununla başla",
+    "storedHint": "Menünü zaten yükledin ({count, plural, one {# dosya} other {# dosya}}) – tekrar yüklemene gerek yok.",
+    "alreadyRunning": "Menün zaten işleniyor."
+  },
+  "progress": {
+    "title": "Her şeyi senin için hazırlıyoruz …",
+    "hint": "Bu sayfayı kapatabilirsin – arka planda çalışmaya devam ediyoruz, sonucu genel bakışta bulursun.",
+    "elapsed": "Geçen süre",
+    "leave": "Genel bakışa git"
+  },
+  "steps": {
+    "sources": "Dosyalar kaydediliyor",
+    "pages": "Sayfalar hazırlanıyor",
+    "import": "Yemekler ve fiyatlar aktarılıyor",
+    "logo": "Logo bulunuyor",
+    "brief": "Menünün tarzı analiz ediliyor",
+    "theme": "Menü tasarımı hazırlanıyor",
+    "print": "Masa kartı tasarlanıyor"
+  },
+  "status": {
+    "pending": "Bekliyor",
+    "running": "Çalışıyor …",
+    "done": "Tamam",
+    "failed": "Başarısız",
+    "skipped": "Atlandı"
+  },
+  "errors": {
+    "dependency": "Önceki bir adım başarısız olduğu için mümkün değil.",
+    "interrupted": "Kesintiye uğradı (ör. yeniden başlatma). Lütfen tekrar dene.",
+    "notAvailable": "Bu özellik şu anda kullanılamıyor.",
+    "noSources": "Kayıtlı dosya yok – lütfen menünü yükle.",
+    "importEmpty": "Dosyalarda yemek bulamadık. Fotoğraflar net ve eksiksiz mi?",
+    "aiCreditsExhausted": "Bu ayki yapay zekâ kredilerin bitti. Diğer adımlar yine de devam ediyor.",
+    "aiFailed": "Yapay zekâ bu adımı tamamlayamadı. Lütfen tekrar dene.",
+    "aiNotConfigured": "Yapay zekâ henüz ayarlanmadı.",
+    "unexpected": "Beklenmeyen hata. Lütfen tekrar dene."
+  },
+  "retry": "Tekrar dene",
+  "retryAll": "Başarısız adımları tekrarla",
+  "review": {
+    "title": "Hazır! Sonuca bir göz at",
+    "titlePartial": "Neredeyse hazır – birkaç adım sana ihtiyaç duyuyor",
+    "lead": "Henüz hiçbir şey yayında değil. Her parçayı tek tek kontrol et ya da hepsini tek tıkla uygula.",
+    "leadDone": "Hepsi uygulandı – dijital menün hazır.",
+    "applyAll": "Hepsini uygula",
+    "appliedAll": "Uygulandı!",
+    "applied": "Uygulandı",
+    "openGuest": "Misafir görünümünü aç",
+    "notAvailable": "Henüz mevcut değil.",
+    "draftHint": "Taslak – ancak uyguladıktan sonra misafirlere görünür.",
+    "openStudio": "Stüdyoda aç",
+    "newUpload": "Yeni menü yükle",
+    "toOverview": "Genel bakışa git",
+    "allergens": {
+      "title": "Alerjenler ve katkı maddeleri",
+      "hint": "Menündeki {count, plural, one {# yemekte} other {# yemekte}} işaretler var.",
+      "suggest": "Kontrol için öneri olarak ekle (önerilen)",
+      "suggestHint": "Bilgileri daha sonra kontrol listesinde onaylarsın. O zamana kadar misafirler „Alerjen bilgisi personelden“ görür.",
+      "confirm": "Alerjen bilgilerini menümüzden al – kontrol ettik",
+      "confirmHint": "Tanınan bilgiler doğrudan onaylanmış olarak kaydedilir ve misafirlere gösterilir."
+    },
+    "import": {
+      "title": "Menü",
+      "found": "{categories, plural, one {# kategoride} other {# kategoride}} {items, plural, one {# yemek} other {# yemek}} bulundu.",
+      "apply": "Menüyü uygula",
+      "edit": "Önizlemeyi kontrol et ve düzenle",
+      "openMenu": "Menüye git",
+      "appliedToast": "Yemeklerin oluşturuldu."
+    },
+    "logo": {
+      "title": "Logo",
+      "found": "Menünden alındı. İstediğin zaman ayarlardan değiştirebilirsin.",
+      "current": "Mevcut logon. İstediğin zaman ayarlardan değiştirebilirsin.",
+      "notFound": "Menünde logo bulamadık. Dosya olarak bir logon var mı?",
+      "failed": "Logo tanınamadı.",
+      "none": "Henüz logo yok.",
+      "other": "Başka dosya seç",
+      "saved": "Logo kaydedildi."
+    },
+    "theme": {
+      "title": "Menü tasarımı",
+      "apply": "Tasarım olarak etkinleştir",
+      "active": "Etkin",
+      "appliedToast": "Yeni tasarımın etkin."
+    },
+    "print": {
+      "title": "Masa kartı",
+      "apply": "Baskı tasarımı olarak kullan",
+      "selected": "Baskıda kullanılıyor",
+      "openTables": "Masalar ve QR kodlarına git",
+      "appliedToast": "Masa kartın baskı tasarımı olarak seçildi."
+    },
+    "upsell": {
+      "title": "Kendi menü tasarımın ve masa kartları",
+      "hint": "Starter veya Pro paketiyle aynı dosyadan menünün tarzında bir tasarım ve uyumlu masa kartları da hazırlıyoruz."
+    }
+  },
+  "card": {
+    "title": "Menünü yükle – gerisini biz hallederiz",
+    "hintFree": "Menünün bir PDF’i veya fotoğrafları yeterli: yemekleri, fiyatları ve logonu aktarırız.",
+    "hintPaid": "Menünün bir PDF’i veya fotoğrafları yeterli: yemekleri, fiyatları ve logonu aktarır, menü tasarımını ve masa kartlarını hazırlarız.",
+    "cta": "Şimdi yükle",
+    "running": "Menün işleniyor … ({total} adımdan {done} tanesi)",
+    "runningCta": "İlerlemeyi gör",
+    "ready": "Sonuçların hazır – bir göz at.",
+    "readyCta": "Sonuçları gör"
+  },
+  "stored": {
+    "title": "Kayıtlı menüyü kullan",
+    "hint": "Daha önce yüklediğin menüyü kullanırız – tekrar yüklemene gerek yok.",
+    "hintBrief": "Menünün tarz analizi zaten hazır – bu daha hızlı.",
+    "use": "Kayıtlı menüyü kullan",
+    "or": "veya yeni dosyalar yükle"
+  }
+}

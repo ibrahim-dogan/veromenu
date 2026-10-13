@@ -94,7 +94,7 @@ export function MenuEditor({
         actions={
           <>
             {perms.ai && (
-              <Link href={`/dashboard/${restaurantId}/import`} className={buttonClass("secondary")}>
+              <Link href={`/dashboard/${restaurantId}/import${active ? `?target=${active.id}` : ""}`} className={buttonClass("secondary")}>
                 <FileUp size={16} aria-hidden /> {t("importCta")}
               </Link>
             )}
@@ -252,7 +252,7 @@ export function MenuEditor({
                           <Plus size={16} aria-hidden /> {t("addFirstCategory")}
                         </Button>
                         {perms.ai && (
-                          <Link href={`/dashboard/${restaurantId}/import`} className={buttonClass("secondary")}>
+                          <Link href={`/dashboard/${restaurantId}/import${active ? `?target=${active.id}` : ""}`} className={buttonClass("secondary")}>
                             <FileUp size={16} aria-hidden /> {t("importCta")}
                           </Link>
                         )}

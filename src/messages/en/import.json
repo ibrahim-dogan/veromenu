@@ -93,5 +93,7 @@
   },
   "kitTitle": "Everything from one file",
   "kitHint": "Menu, logo, your own design and table cards – from a single file, in one go.",
-  "kitCta": "Start the complete kit"
+  "kitCta": "Start the complete kit",
+  "mergeNotice": "{menu} already has {count, plural, one {# category} other {# categories}} with the same name – dishes are added there, existing dishes with the same name are skipped.",
+  "appliedSkipped": "{count, plural, one {# dish already existed and was skipped.} other {# dishes already existed and were skipped.}}"
 }

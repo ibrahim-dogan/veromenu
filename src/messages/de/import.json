@@ -93,5 +93,7 @@
   },
   "kitTitle": "Alles aus einer Datei",
   "kitHint": "Speisekarte, Logo, eigenes Design und Tischaufsteller – aus einer einzigen Datei, in einem Durchgang.",
-  "kitCta": "Komplett-Paket starten"
+  "kitCta": "Komplett-Paket starten",
+  "mergeNotice": "{menu} enthält schon {count, plural, one {# gleichnamige Kategorie} other {# gleichnamige Kategorien}} – die Gerichte werden dort ergänzt, vorhandene Gerichte mit gleichem Namen werden übersprungen.",
+  "appliedSkipped": "{count, plural, one {# Gericht war schon vorhanden und wurde übersprungen.} other {# Gerichte waren schon vorhanden und wurden übersprungen.}}"
 }

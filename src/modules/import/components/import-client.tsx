@@ -29,7 +29,7 @@ import type { ApplyImportResult, DraftItem, DraftMenu, ImportDto, SourceFile } f
 const MAX_FILES = 10;
 const ACCEPT = "image/jpeg,image/png,image/webp,image/heic,application/pdf";
 
-type MenuOption = { id: string; name: string; itemCount: number };
+type MenuOption = { id: string; name: string; itemCount: number; categoryNames: string[] };
 type Props = {
   restaurantId: string;
   active: ImportDto | null;
@@ -38,6 +38,8 @@ type Props = {
   limits: { items: number; itemsUsed: number; menus: number };
   /** Stored menu documents (settings.sources) – can be re-imported without uploading again. */
   sources: SourceFile[];
+  /** Menu the owner came from (menu editor tab) – the import goes there by default. */
+  defaultTargetMenuId?: string | null;
 };
 
 export function ImportClient(props: Props) {
@@ -345,13 +347,17 @@ function AppliedBanner({ restaurantId, result, onClose }: { restaurantId: string
             <p className="text-sm text-stone-700">{t("appliedSummary", { items: result.items, categories: result.categories })}</p>
             {result.allergensConfirmed > 0 && <p className="mt-1 text-sm text-emerald-800">{t("appliedConfirmed", { count: result.allergensConfirmed })}</p>}
             {result.reviewTasks > 0 && <p className="mt-1 text-sm text-amber-800">{t("appliedReview", { count: result.reviewTasks })}</p>}
+            {result.skippedDuplicates > 0 && <p className="mt-1 text-sm text-stone-600">{t("appliedSkipped", { count: result.skippedDuplicates })}</p>}
           </div>
           <button type="button" onClick={onClose} className="text-stone-400 hover:text-stone-700" aria-label="close">
             <X size={18} />
           </button>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link href={`/dashboard/${restaurantId}/menu`} className={buttonClass("primary", "sm")}>
+          <Link
+            href={`/dashboard/${restaurantId}/menu${result.menuIds?.[0] ? `?menu=${result.menuIds[0]}` : ""}`}
+            className={buttonClass("primary", "sm")}
+          >
             {t("openMenu")}
           </Link>
           {result.reviewTasks > 0 && (
@@ -380,6 +386,7 @@ function DraftEditor({
   active,
   menus,
   limits,
+  defaultTargetMenuId,
   onApplied,
 }: Props & { active: ImportDto; onApplied: (r: ApplyImportResult) => void }) {
   const t = useTranslations("import");
@@ -388,10 +395,17 @@ function DraftEditor({
   const toText = (c: number | null) => (c == null ? "" : (c / 100).toFixed(2).replace(".", decimal));
 
   const [state, setState] = useState<EditMenu[]>(() => {
-    const emptyMenus = menus.filter((m) => m.itemCount === 0);
+    // Default target: the menu the owner came from → an empty menu → a menu with the same name → new menu.
+    // (Same-name used to win, which sent imports into the full "Speisekarte" instead of a freshly created menu.)
+    const used = new Set<string>();
     return active.draft!.menus.map((m, idx) => {
-      const same = menus.find((x) => x.name.trim().toLowerCase() === m.name.trim().toLowerCase());
-      const target = same?.id ?? emptyMenus[idx]?.id ?? (menus.length + idx >= limits.menus ? (menus[0]?.id ?? null) : null);
+      const free = (x: MenuOption) => !used.has(x.id);
+      const fromEditor = idx === 0 && defaultTargetMenuId ? menus.find((x) => x.id === defaultTargetMenuId) : undefined;
+      const empty = menus.find((x) => x.itemCount === 0 && free(x));
+      const same = menus.find((x) => free(x) && x.name.trim().toLowerCase() === m.name.trim().toLowerCase());
+      const target =
+        fromEditor?.id ?? empty?.id ?? same?.id ?? (menus.length + idx >= limits.menus ? (menus.find(free)?.id ?? menus[0]?.id ?? null) : null);
+      if (target) used.add(target);
       return {
         key: m.key,
         name: m.name,
@@ -552,6 +566,17 @@ function DraftEditor({
                 ))}
               </Select>
             </label>
+            {m.targetMenuId &&
+              (() => {
+                const target = menus.find((x) => x.id === m.targetMenuId);
+                const names = new Set((target?.categoryNames ?? []).map((n) => n.trim().toLowerCase()));
+                const overlap = m.categories.filter((c) => names.has(c.name.trim().toLowerCase())).length;
+                return overlap > 0 ? (
+                  <p className="self-end rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                    {t("mergeNotice", { count: overlap, menu: target?.name ?? "" })}
+                  </p>
+                ) : null;
+              })()}
             {m.targetMenuId === null && (
               <label className="space-y-1">
                 <span className="text-xs font-medium text-stone-500">{t("newMenuName")}</span>

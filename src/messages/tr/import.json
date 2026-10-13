@@ -93,5 +93,7 @@
   },
   "kitTitle": "Tek dosyadan her şey",
   "kitHint": "Menü, logo, kendi tasarımın ve masa kartları – tek bir dosyadan, tek seferde.",
-  "kitCta": "Komple paketi başlat"
+  "kitCta": "Komple paketi başlat",
+  "mergeNotice": "{menu} menüsünde aynı adlı {count} kategori zaten var – yemekler oraya eklenir, aynı adlı mevcut yemekler atlanır.",
+  "appliedSkipped": "{count} yemek zaten vardı ve atlandı."
 }

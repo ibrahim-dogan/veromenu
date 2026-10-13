@@ -14,8 +14,9 @@ export async function generateMetadata() {
   return { title: t("title") };
 }
 
-export default async function ImportPage({ params }: PageProps<"/[locale]/dashboard/[rid]/import">) {
+export default async function ImportPage({ params, searchParams }: PageProps<"/[locale]/dashboard/[rid]/import">) {
   const { rid } = await params;
+  const { target } = await searchParams;
   const ctx = await requireRestaurant(rid, "ai.use");
   const t = await getTranslations("import");
   const enabled = planHas(ctx.restaurant.plan, "ai_import");
@@ -34,7 +35,13 @@ export default async function ImportPage({ params }: PageProps<"/[locale]/dashbo
         restaurantId={rid}
         active={active}
         history={imports}
-        menus={tree.map((m) => ({ id: m.id, name: m.name, itemCount: m.categories.reduce((k, c) => k + c.items.length, 0) }))}
+        menus={tree.map((m) => ({
+          id: m.id,
+          name: m.name,
+          itemCount: m.categories.reduce((k, c) => k + c.items.length, 0),
+          categoryNames: m.categories.map((c) => c.name),
+        }))}
+        defaultTargetMenuId={typeof target === "string" && tree.some((m) => m.id === target) ? target : null}
         limits={{ items: plan.limits.items, itemsUsed, menus: plan.limits.menus }}
         sources={sources}
       />

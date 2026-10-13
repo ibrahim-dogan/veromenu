@@ -62,6 +62,12 @@ export type ApplyImportResult = {
   reviewTasks: number;
   /** Items whose allergens/additives were taken over as confirmed (owner ticked "wir haben sie geprüft"). */
   allergensConfirmed: number;
+  /** Items skipped because the target category already contains a dish with the same name (re-import). */
+  skippedDuplicates: number;
+  /** Existing categories of the target menu that received the imported dishes (same name). */
+  mergedCategories: number;
+  /** Menus that received items, in draft order (for "Zur Speisekarte" links). */
+  menuIds: string[];
 };
 
 /** A stored menu source document (restaurants.settings.sources) offered for re-import. */

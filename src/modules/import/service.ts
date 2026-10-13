@@ -2,9 +2,9 @@ import "server-only";
 import { languageName } from "@/core/i18n/locales";
 import sharp from "sharp";
 import { nanoid } from "nanoid";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { db } from "@/core/db";
-import { media, menuImports, reviewTasks } from "@/core/db/schema";
+import { categories, items, media, menuImports, reviewTasks } from "@/core/db/schema";
 import { aiJson, type ContentPart } from "@/core/ai";
 import { AppError } from "@/core/http/errors";
 import { audit } from "@/core/audit";
@@ -230,6 +230,9 @@ export async function discardImport(restaurantId: string, importId: string) {
 
 // ------------------------------------------------------------------ apply
 
+/** Case/space-insensitive name key for duplicate detection. */
+const norm = (s: string) => s.normalize("NFC").trim().toLowerCase().replace(/\s+/g, " ");
+
 /**
  * Creates the menus/categories/items of the draft. `confirmAllergens` = the owner ticked "Allergen-Angaben aus
  * unserer Karte übernehmen – wir haben sie geprüft": items with codes are stored as confirmed (by this user);
@@ -257,29 +260,81 @@ export async function applyImport(opts: {
   };
   const total = countDraftItems(draft);
   if (!total) throw new AppError("validation", "empty");
-  await menu.assertItemLimit(restaurantId, total);
 
   return db.transaction(async (tx) => {
-    const result: ApplyImportResult = { menus: 0, categories: 0, items: 0, reviewTasks: 0, allergensConfirmed: 0 };
-    let firstMenuId: string | null = null;
+    const result: ApplyImportResult = {
+      menus: 0,
+      categories: 0,
+      items: 0,
+      reviewTasks: 0,
+      allergensConfirmed: 0,
+      skippedDuplicates: 0,
+      mergedCategories: 0,
+      menuIds: [],
+    };
+    // Importing into an existing menu MERGES: a category with the same name is reused and dishes whose name
+    // already exists there are skipped – re-importing the same card never duplicates the menu.
+    const existingByMenu = new Map<string, Map<string, { id: string; itemNames: Set<string> }>>();
+    const targetIds = [...new Set(draft.menus.map((m) => m.targetMenuId).filter((x): x is string => !!x))];
+    for (const id of targetIds) {
+      await menu.getMenu(restaurantId, id, tx);
+      const cats = await tx.select({ id: categories.id, name: categories.name }).from(categories).where(eq(categories.menuId, id)).orderBy(asc(categories.sort));
+      const its = cats.length
+        ? await tx.select({ categoryId: items.categoryId, name: items.name }).from(items).where(inArray(items.categoryId, cats.map((c) => c.id)))
+        : [];
+      const byName = new Map<string, { id: string; itemNames: Set<string> }>();
+      for (const c of cats) {
+        const k = norm(c.name);
+        if (!byName.has(k)) byName.set(k, { id: c.id, itemNames: new Set() });
+      }
+      for (const it of its) {
+        for (const entry of byName.values()) if (entry.id === it.categoryId) entry.itemNames.add(norm(it.name));
+      }
+      existingByMenu.set(id, byName);
+    }
+    const isDuplicate = (menuId: string | null, catName: string, itemName: string) =>
+      !!menuId && !!existingByMenu.get(menuId)?.get(norm(catName))?.itemNames.has(norm(itemName));
+    // Plan limit counts only dishes that will really be created.
+    const toCreate = draft.menus.reduce(
+      (n, m) => n + m.categories.reduce((k, c) => k + c.items.filter((i) => !isDuplicate(m.targetMenuId, c.name, i.name)).length, 0),
+      0,
+    );
+    if (toCreate) await menu.assertItemLimit(restaurantId, toCreate, tx);
+
     for (const m of draft.menus) {
       const cats = m.categories.filter((c) => c.items.length);
       if (!cats.length) continue;
       let menuId = m.targetMenuId;
-      if (menuId) await menu.getMenu(restaurantId, menuId, tx);
-      else {
+      if (!menuId) {
         const created = await menu.createMenu(restaurantId, { name: m.name.trim() || "Speisekarte" }, tx);
         menuId = created.id;
         result.menus++;
       }
-      firstMenuId ??= menuId;
+      if (!result.menuIds.includes(menuId)) result.menuIds.push(menuId);
+      const existing = existingByMenu.get(menuId);
       for (const c of cats) {
-        const cat = await menu.createCategory(restaurantId, { menuId, name: c.name.trim() || "Sonstiges", description: c.description }, tx);
-        result.categories++;
+        const catName = c.name.trim() || "Sonstiges";
+        const match = existing?.get(norm(catName));
+        let catId: string;
+        if (match) {
+          catId = match.id;
+          result.mergedCategories++;
+        } else {
+          const cat = await menu.createCategory(restaurantId, { menuId, name: catName, description: c.description }, tx);
+          catId = cat.id;
+          existing?.set(norm(catName), { id: catId, itemNames: new Set() });
+          result.categories++;
+        }
+        const seen = existing?.get(norm(catName))?.itemNames;
         for (const i of c.items) {
+          if (seen?.has(norm(i.name))) {
+            result.skippedDuplicates++;
+            continue;
+          }
+          seen?.add(norm(i.name));
           const it = await menu.createItem(
             restaurantId,
-            cat.id,
+            catId,
             {
               name: i.name.trim(),
               description: i.description,
@@ -314,7 +369,7 @@ export async function applyImport(opts: {
     }
     await tx
       .update(menuImports)
-      .set({ status: "applied", appliedAt: new Date(), result: draft, targetMenuId: firstMenuId })
+      .set({ status: "applied", appliedAt: new Date(), result: draft, targetMenuId: result.menuIds[0] ?? null })
       .where(eq(menuImports.id, row.id));
     await audit(
       {

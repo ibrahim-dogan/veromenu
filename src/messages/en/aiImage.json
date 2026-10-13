@@ -26,5 +26,7 @@
   "generating": "Creating image … about 10–30 seconds",
   "aiLabel": "AI-generated illustration",
   "failed": "The image couldn't be created. Please try again, maybe with a different description.",
-  "transparencyNote": "Guests will see the note “AI-generated illustration” on this image (transparency obligation under the EU AI Act)."
+  "transparencyNote": "Guests will see the note “AI-generated illustration” on this image (transparency obligation under the EU AI Act).",
+  "ownDishReference": "The reference photo shows our own dish – the result is then an edited real photo and guests see no AI notice.",
+  "transparencyNoteOwnDish": "Edited photo of your own dish: guests see no AI notice. The file still carries a machine-readable marker."
 }

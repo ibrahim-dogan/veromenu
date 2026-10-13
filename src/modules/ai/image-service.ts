@@ -105,7 +105,7 @@ export async function discardImageDraft(restaurantId: string, token: string) {
   await Promise.all([storage().delete(draftKey(restaurantId, token, "jpg")), storage().delete(draftKey(restaurantId, token, "json"))]);
 }
 
-export async function acceptImageDraft(opts: { restaurantId: string; userId: string; target: ImageTarget; token: string }) {
+export async function acceptImageDraft(opts: { restaurantId: string; userId: string; target: ImageTarget; token: string; ownDishReference?: boolean }) {
   const { restaurantId, target, token } = opts;
   const [data, metaBuf] = await Promise.all([storage().get(draftKey(restaurantId, token, "jpg")), storage().get(draftKey(restaurantId, token, "json"))]);
   if (!data || !metaBuf) throw new AppError("notFound");
@@ -123,6 +123,8 @@ export async function acceptImageDraft(opts: { restaurantId: string; userId: str
     aiPrompt: meta.prompt,
     aiModel: meta.model,
     sourceMediaId: meta.sourceMediaId,
+    // A real photo of the restaurant's own dish was the reference → edited photo, no visible AI badge.
+    aiLabel: !(meta.sourceMediaId && opts.ownDishReference !== false),
   });
   if (target.type === "item") await menu.updateItem(restaurantId, target.id, { imageMediaId: m.id });
   else await menu.updateCategory(restaurantId, target.id, { imageMediaId: m.id });
@@ -132,7 +134,7 @@ export async function acceptImageDraft(opts: { restaurantId: string; userId: str
     action: "ai.image.apply",
     entityType: target.type,
     entityId: target.id,
-    data: { mediaId: m.id, model: meta.model, reference: meta.sourceMediaId },
+    data: { mediaId: m.id, model: meta.model, reference: meta.sourceMediaId, aiLabel: m.aiLabel },
   });
   await discardImageDraft(restaurantId, token).catch(() => undefined);
   return { mediaId: m.id };

@@ -64,6 +64,9 @@ function AiImageDialog({
   const [subject, setSubject] = React.useState("");
   const [style, setStyle] = React.useState<ImageStyle>("bright");
   const [referenceId, setReferenceId] = React.useState<string | null>(null);
+  // the reference shows the restaurant's own dish → the result is an edited real photo (no guest AI badge)
+  const [ownDish, setOwnDish] = React.useState(true);
+  const showsBadge = !referenceId || !ownDish;
   const [draft, setDraft] = React.useState<{ token: string; previewUrl: string } | null>(null);
   const [failed, setFailed] = React.useState(false);
 
@@ -96,7 +99,7 @@ function AiImageDialog({
 
   async function doAccept() {
     if (!draft) return;
-    const res = await accept.run({ restaurantId, target, token: draft.token });
+    const res = await accept.run({ restaurantId, target, token: draft.token, ownDishReference: !!referenceId && ownDish });
     if (res.ok) {
       onApplied?.(res.data.mediaId);
       onClose();
@@ -202,6 +205,12 @@ function AiImageDialog({
                 </button>
               )}
               <p className="text-xs text-stone-500">{t("referenceHint")}</p>
+              {referenceId && (
+                <label className="flex items-start gap-2 rounded-lg bg-stone-50 px-3 py-2 text-xs text-stone-700">
+                  <input type="checkbox" className="mt-0.5 accent-brand-700" checked={ownDish} onChange={(e) => setOwnDish(e.target.checked)} />
+                  <span>{t("ownDishReference")}</span>
+                </label>
+              )}
             </div>
           </div>
 
@@ -222,14 +231,14 @@ function AiImageDialog({
                   {t("generating")}
                 </div>
               )}
-              {draft && !generate.pending && (
+              {draft && !generate.pending && showsBadge && (
                 <span className="absolute bottom-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-[11px] font-medium text-white">{t("aiLabel")}</span>
               )}
             </div>
             {failed && <p className="text-sm text-red-700">{t("failed")}</p>}
             <p className="flex gap-2 rounded-lg bg-sky-50 px-3 py-2 text-xs text-sky-900">
               <Info size={14} className="mt-px shrink-0" />
-              {t("transparencyNote")}
+              {showsBadge ? t("transparencyNote") : t("transparencyNoteOwnDish")}
             </p>
           </div>
         </div>

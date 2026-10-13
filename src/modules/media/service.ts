@@ -14,6 +14,8 @@ import { ALLOWED_UPLOAD_MIME, MAX_UPLOAD_BYTES, mediaSrc, saveMedia, type Media 
 export type MediaDto = {
   id: string;
   kind: "upload" | "ai_generated";
+  /** false = AI-edited own-dish photo (no guest badge) */
+  aiLabel: boolean;
   mime: string;
   url: string;
   thumb: string;
@@ -31,6 +33,7 @@ export function toMediaDto(m: Media): MediaDto {
   return {
     id: m.id,
     kind: m.kind,
+    aiLabel: m.aiLabel,
     mime: m.mime,
     url: mediaUrl(m.storageKey)!,
     thumb: mediaSrc(m, "sm")!,

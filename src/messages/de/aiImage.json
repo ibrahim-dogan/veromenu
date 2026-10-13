@@ -26,5 +26,7 @@
   "generating": "Bild wird erstellt … ca. 10–30 Sekunden",
   "aiLabel": "KI-generiertes Symbolbild",
   "failed": "Das Bild konnte nicht erstellt werden. Versuch es noch einmal, evtl. mit einer anderen Beschreibung.",
-  "transparencyNote": "Deine Gäste sehen bei diesem Bild den Hinweis „KI-generiertes Symbolbild“ (Transparenzpflicht nach EU-KI-Verordnung)."
+  "transparencyNote": "Deine Gäste sehen bei diesem Bild den Hinweis „KI-generiertes Symbolbild“ (Transparenzpflicht nach EU-KI-Verordnung).",
+  "ownDishReference": "Das Referenzfoto zeigt unser eigenes Gericht – dann ist es ein bearbeitetes echtes Foto und Gäste sehen keinen KI-Hinweis.",
+  "transparencyNoteOwnDish": "Bearbeitetes Foto deines eigenen Gerichts: Gäste sehen keinen KI-Hinweis. Die Datei enthält weiterhin eine maschinenlesbare Kennzeichnung."
 }

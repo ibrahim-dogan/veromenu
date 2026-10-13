@@ -61,7 +61,7 @@ export function MediaLibrary({ restaurantId, items }: { restaurantId: string; it
                   <Thumb item={m} />
                   {m.kind === "ai_generated" && (
                     <Badge tone="purple" className="absolute top-2 left-2 bg-violet-50/95">
-                      <Sparkles size={12} aria-hidden /> {t("aiBadge")}
+                      <Sparkles size={12} aria-hidden /> {m.aiLabel === false ? t("aiEditedBadge") : t("aiBadge")}
                     </Badge>
                   )}
                 </a>

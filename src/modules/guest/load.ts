@@ -32,7 +32,7 @@ export type GuestLoadOptions = {
 const SLUG = /^[a-z0-9][a-z0-9-]{0,63}$/;
 const TOKEN = /^[A-Za-z0-9_-]{4,128}$/;
 
-type MediaRow = Pick<typeof media.$inferSelect, "id" | "kind" | "storageKey" | "variants" | "mime" | "alt" | "width" | "height">;
+type MediaRow = Pick<typeof media.$inferSelect, "id" | "kind" | "aiLabel" | "storageKey" | "variants" | "mime" | "alt" | "width" | "height">;
 
 function toImage(m: MediaRow | undefined): GuestImage | null {
   if (!m || !m.mime.startsWith("image/")) return null;
@@ -40,7 +40,7 @@ function toImage(m: MediaRow | undefined): GuestImage | null {
     sm: mediaSrc(m, "sm")!,
     md: mediaSrc(m, "md")!,
     alt: m.alt,
-    isAi: m.kind === "ai_generated",
+    isAi: m.kind === "ai_generated" && m.aiLabel !== false,
     width: m.width,
     height: m.height,
   };
@@ -148,6 +148,7 @@ const loadCached = cache(
           .select({
             id: media.id,
             kind: media.kind,
+            aiLabel: media.aiLabel,
             storageKey: media.storageKey,
             variants: media.variants,
             mime: media.mime,

@@ -58,5 +58,6 @@
   "usageItems": "{count, plural, one {on # item} other {on # items}}",
   "usageCategories": "{count, plural, one {on # category} other {on # categories}}",
   "usageMenus": "{count, plural, one {in # PDF menu} other {in # PDF menus}}",
-  "usageBranding": "as logo or cover image"
+  "usageBranding": "as logo or cover image",
+  "aiEditedBadge": "AI-edited"
 }

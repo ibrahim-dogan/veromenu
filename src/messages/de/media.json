@@ -58,5 +58,6 @@
   "usageItems": "{count, plural, one {bei # Gericht} other {bei # Gerichten}}",
   "usageCategories": "{count, plural, one {bei # Kategorie} other {bei # Kategorien}}",
   "usageMenus": "{count, plural, one {in # PDF-Karte} other {in # PDF-Karten}}",
-  "usageBranding": "als Logo oder Titelbild"
+  "usageBranding": "als Logo oder Titelbild",
+  "aiEditedBadge": "KI-bearbeitet"
 }

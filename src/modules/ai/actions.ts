@@ -43,9 +43,9 @@ export const generateAiImage = action(
   },
 );
 
-export const acceptAiImage = action(z.object({ restaurantId: rid, target, token }), async ({ restaurantId, target, token }) => {
+export const acceptAiImage = action(z.object({ restaurantId: rid, target, token, ownDishReference: z.boolean().optional() }), async ({ restaurantId, target, token, ownDishReference }) => {
   const ctx = await imageContext(restaurantId);
-  return acceptImageDraft({ restaurantId, userId: ctx.user.id, target, token });
+  return acceptImageDraft({ restaurantId, userId: ctx.user.id, target, token, ownDishReference });
 });
 
 export const discardAiImage = action(z.object({ restaurantId: rid, token }), async ({ restaurantId, token }) => {

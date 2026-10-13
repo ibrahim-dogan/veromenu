@@ -33,6 +33,11 @@ export const media = pgTable(
     aiPrompt: text("ai_prompt"),
     aiModel: text("ai_model"),
     sourceMediaId: uuid("source_media_id"),
+    /**
+     * Visible AI notice for guests. false = AI-edited photo of the restaurant's OWN dish (reference photo
+     * confirmed by the owner) → no badge; the file still carries a machine-readable IPTC marker.
+     */
+    aiLabel: boolean("ai_label").notNull().default(true),
     createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },

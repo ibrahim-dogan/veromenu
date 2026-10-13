@@ -61,7 +61,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  serverExternalPackages: ["@node-rs/argon2", "sharp", "postgres"],
+  serverExternalPackages: ["@node-rs/argon2", "sharp", "postgres", "@napi-rs/canvas", "pdfjs-dist"],
   experimental: {
     serverActions: { bodySizeLimit: "25mb" },
   },

@@ -30,6 +30,8 @@ export type RestaurantSettings = {
     requireTable: boolean;
     allowNotes: boolean;
   };
+  /** The restaurant's own menu documents (PDF/photos) – uploaded once, reused for import, logo, themes, print designs. */
+  sources?: { mediaIds: string[]; updatedAt: string };
   /** QR print designs: chosen print theme + its customizer values (which elements are visible, texts …). */
   print?: { themeId?: string | null; config?: Record<string, unknown> };
   translations?: {

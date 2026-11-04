@@ -106,7 +106,7 @@ curl -I https://<DOMAIN>/    # 200 + Security-Header
 
 ## 5. Backups
 
-**Installiert (2026-11-04):** `/usr/local/bin/veromenu-backup` (Quelle: `scripts/veromenu-backup.sh`), Cron `/etc/cron.d/veromenu-backup` täglich 03:30 als root. Schreibt nach `/var/backups/veromenu/`: `db-DATUM.dump` (pg_dump custom), `data-DATUM.tar.gz` (Uploads), `env-DATUM` (.env), 14 Tage Aufbewahrung, Log `backup.log` + `/var/log/veromenu-backup.log`. Noch nicht außerhalb des Servers gespiegelt.
+**Installiert (2026-11-04):** `/usr/local/bin/veromenu-backup` (Quelle: `scripts/veromenu-backup.sh`), Cron `/etc/cron.d/veromenu-backup` täglich 03:30 als root. Schreibt nach `/var/backups/veromenu/`: `db-DATUM.dump` (pg_dump custom), `data-DATUM.tar.gz` (Uploads), `env-DATUM` (.env), 14 Tage Aufbewahrung, Log `backup.log` + `/var/log/veromenu-backup.log`. Danach lädt `/usr/local/bin/veromenu-dropbox` (Quelle `scripts/veromenu-dropbox.py`) ein AES-256-verschlüsseltes `veromenu-DATUM.tar.enc` in die Dropbox-App `veromenu-yedek` (App-Ordner, Unterordner `/veromenu`), 7 Tage. Token: `/etc/veromenu/dropbox.env` (einmalig via `scripts/dropbox-connect.py`), Passwort: `/etc/veromenu/backup.pass` (Kopie im Passwortmanager). Entschlüsseln: `openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in veromenu-DATUM.tar.enc -out vm.tar`.
 
 Alte Beispielzeilen (nicht installiert):
 

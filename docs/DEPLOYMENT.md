@@ -106,6 +106,10 @@ curl -I https://<DOMAIN>/    # 200 + Security-Header
 
 ## 5. Backups
 
+**Installiert (2026-11-04):** `/usr/local/bin/veromenu-backup` (Quelle: `scripts/veromenu-backup.sh`), Cron `/etc/cron.d/veromenu-backup` täglich 03:30 als root. Schreibt nach `/var/backups/veromenu/`: `db-DATUM.dump` (pg_dump custom), `data-DATUM.tar.gz` (Uploads), `env-DATUM` (.env), 14 Tage Aufbewahrung, Log `backup.log` + `/var/log/veromenu-backup.log`. Noch nicht außerhalb des Servers gespiegelt.
+
+Alte Beispielzeilen (nicht installiert):
+
 **Datenbank** – täglicher Dump mit 14 Tagen Aufbewahrung (`crontab -e` als Benutzer `veromenu`):
 
 ```cron

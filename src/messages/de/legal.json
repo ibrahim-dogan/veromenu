@@ -1,8 +1,8 @@
 {
   "eyebrow": "Rechtliches",
   "updated": "Stand: {date}",
-  "bannerTitle": "Vorlage – vor Livegang juristisch prüfen lassen",
-  "bannerBody": "Dieser Text ist eine sorgfältig erstellte Vorlage, ersetzt aber keine Rechtsberatung. Bitte lass ihn vor dem Livegang von einer Anwältin oder einem Anwalt prüfen und an deinen Betrieb anpassen.",
+  "bannerTitle": "Betreiberangaben unvollständig",
+  "bannerBody": "Für Impressum, Datenschutzerklärung, AGB und AVV fehlen Pflichtangaben zum Betreiber. Bitte die LEGAL_*-Variablen in der .env setzen.",
   "summaryTitle": "Kurzfassung",
   "bindingNotice": "Rechtsverbindlich ist ausschließlich die deutsche Fassung.",
   "germanTextFollows": "Rechtsverbindlich ist ausschließlich die deutsche Fassung.",
@@ -33,7 +33,7 @@
     "title": "Allgemeine Geschäftsbedingungen",
     "metaDescription": "AGB für die Nutzung von VeroMenu durch Gastronomiebetriebe (nur für Unternehmer).",
     "s1": "Die AGB gelten nur für Unternehmen, insbesondere Gastronomiebetriebe – nicht für Verbraucher.",
-    "s2": "Tarife sind Free, Starter und Pro; bezahlte Tarife sind monatlich kündbar.",
+    "s2": "Tarife sind Free, Starter und Pro; bezahlte Tarife sind monatlich kündbar. Preise sind Endpreise ohne Umsatzsteuer (§ 19 UStG).",
     "s3": "KI-Ergebnisse sind Vorschläge, die du vor der Veröffentlichung prüfen musst.",
     "s4": "Allergen- und Zusatzstoffangaben bleiben allein in der Verantwortung des Restaurants.",
     "s5": "Wir sichern 98,5 % Verfügbarkeit im Jahresmittel zu; die Haftung ist bei leichter Fahrlässigkeit begrenzt.",
@@ -41,11 +41,11 @@
   },
   "avv": {
     "title": "Auftragsverarbeitungsvertrag (AVV)",
-    "metaDescription": "Zusammenfassung des Auftragsverarbeitungsvertrags nach Art. 28 DSGVO inklusive Unterauftragsverarbeitern.",
+    "metaDescription": "Auftragsverarbeitungsvertrag nach Art. 28 DSGVO mit technischen und organisatorischen Maßnahmen und Unterauftragsverarbeitern.",
     "s1": "Das Restaurant ist Verantwortlicher, VeroMenu verarbeitet Gäste- und Teamdaten in seinem Auftrag.",
-    "s2": "Verarbeitet werden vor allem Bestellungen, pseudonymisierte Statistikdaten und Teamkonten.",
+    "s2": "Verarbeitet werden vor allem Bestellungen, pseudonyme Statistikdaten und Teamkonten; die Anlagen beschreiben Schutzmaßnahmen und Unterauftragsverarbeiter.",
     "s3": "Wir sichern die Daten mit Hosting in Deutschland, Verschlüsselung und Rollenrechten.",
-    "s4": "Unterauftragsverarbeiter sind Hosting, E-Mail-Versand und – nur für Speisekarteninhalte – OpenRouter.",
+    "s4": "Unterauftragsverarbeiter sind IONOS (Hosting), Cloudflare (Netzwerk) und – nur für Inhalte des Betriebs – OpenRouter mit den angebundenen KI-Modellanbietern.",
     "s5": "Datenschutzverletzungen melden wir innerhalb von 48 Stunden; nach Vertragsende löschen wir alles binnen 30 Tagen."
   }
 }

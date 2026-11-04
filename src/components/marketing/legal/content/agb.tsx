@@ -2,12 +2,17 @@ import { Link } from "@/core/i18n/navigation";
 import { PLANS } from "@/modules/billing/plans";
 import { formatPrice } from "@/core/utils";
 import type { Operator } from "../operator";
+import { LEGAL_VERSION_DATE } from "../legal-page";
 import { Callout, Email, Val, type LegalSection } from "../ui";
 
 const PLAN_NAMES: Record<string, string> = { free: "Free", starter: "Starter", pro: "Pro" };
 
+/** Version of the AGB text – bump together with LEGAL_VERSION_DATE when the content changes. */
+export const AGB_VERSION = "1.0";
+
 /** Allgemeine Geschäftsbedingungen (B2B SaaS). Legally binding German text. */
 export function agbSections(op: Operator): LegalSection[] {
+  const stand = new Intl.DateTimeFormat("de-DE", { dateStyle: "long", timeZone: "Europe/Berlin" }).format(LEGAL_VERSION_DATE);
   return [
     {
       id: "geltung",
@@ -16,8 +21,8 @@ export function agbSections(op: Operator): LegalSection[] {
         <>
           <p>
             (1) Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge über die Nutzung der Software-as-a-Service-
-            Plattform „VeroMenu“ (nachfolgend „Dienst“) zwischen <Val value={op.name} name="LEGAL_NAME" /> (nachfolgend „Anbieter“)
-            und dem Kunden.
+            Plattform „VeroMenu“ (nachfolgend „Dienst“) zwischen <Val value={op.name} name="LEGAL_NAME" />
+            {op.address?.length ? `, ${op.address.join(", ")}` : ""} (nachfolgend „Anbieter“) und dem Kunden.
           </p>
           <p>
             (2) Das Angebot richtet sich ausschließlich an Unternehmer im Sinne des § 14 BGB, juristische Personen des öffentlichen
@@ -37,9 +42,10 @@ export function agbSections(op: Operator): LegalSection[] {
       content: (
         <>
           <p>
-            (1) Die Darstellung des Dienstes auf der Website ist kein verbindliches Angebot. Mit Abschluss der Registrierung gibt
-            der Kunde ein Angebot auf Abschluss eines Nutzungsvertrags im Tarif „Free“ ab; der Vertrag kommt mit der Freischaltung
-            des Kundenkontos zustande.
+            (1) Die Darstellung des Dienstes auf der Website ist kein verbindliches Angebot. Mit Abschluss der Registrierung und
+            der Bestätigung dieser AGB gibt der Kunde ein Angebot auf Abschluss eines Nutzungsvertrags im Tarif „Free“ ab; der
+            Vertrag kommt mit der Freischaltung des Kundenkontos (Bestätigung der E-Mail-Adresse) zustande. Der Vertragstext wird
+            nicht gesondert gespeichert; die jeweils gültige Fassung dieser AGB ist jederzeit unter dieser Adresse abrufbar.
           </p>
           <p>
             (2) Der Wechsel in einen kostenpflichtigen Tarif erfolgt durch Bestellung im Kundenkonto oder durch gesonderte
@@ -88,8 +94,10 @@ export function agbSections(op: Operator): LegalSection[] {
             ))}
           </ul>
           <p>
-            (2) Die auf der Website angegebenen Preise enthalten die gesetzliche Umsatzsteuer. Rechnungen weisen den Nettobetrag
-            und die Umsatzsteuer gesondert aus.
+            (2){" "}
+            {op.smallBusiness
+              ? "Der Anbieter ist Kleinunternehmer im Sinne von § 19 UStG. Die angegebenen Preise sind Endpreise; Umsatzsteuer wird nicht berechnet und auf Rechnungen nicht ausgewiesen. Entfällt die Kleinunternehmerregelung, kann der Anbieter ab diesem Zeitpunkt die gesetzliche Umsatzsteuer zusätzlich berechnen; hierüber informiert er den Kunden mindestens sechs Wochen im Voraus in Textform, und der Kunde kann zum Zeitpunkt der Umstellung kündigen."
+              : "Alle Preise verstehen sich zuzüglich der gesetzlichen Umsatzsteuer, die auf Rechnungen gesondert ausgewiesen wird."}
           </p>
           <p>
             (3) Der Anbieter kann die Preise mit einer Ankündigungsfrist von sechs Wochen zum Beginn eines Abrechnungszeitraums
@@ -105,8 +113,9 @@ export function agbSections(op: Operator): LegalSection[] {
       content: (
         <>
           <p>
-            (1) Kostenpflichtige Tarife werden monatlich im Voraus abgerechnet. Rechnungen sind innerhalb von 14 Tagen nach Zugang
-            ohne Abzug zahlbar.
+            (1) Kostenpflichtige Tarife werden monatlich im Voraus per Rechnung abgerechnet, die der Anbieter elektronisch (per
+            E-Mail) übermittelt. Rechnungen sind innerhalb von 14 Tagen nach Zugang ohne Abzug per Überweisung zahlbar. Bei
+            Zahlungsverzug gelten die gesetzlichen Regelungen (§§ 286, 288 BGB).
           </p>
           <p>
             (2) Kostenpflichtige Tarife laufen auf unbestimmte Zeit und können von beiden Parteien mit Wirkung zum Ende des
@@ -135,7 +144,11 @@ export function agbSections(op: Operator): LegalSection[] {
               sind,
             </li>
             <li>in der Speisekarte eine eigene, vollständige Anbieterkennzeichnung (Impressum) nach § 5 DDG hinterlegt ist,</li>
-            <li>er über die erforderlichen Rechte an hochgeladenen Texten, Bildern und Marken verfügt.</li>
+            <li>er über die erforderlichen Rechte an hochgeladenen Texten, Bildern, Logos und Marken verfügt,</li>
+            <li>
+              er seine Gäste, soweit er die Bestellfunktion nutzt, in eigener Verantwortung über die Verarbeitung ihrer Daten
+              informiert (Art. 13 DSGVO); er ist insoweit Verantwortlicher, der Anbieter Auftragsverarbeiter (§ 9).
+            </li>
           </ul>
           <p>
             (2) Der Kunde hält seine Zugangsdaten geheim, vergibt Teamrollen mit der gebotenen Sorgfalt und informiert den Anbieter
@@ -177,7 +190,18 @@ export function agbSections(op: Operator): LegalSection[] {
           </p>
           <p>
             (4) KI-generierte Bilder werden im Dienst als solche gekennzeichnet. Der Kunde verwendet sie nur so, dass Gäste nicht
-            über die tatsächliche Beschaffenheit der Speisen getäuscht werden.
+            über die tatsächliche Beschaffenheit der Speisen getäuscht werden, und entfernt die Kennzeichnung nicht, soweit sie
+            gesetzlich vorgeschrieben ist.
+          </p>
+          <p>
+            (5) Für alle mit Hilfe der KI-Funktionen erzeugten oder geänderten Inhalte – insbesondere Übersetzungen, Beschreibungen,
+            Allergen- und Zusatzstoffangaben, Bilder und Speisekarten-Designs – ist der Kunde ab ihrer Übernahme oder
+            Veröffentlichung wie für eigene Inhalte verantwortlich. Der Anbieter gewährleistet nicht, dass KI-Ergebnisse frei von
+            Rechten Dritter sind; der Kunde prüft dies vor der Verwendung, soweit erkennbar Anlass dazu besteht.
+          </p>
+          <p>
+            (6) Für die KI-Funktionen setzt der Anbieter externe Modellanbieter ein (siehe <Link href="/datenschutz">Datenschutzerklärung</Link>{" "}
+            und <Link href="/avv">AVV</Link>). Ein Anspruch auf ein bestimmtes Modell besteht nicht.
           </p>
         </>
       ),
@@ -193,8 +217,9 @@ export function agbSections(op: Operator): LegalSection[] {
             von Netzen Dritter) sowie Ausfälle von KI-Drittanbietern, deren Funktionen nicht zum Kern der Speisekarte gehören.
           </p>
           <p>
-            (2) Support erfolgt per E-Mail an Werktagen (Montag bis Freitag, ausgenommen bundeseinheitliche Feiertage) zu den
-            üblichen Geschäftszeiten.
+            (2) Support erfolgt per E-Mail an <Email value={op.email} /> an Werktagen (Montag bis Freitag, ausgenommen gesetzliche
+            Feiertage in Hamburg) zu den üblichen Geschäftszeiten. Ein bestimmter Reaktionszeitraum ist nicht geschuldet, sofern
+            nicht gesondert vereinbart.
           </p>
         </>
       ),
@@ -240,17 +265,17 @@ export function agbSections(op: Operator): LegalSection[] {
           <p>
             (2) Bei leichter Fahrlässigkeit haftet der Anbieter nur bei Verletzung einer wesentlichen Vertragspflicht
             (Kardinalpflicht), deren Erfüllung die ordnungsgemäße Durchführung des Vertrags überhaupt erst ermöglicht und auf deren
-            Einhaltung der Kunde regelmäßig vertrauen darf. In diesem Fall ist die Haftung auf den vertragstypischen, vorhersehbaren
-            Schaden begrenzt, höchstens jedoch auf die Summe der vom Kunden in den zwölf Monaten vor dem schadensbegründenden
-            Ereignis gezahlten Entgelte.
+            Einhaltung der Kunde regelmäßig vertrauen darf. In diesem Fall ist die Haftung auf den vertragstypischen, bei
+            Vertragsschluss vorhersehbaren Schaden begrenzt. Im Übrigen ist die Haftung bei leichter Fahrlässigkeit ausgeschlossen.
           </p>
           <p>
             (3) Für den Verlust von Daten haftet der Anbieter nur in Höhe des Aufwands, der bei ordnungsgemäßer und regelmäßiger
             Datensicherung durch den Kunden zur Wiederherstellung erforderlich gewesen wäre.
           </p>
           <p>
-            (4) Der Anbieter haftet nicht für die inhaltliche Richtigkeit von KI-Ergebnissen (§ 7), insbesondere nicht für
-            Allergen- und Zusatzstoffangaben, Übersetzungen oder Preise, die der Kunde veröffentlicht hat.
+            (4) Vorbehaltlich Abs. 1 haftet der Anbieter nicht für die inhaltliche Richtigkeit von KI-Ergebnissen (§ 7), die der
+            Kunde übernommen oder veröffentlicht hat, insbesondere nicht für Allergen- und Zusatzstoffangaben, Übersetzungen oder
+            Preise.
           </p>
           <p>(5) Die vorstehenden Beschränkungen gelten auch zugunsten der Erfüllungsgehilfen und gesetzlichen Vertreter des Anbieters.</p>
         </>
@@ -301,11 +326,15 @@ export function agbSections(op: Operator): LegalSection[] {
           <p>(1) Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts (CISG).</p>
           <p>
             (2) Ist der Kunde Kaufmann, juristische Person des öffentlichen Rechts oder öffentlich-rechtliches Sondervermögen, ist
-            ausschließlicher Gerichtsstand für alle Streitigkeiten aus diesem Vertrag Hamburg bzw. der Sitz des Anbieters.
+            ausschließlicher Gerichtsstand für alle Streitigkeiten aus und im Zusammenhang mit diesem Vertrag Hamburg. Der Anbieter
+            ist berechtigt, den Kunden auch an seinem allgemeinen Gerichtsstand zu verklagen.
           </p>
           <p>
             (3) Sollten einzelne Bestimmungen dieser AGB unwirksam sein oder werden, bleibt die Wirksamkeit der übrigen Bestimmungen
             unberührt. An die Stelle der unwirksamen Bestimmung tritt die gesetzliche Regelung.
+          </p>
+          <p>
+            (4) Stand: {stand}, Version {AGB_VERSION}. Frühere Fassungen stellt der Anbieter auf Anfrage zur Verfügung.
           </p>
         </>
       ),

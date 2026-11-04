@@ -12,7 +12,7 @@ import { getGuestRestaurantRow } from "@/modules/guest/load";
 import type { GuestMenuData } from "@/modules/guest/types";
 import { GuestFrame } from "@/modules/guest/components/guest-frame";
 import { LanguageSwitcher } from "@/modules/guest/components/language-switcher";
-import { LegalFooter } from "@/modules/guest/components/legal-footer";
+import { LegalFooter, privacyHref } from "@/modules/guest/components/legal-footer";
 import { guestHref } from "@/modules/guest/components/blocks";
 import { StudioThemeHost } from "@/modules/guest/components/studio-host";
 import { parseStudioThemeId } from "@/modules/theme-engine";
@@ -133,6 +133,13 @@ function StudioPage({ data, sel, t }: { data: GuestMenuData; sel: StudioSelectio
         languageSwitcher={<LanguageSwitcher data={data} t={t} buttonClassName="bg-g-surface/90 text-g-text border-g-border border shadow-md backdrop-blur h-11" />}
         menuSwitcher={<MenuPicker data={data} t={t} buttonClassName="bg-g-surface/90 text-g-text border-g-border border shadow-md backdrop-blur h-11" />}
         info={<LegalFooter data={data} t={t} className="text-g-muted pt-4" />}
+        legalLinks={{
+          imprintHref: guestHref(data, { path: "/impressum" }),
+          imprintLabel: t("imprint"),
+          privacyHref: privacyHref(data.locale),
+          privacyLabel: t("privacy"),
+          navLabel: t("legalNav"),
+        }}
         hostCartBar={controls.cart}
       />
     </GuestFrame>

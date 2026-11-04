@@ -12,6 +12,7 @@
  *   LEGAL_REPRESENTATIVE        Vertretungsberechtigte Person(en) (optional)
  *   LEGAL_REGISTER              Registereintrag, e.g. "Amtsgericht Hamburg, HRB 12345" (optional)
  *   LEGAL_SUPERVISORY_AUTHORITY Datenschutz-Aufsichtsbehörde, lines (optional, default HmbBfDI)
+ *   LEGAL_MAIL_PROVIDER         E-Mail-Versanddienstleister (name, address) – listed as AVV sub-processor only when set
  *   LEGAL_HOSTER                Hosting-Anbieter, lines (optional, default Hetzner Online GmbH)
  */
 export type OperatorKey =
@@ -36,6 +37,7 @@ export type Operator = {
   supervisoryAuthorityIsDefault: boolean;
   hoster: string[];
   hosterIsDefault: boolean;
+  mailProvider?: string;
 };
 
 export const DEFAULT_HOSTER = ["Hetzner Online GmbH", "Industriestr. 25", "91710 Gunzenhausen", "Deutschland"];
@@ -75,5 +77,6 @@ export function getOperator(): Operator {
     supervisoryAuthorityIsDefault: !sa,
     hoster: hoster ?? DEFAULT_HOSTER,
     hosterIsDefault: !hoster,
+    mailProvider: val("LEGAL_MAIL_PROVIDER"),
   };
 }

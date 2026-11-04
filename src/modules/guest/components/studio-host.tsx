@@ -21,6 +21,7 @@ export function StudioThemeHost({
   languageSwitcher,
   menuSwitcher,
   info,
+  legalLinks,
   hostCartBar,
 }: {
   src: string;
@@ -34,6 +35,8 @@ export function StudioThemeHost({
   menuSwitcher?: ReactNode;
   /** Server-rendered legal info (imprint, prices, allergens, hours …). */
   info: ReactNode;
+  /** Always-visible text links (DDG § 5: imprint must be easy to recognise and directly reachable). */
+  legalLinks: { imprintHref: string; imprintLabel: string; privacyHref: string; privacyLabel: string; navLabel: string };
   /** Host renders the floating cart bar (else the theme has its own data-vm-cart button). */
   hostCartBar: boolean;
 }) {
@@ -175,6 +178,21 @@ export function StudioThemeHost({
           <Info size={20} aria-hidden />
         </button>
       </div>
+      <nav
+        aria-label={legalLinks.navLabel}
+        className="bg-g-surface/90 text-g-text border-g-border fixed start-3 z-30 flex items-center gap-3 rounded-full border px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur transition-[bottom] duration-200"
+        style={{ bottom: `calc(${hostCartBar && count > 0 ? 88 : 12}px + env(safe-area-inset-bottom))` }}
+      >
+        <a href={legalLinks.imprintHref} className="underline-offset-4 hover:underline">
+          {legalLinks.imprintLabel}
+        </a>
+        <span aria-hidden className="opacity-40">
+          ·
+        </span>
+        <a href={legalLinks.privacyHref} className="underline-offset-4 hover:underline">
+          {legalLinks.privacyLabel}
+        </a>
+      </nav>
       <Sheet open={infoOpen} onClose={() => setInfoOpen(false)} label={t("info")} closeLabel={t("close")}>
         <div className="px-5 pt-5">
           <h2 className="font-g-display pe-12 text-2xl font-semibold">{t("info")}</h2>

@@ -8,6 +8,13 @@
 # Local development uses docker-compose.dev.yml instead.
 name: veromenu
 
+# Rotate container logs (Docker's json-file default keeps them forever): max. 3 × 10 MB per container.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   db:
     image: postgres:17-alpine
@@ -24,6 +31,7 @@ services:
       timeout: 5s
       retries: 20
     shm_size: 256mb
+    logging: *logging
 
   app:
     build:
@@ -49,6 +57,7 @@ services:
       # Only reachable from the host itself; Caddy (or your own proxy) handles public traffic.
       - "127.0.0.1:${APP_PORT:-3000}:3000"
     stop_grace_period: 30s
+    logging: *logging
 
   caddy:
     image: caddy:2-alpine
@@ -66,6 +75,7 @@ services:
       - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
+    logging: *logging
 
 volumes:
   pgdata:

@@ -136,9 +136,9 @@
   "pricing": {
     "eyebrow": "Preise",
     "title": "Faire Preise, monatlich kündbar",
-    "subtitle": "Starte kostenlos und wechsle den Tarif, wenn dein Betrieb wächst. Alle Preise inklusive 19 % MwSt.",
+    "subtitle": "Starte kostenlos und wechsle den Tarif, wenn dein Betrieb wächst. Alle Preise sind Endpreise – gemäß § 19 UStG wird keine Umsatzsteuer berechnet.",
     "perMonth": "/ Monat",
-    "vatIncl": "inkl. MwSt.",
+    "vatIncl": "Endpreis, keine USt. (§ 19 UStG)",
     "popular": "Beliebt",
     "includes": "Enthalten:",
     "freeName": "Free",
@@ -166,7 +166,7 @@
     "featureCustomBranding": "Ohne „Powered by VeroMenu“",
     "featureStaffRoles": "Eigene Team-Rollen",
     "creditsNote": "1 KI-Credit entspricht etwa einer Übersetzung, ein Karten-Import kostet rund 10 Credits.",
-    "billingNote": "Monatlich kündbar. Für Unternehmen gibt es eine Rechnung mit ausgewiesener Umsatzsteuer."
+    "billingNote": "Monatlich kündbar. Du bekommst jeden Monat eine Rechnung; als Kleinunternehmer nach § 19 UStG weisen wir keine Umsatzsteuer aus."
   },
   "faq": {
     "eyebrow": "FAQ",
@@ -204,7 +204,7 @@
   },
   "pricingPage": {
     "metaTitle": "Preise",
-    "metaDescription": "VeroMenu Tarife: Free, Starter und Pro. Monatlich kündbar, alle Preise inklusive MwSt.",
+    "metaDescription": "VeroMenu Tarife: Free, Starter und Pro. Monatlich kündbar, Endpreise ohne Umsatzsteuer (Kleinunternehmer, § 19 UStG).",
     "title": "Ein Tarif für jede Küche",
     "subtitle": "Kostenlos starten, jederzeit wechseln. Keine Einrichtungsgebühr, keine versteckten Kosten."
   },

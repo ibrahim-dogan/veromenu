@@ -1,8 +1,8 @@
 {
   "eyebrow": "Yasal",
   "updated": "Son güncelleme: {date}",
-  "bannerTitle": "Şablon – yayına almadan önce bir hukukçuya kontrol ettir",
-  "bannerBody": "Bu metin özenle hazırlanmış bir şablondur, ancak hukuki danışmanlığın yerini tutmaz. Yayına almadan önce bir avukata kontrol ettir ve işletmene göre uyarla.",
+  "bannerTitle": "İşletmeci bilgileri eksik",
+  "bannerBody": "Künye, gizlilik politikası, kullanım koşulları ve veri işleme sözleşmesi için zorunlu işletmeci bilgileri eksik. Lütfen .env içindeki LEGAL_* değişkenlerini ayarla.",
   "summaryTitle": "Türkçe özet",
   "bindingNotice": "Yalnızca aşağıdaki Almanca metin hukuken bağlayıcıdır. Bu özet bilgi amaçlıdır.",
   "germanTextFollows": "Hukuken bağlayıcı Almanca metin:",
@@ -33,7 +33,7 @@
     "title": "Genel işlem koşulları",
     "metaDescription": "VeroMenu’nun restoranlar tarafından kullanımına ilişkin genel işlem koşulları (yalnızca işletmeler için).",
     "s1": "Bu koşullar yalnızca işletmeler, özellikle restoranlar için geçerlidir – tüketiciler için değil.",
-    "s2": "Paketler Free, Starter ve Pro’dur; ücretli paketler aylık olarak iptal edilebilir.",
+    "s2": "Paketler Free, Starter ve Pro’dur; ücretli paketler aylık iptal edilebilir. Fiyatlar nihai fiyattır, KDV alınmaz (§ 19 UStG).",
     "s3": "Yapay zekâ sonuçları birer öneridir ve yayımlamadan önce kontrol etmen gerekir.",
     "s4": "Alerjen ve katkı maddesi bilgileri yalnızca restoranın sorumluluğundadır.",
     "s5": "Yıllık ortalama %98,5 erişilebilirlik taahhüt ediyoruz; hafif ihmalde sorumluluk sınırlıdır.",
@@ -41,11 +41,11 @@
   },
   "avv": {
     "title": "Veri işleme sözleşmesi (AVV)",
-    "metaDescription": "GDPR 28. madde uyarınca veri işleme sözleşmesinin alt işleyenler dahil özeti.",
+    "metaDescription": "Teknik ve organizasyonel önlemler ile alt işleyenleri içeren, GDPR 28. madde uyarınca veri işleme sözleşmesi.",
     "s1": "Veri sorumlusu restorandır; VeroMenu misafir ve ekip verilerini onun adına işler.",
-    "s2": "Bu, başta siparişleri, takma adlandırılmış istatistik verilerini ve ekip hesaplarını kapsar.",
+    "s2": "Bu, başta siparişleri, takma adlı istatistik verilerini ve ekip hesaplarını kapsar; ekler güvenlik önlemlerini ve alt işleyenleri açıklar.",
     "s3": "Verileri Almanya’da barındırma, şifreleme ve rol tabanlı yetkilerle koruyoruz.",
-    "s4": "Alt işleyenler barındırma, e-posta gönderimi ve – yalnızca menü içeriği için – OpenRouter’dır.",
+    "s4": "Alt işleyenler IONOS (barındırma), Cloudflare (ağ) ve – yalnızca işletmenin kendi içeriği için – OpenRouter ile bağlı yapay zekâ model sağlayıcılarıdır.",
     "s5": "Veri ihlallerini 48 saat içinde bildiririz ve sözleşme bitiminden sonra 30 gün içinde her şeyi sileriz."
   }
 }

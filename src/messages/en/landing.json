@@ -136,9 +136,9 @@
   "pricing": {
     "eyebrow": "Pricing",
     "title": "Fair prices, cancel monthly",
-    "subtitle": "Start for free and switch plans as your business grows. All prices include 19% German VAT.",
+    "subtitle": "Start for free and switch plans as your business grows. All prices are final – no VAT is charged (small business, Section 19 German VAT Act).",
     "perMonth": "/ month",
-    "vatIncl": "incl. VAT",
+    "vatIncl": "final price, no VAT (§ 19 UStG)",
     "popular": "Popular",
     "includes": "Includes:",
     "freeName": "Free",
@@ -166,7 +166,7 @@
     "featureCustomBranding": "No “Powered by VeroMenu”",
     "featureStaffRoles": "Custom team roles",
     "creditsNote": "1 AI credit is roughly one translation; a menu import costs about 10 credits.",
-    "billingNote": "Cancel monthly. Businesses receive an invoice with VAT shown separately."
+    "billingNote": "Cancel monthly. You receive a monthly invoice; as a small business under Section 19 of the German VAT Act we do not charge VAT."
   },
   "faq": {
     "eyebrow": "FAQ",
@@ -204,7 +204,7 @@
   },
   "pricingPage": {
     "metaTitle": "Pricing",
-    "metaDescription": "VeroMenu plans: Free, Starter and Pro. Cancel monthly, all prices include VAT.",
+    "metaDescription": "VeroMenu plans: Free, Starter and Pro. Cancel monthly, final prices without VAT (small business, Section 19 UStG).",
     "title": "A plan for every kitchen",
     "subtitle": "Start for free, switch any time. No setup fee, no hidden costs."
   },

@@ -136,9 +136,9 @@
   "pricing": {
     "eyebrow": "Fiyatlar",
     "title": "Adil fiyatlar, aylık iptal",
-    "subtitle": "Ücretsiz başla, işletmen büyüdükçe paketini değiştir. Tüm fiyatlara %19 KDV dahildir.",
+    "subtitle": "Ücretsiz başla, işletmen büyüdükçe paketini değiştir. Tüm fiyatlar nihai fiyattır – Alman KDV Kanunu § 19 uyarınca KDV alınmaz.",
     "perMonth": "/ ay",
-    "vatIncl": "KDV dahil",
+    "vatIncl": "nihai fiyat, KDV yok (§ 19 UStG)",
     "popular": "Popüler",
     "includes": "Dahil olanlar:",
     "freeName": "Free",
@@ -166,7 +166,7 @@
     "featureCustomBranding": "“Powered by VeroMenu” ibaresi olmadan",
     "featureStaffRoles": "Özel ekip rolleri",
     "creditsNote": "1 yapay zekâ kredisi yaklaşık bir çeviriye karşılık gelir; bir menü aktarımı yaklaşık 10 kredidir.",
-    "billingNote": "Aylık iptal edilebilir. İşletmeler KDV’si ayrıca gösterilen fatura alır."
+    "billingNote": "Aylık iptal edilebilir. Her ay fatura alırsın; § 19 UStG kapsamında küçük işletme olduğumuz için KDV göstermiyoruz."
   },
   "faq": {
     "eyebrow": "SSS",
@@ -204,7 +204,7 @@
   },
   "pricingPage": {
     "metaTitle": "Fiyatlar",
-    "metaDescription": "VeroMenu paketleri: Free, Starter ve Pro. Aylık iptal, tüm fiyatlara KDV dahil.",
+    "metaDescription": "VeroMenu paketleri: Free, Starter ve Pro. Aylık iptal, KDV’siz nihai fiyatlar (küçük işletme, § 19 UStG).",
     "title": "Her mutfağa uygun bir paket",
     "subtitle": "Ücretsiz başla, istediğin zaman değiştir. Kurulum ücreti yok, gizli maliyet yok."
   },

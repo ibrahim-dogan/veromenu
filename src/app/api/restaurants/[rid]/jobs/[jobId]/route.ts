@@ -1,6 +1,7 @@
 import { getRestaurantContext } from "@/core/auth/guards";
 import { toActionError } from "@/core/http/action";
 import { getKitDto } from "@/modules/kit/service";
+import { getOwnJob } from "@/core/jobs/background";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const NO_STORE = { "cache-control": "private, no-store" };
@@ -8,6 +9,7 @@ const STATUS: Record<string, number> = { forbidden: 403, notFound: 404, validati
 
 /**
  * GET /api/restaurants/[rid]/jobs/[jobId] → { ok, data: KitJobDto } – polled by the onboarding / kit review screen.
+ * For generic background jobs (src/core/jobs) of the current user → { ok, data: JobStatusDto }.
  * Session + membership; the kit is a menu-editing feature (menu.edit or ai.use).
  */
 export async function GET(_req: Request, { params }: RouteContext<"/api/restaurants/[rid]/jobs/[jobId]">) {
@@ -16,6 +18,9 @@ export async function GET(_req: Request, { params }: RouteContext<"/api/restaura
   try {
     const ctx = await getRestaurantContext(rid);
     if (!ctx) return Response.json({ ok: false, error: "forbidden" }, { status: 401, headers: NO_STORE });
+    // Generic background jobs (src/core/jobs): only the user who started a job can poll it.
+    const own = await getOwnJob(rid, jobId, ctx.user.id);
+    if (own && own.kind !== "menu_kit") return Response.json({ ok: true, data: own }, { headers: NO_STORE });
     if (!ctx.can("menu.edit") && !ctx.can("ai.use")) return Response.json({ ok: false, error: "forbidden" }, { status: 403, headers: NO_STORE });
     return Response.json({ ok: true, data: await getKitDto(rid, jobId) }, { headers: NO_STORE });
   } catch (e) {

@@ -3,7 +3,11 @@ import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/toast";
-import { planTranslationJob, runTranslationBatch } from "../actions";
+import { planTranslationJob, runTranslationBatch as startRunTranslationBatch } from "../actions";
+import { viaJob } from "@/core/jobs/client";
+
+/** Runs as a background job (long AI call; Cloudflare cuts requests at 100 s) – resolves when done. */
+const runTranslationBatch = viaJob(startRunTranslationBatch);
 
 export type JobProgress = { batch: number; batches: number; done: number; total: number; locale: string } | null;
 type Totals = { translated: number; approved: number; machine: number; needsReview: number; skipped: number; failed: number };

@@ -8,6 +8,7 @@
 import { z } from "zod";
 import { getLocale } from "next-intl/server";
 import { assertRestaurantPermission, getRestaurantContext } from "@/core/auth/guards";
+import { jobAction } from "@/core/jobs/background";
 import { action, AppError, ForbiddenError } from "@/core/http/action";
 import { UI_LOCALES, type UiLocale } from "@/core/i18n/locales";
 import { planHas } from "@/modules/billing/plans";
@@ -104,11 +105,20 @@ export const getStoredSourcesAction = action(z.object({ restaurantId: rid, kind:
 });
 
 /** "Gespeicherte Speisekarte verwenden": new menu theme / print design from the stored sources (draft). */
-export const generateFromStoredSourcesAction = action(
+export const generateFromStoredSourcesAction = jobAction(
+  // background job (30–120 s, Cloudflare cuts requests at 100 s); kinds match the theme-ai actions for resuming
+  ({ kind }) => (kind === "print" ? "print_files" : "theme_files"),
   z.object({ restaurantId: rid, kind: z.enum(["menu", "print"]), format: printFormat.optional(), notes: z.string().max(2000).optional() }),
-  async ({ restaurantId, kind, format, notes }): Promise<{ themeId: string; versionId: string; summary: string; briefReused: boolean }> => {
+  async ({ restaurantId, kind, format, notes }) => {
     const ctx = await designAiContext(restaurantId, kind);
-    const res = await generateFromStoredSources({ restaurantId, userId: ctx.user.id, locale: await uiLocale(), kind, format, notes: notes?.trim() || undefined });
-    return { themeId: res.themeId, versionId: res.versionId, summary: res.summary, briefReused: res.briefReused };
+    const locale = await uiLocale();
+    return {
+      restaurantId,
+      userId: ctx.user.id,
+      run: async (): Promise<{ themeId: string; versionId: string; summary: string; briefReused: boolean }> => {
+        const res = await generateFromStoredSources({ restaurantId, userId: ctx.user.id, locale, kind, format, notes: notes?.trim() || undefined });
+        return { themeId: res.themeId, versionId: res.versionId, summary: res.summary, briefReused: res.briefReused };
+      },
+    };
   },
 );

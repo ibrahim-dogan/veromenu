@@ -5,9 +5,13 @@ import { Check, Pencil, RefreshCw, ShieldQuestion } from "lucide-react";
 import { Button, Textarea } from "@/components/ui";
 import { useAction } from "@/components/use-action";
 import { cn } from "@/core/utils";
-import { approveTranslation, runReviewOnly, saveTranslation } from "../actions";
+import { approveTranslation, runReviewOnly as startRunReviewOnly, saveTranslation } from "../actions";
+import { viaJob } from "@/core/jobs/client";
 import type { TranslationListRow } from "../service";
 import { ScoreBadge, TranslationStatusBadge } from "./status-badges";
+
+/** Runs as a background job (long AI call; Cloudflare cuts requests at 100 s) – resolves when done. */
+const runReviewOnly = viaJob(startRunReviewOnly);
 
 export function TranslationRow({
   restaurantId,

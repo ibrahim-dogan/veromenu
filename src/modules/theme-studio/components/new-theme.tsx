@@ -11,13 +11,20 @@ import { useAction } from "@/components/use-action";
 import { Dropzone } from "@/modules/media/components/dropzone";
 import { Thumb } from "@/modules/media/components/media-picker";
 import type { MediaItem } from "@/modules/media/components/media-client";
-import { generateThemeFromFiles, generateThemeFromPrompt } from "@/modules/theme-ai/actions";
-import { generateFromStoredSourcesAction } from "@/modules/kit/actions";
+import { generateThemeFromFiles as startThemeFromFiles, generateThemeFromPrompt as startThemeFromPrompt } from "@/modules/theme-ai/actions";
+import { generateFromStoredSourcesAction as startFromStoredSources } from "@/modules/kit/actions";
+import { viaJob } from "@/core/jobs/client";
+import { useResumeJob } from "@/core/jobs/use-resume-job";
 import { StoredSourcesOption } from "@/modules/kit/components/stored-sources";
 import { createBlankThemeAction, importThemeAction } from "../actions";
 import { readFileText } from "../lib/client";
 import { AiProgress } from "./ai-progress";
 import { VoiceButton } from "./voice-button";
+
+// AI generation runs as a background job (30–120 s); these resolve when the job is done.
+const generateThemeFromFiles = viaJob(startThemeFromFiles);
+const generateThemeFromPrompt = viaJob(startThemeFromPrompt);
+const generateFromStoredSourcesAction = viaJob(startFromStoredSources);
 
 type Mode = "files" | "prompt" | "blank" | null;
 
@@ -38,6 +45,23 @@ export function NewTheme({ restaurantId, canUseAi, onTemplates }: { restaurantId
   const [generating, setGenerating] = useState<"files" | "prompt" | null>(null);
   const [importInput, setImportInput] = useState<HTMLInputElement | null>(null);
   const openStudio = (themeId: string) => router.push(`/dashboard/${restaurantId}/design/studio/${themeId}`);
+
+  // Page reloaded while a generation was running → show the progress again and open the theme when it is ready.
+  useResumeJob<{ themeId: string }>(
+    restaurantId,
+    ["theme_files", "theme_prompt"],
+    {
+      onResume: (job) => setGenerating(job.kind === "theme_files" ? "files" : "prompt"),
+      onDone: (res) => {
+        setGenerating(null);
+        if (res.ok) {
+          toast.success(t("generated"));
+          openStudio(res.data.themeId);
+        } else toast.error(te.has(res.error) ? te(res.error) : te("unexpected"));
+      },
+    },
+    canUseAi,
+  );
 
   const imp = useAction(importThemeAction, { success: t("imported"), refresh: false, onSuccess: (d) => openStudio(d.themeId) });
 

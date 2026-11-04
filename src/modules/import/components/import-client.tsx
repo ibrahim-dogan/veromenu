@@ -115,10 +115,10 @@ function UploadCard({ restaurantId, sources }: { restaurantId: string; sources: 
     if (!created.ok) return setPhase("idle");
     setPhase("extracting");
     setStartedAt(new Date().toISOString());
+    // Starts the background extraction; the refreshed page then shows the processing card (survives reloads).
     const res = await run.run({ restaurantId, importId: created.data.importId });
-    setPhase("idle");
+    if (!res.ok) return setPhase("idle");
     setFiles([]);
-    if (res.ok && res.data.status === "failed") toast.error(t(`failReasons.${failReason(res.data.error)}`));
   }
 
   if (phase === "extracting" && startedAt) return <ProcessingCard since={startedAt} />;

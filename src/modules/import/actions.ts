@@ -6,7 +6,7 @@ import { assertRestaurantPermission } from "@/core/auth/guards";
 import { action, AppError } from "@/core/http/action";
 import { ALLOWED_UPLOAD_MIME, MAX_UPLOAD_BYTES, saveMedia } from "@/core/storage/media";
 import { planHas } from "@/modules/billing/plans";
-import { applyImport, createImport, discardImport, MAX_IMPORT_FILES, runExtraction } from "./service";
+import { applyImport, createImport, discardImport, MAX_IMPORT_FILES, startExtraction } from "./service";
 
 const rid = z.uuid();
 
@@ -50,11 +50,14 @@ export const startImport = action(
   },
 );
 
-/** Runs the AI extraction – may take 30–90 s. */
+/**
+ * Starts the AI extraction in the background (30–120 s) and returns immediately with status "processing";
+ * the import page polls via router.refresh() (ProcessingCard) until the row is ready/failed.
+ */
 export const runImport = action(z.object({ restaurantId: rid, importId: z.uuid() }), async ({ restaurantId, importId }) => {
   const ctx = await importContext(restaurantId);
-  const dto = await runExtraction(restaurantId, ctx.user.id, importId, await getLocale());
-  return { status: dto.status, error: dto.error, itemCount: dto.itemCount };
+  await startExtraction(restaurantId, ctx.user.id, importId, await getLocale());
+  return { status: "processing" as string, error: null as string | null, itemCount: 0 };
 });
 
 export const discardMenuImport = action(z.object({ restaurantId: rid, importId: z.uuid() }), async ({ restaurantId, importId }) => {

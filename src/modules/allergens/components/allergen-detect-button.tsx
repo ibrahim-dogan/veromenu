@@ -10,8 +10,12 @@ import { RefreshCw, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui";
 import { Dialog } from "@/components/ui/dialog";
 import { useAction } from "@/components/use-action";
-import { detectItemAllergens, loadAllergenState } from "../actions";
+import { detectItemAllergens as startDetectItemAllergens, loadAllergenState } from "../actions";
+import { viaJob } from "@/core/jobs/client";
 import { AllergenReviewPanel, type PanelState } from "./allergen-review-panel";
+
+/** Runs as a background job (long AI call; Cloudflare cuts requests at 100 s) – resolves when done. */
+const detectItemAllergens = viaJob(startDetectItemAllergens);
 
 export function AllergenDetectButton({ restaurantId, itemId, onDone }: { restaurantId: string; itemId: string; onDone?: () => void }) {
   const t = useTranslations("allergens");

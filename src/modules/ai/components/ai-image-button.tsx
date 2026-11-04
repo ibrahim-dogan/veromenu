@@ -6,9 +6,13 @@ import { cn } from "@/core/utils";
 import { Button, Label, Textarea } from "@/components/ui";
 import { Dialog } from "@/components/ui/dialog";
 import { MediaPicker } from "@/modules/media/components/media-picker";
-import { acceptAiImage, discardAiImage, generateAiImage, getAiImageContext } from "../actions";
+import { acceptAiImage, discardAiImage, generateAiImage as startGenerateAiImage, getAiImageContext } from "../actions";
+import { viaJob } from "@/core/jobs/client";
 import { IMAGE_STYLES, type AiImageContext, type ImageStyle } from "../image-types";
 import { useBusyAction } from "./use-busy-action";
+
+/** Runs as a background job (long AI call; Cloudflare cuts requests at 100 s) – resolves when done. */
+const generateAiImage = viaJob(startGenerateAiImage);
 
 const STYLE_SWATCH: Record<ImageStyle, string> = {
   bright: "bg-gradient-to-br from-amber-50 via-white to-sky-50",

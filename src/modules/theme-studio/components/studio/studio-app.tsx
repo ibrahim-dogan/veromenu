@@ -11,7 +11,11 @@ import { toast } from "@/components/ui/toast";
 import { serializePackage, validatePackage, type ThemeMediaRef } from "@/modules/theme-engine";
 import { manifestSchema } from "@/modules/theme-engine/settings";
 import type { PrintView, ThemeKind, ThemeManifest, ThemePackage, ThemeValidation, ThemeView } from "@/modules/theme-engine/types";
-import { proposeThemeEdit } from "@/modules/theme-ai/actions";
+import { proposeThemeEdit as startThemeEdit } from "@/modules/theme-ai/actions";
+import { viaJob } from "@/core/jobs/client";
+
+/** Chat edit as a background job (30–90 s, Cloudflare cuts requests at 100 s) – resolves when the proposal is ready. */
+const proposeThemeEdit = viaJob(startThemeEdit);
 import { publishThemeAction, renameThemeAction, restoreVersionAction, saveThemeSettingsAction, saveVersionAction } from "../../actions";
 import { downloadText, studioGet, themeStatus } from "../../lib/client";
 import { exportFileName, MANIFEST_PATH, mainTemplate, mediaIdsFor, newFileKindsFor, samePackage, sanitizeSettings, settingsDefaults, starterContent, withSettingsAsDefaults } from "../../lib/package";

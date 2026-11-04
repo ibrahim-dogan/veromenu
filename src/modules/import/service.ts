@@ -182,6 +182,20 @@ async function filesToParts(restaurantId: string, mediaIds: string[]): Promise<C
   return parts;
 }
 
+/**
+ * Starts the extraction in the background (it takes 30–120 s; Cloudflare cuts requests at 100 s) and returns at once.
+ * The row is `processing` right away, so the import page shows the progress card (auto-refresh) even after a reload.
+ */
+export async function startExtraction(restaurantId: string, userId: string, importId: string, replyLocale?: string): Promise<void> {
+  const row = await getOwnImport(restaurantId, importId);
+  if (row.status === "applied" || row.status === "discarded") throw new AppError("validation", "status");
+  await db.update(menuImports).set({ status: "processing", error: null, createdAt: new Date() }).where(eq(menuImports.id, importId));
+  void runExtraction(restaurantId, userId, importId, replyLocale).catch(async (e) => {
+    console.error("[import] extraction failed", e);
+    await db.update(menuImports).set({ status: "failed", error: "unexpected" }).where(eq(menuImports.id, importId)).catch(() => {});
+  });
+}
+
 /** Runs the extraction (30–90 s). Status ends as `ready` or `failed`; never throws for AI failures. */
 export async function runExtraction(restaurantId: string, userId: string, importId: string, replyLocale?: string): Promise<ImportDto> {
   const row = await getOwnImport(restaurantId, importId);

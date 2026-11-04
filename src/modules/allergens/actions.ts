@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { jobAction } from "@/core/jobs/background";
 import { getLocale } from "next-intl/server";
 import { assertRestaurantPermission, ForbiddenError, getRestaurantContext } from "@/core/auth/guards";
 import { action } from "@/core/http/action";
@@ -21,21 +22,38 @@ export const loadAllergenState = action(z.object({ restaurantId: rid, itemId: id
   return { ...state, canConfirm: ctx.can("allergens.review") };
 });
 
-export const detectItemAllergens = action(z.object({ restaurantId: rid, itemId: id }), async (input) => {
+/** AI detection runs as a background job (call + fallback can exceed Cloudflare's 100 s). */
+export const detectItemAllergens = jobAction("allergens_item", z.object({ restaurantId: rid, itemId: id }), async (input) => {
   const ctx = await assertCanDetect(input.restaurantId);
-  await detectAllergens(input.restaurantId, [input.itemId], ctx.user.id, await getLocale());
-  const state = await getAllergenState(input.restaurantId, input.itemId);
-  return { ...state, canConfirm: ctx.can("allergens.review") };
+  const locale = await getLocale();
+  const canConfirm = ctx.can("allergens.review");
+  return {
+    restaurantId: input.restaurantId,
+    userId: ctx.user.id,
+    run: async () => {
+      await detectAllergens(input.restaurantId, [input.itemId], ctx.user.id, locale);
+      const state = await getAllergenState(input.restaurantId, input.itemId);
+      return { ...state, canConfirm };
+    },
+  };
 });
 
 /** Bulk: the client loops over chunks of ITEMS_PER_CALL ids (progress UI, no job queue). */
-export const detectAllergensChunk = action(
+export const detectAllergensChunk = jobAction(
+  "allergens_chunk",
   z.object({ restaurantId: rid, itemIds: z.array(id).min(1).max(ITEMS_PER_CALL) }),
   async (input) => {
     const ctx = await assertRestaurantPermission(input.restaurantId, "allergens.review");
-    const res = await detectAllergens(input.restaurantId, input.itemIds, ctx.user.id, await getLocale());
-    const values = Object.values(res);
-    return { done: values.length, needsReview: values.filter((s) => s.status === "needs_review").length };
+    const locale = await getLocale();
+    return {
+      restaurantId: input.restaurantId,
+      userId: ctx.user.id,
+      run: async () => {
+        const res = await detectAllergens(input.restaurantId, input.itemIds, ctx.user.id, locale);
+        const values = Object.values(res);
+        return { done: values.length, needsReview: values.filter((s) => s.status === "needs_review").length };
+      },
+    };
   },
 );
 

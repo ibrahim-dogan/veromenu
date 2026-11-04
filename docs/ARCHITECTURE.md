@@ -55,6 +55,7 @@ docs/                         this folder
 - **AI never writes directly**: the agent produces a change set → server validates and renders a diff (dry run) → user approves → applied in one transaction with undo data (`agent_changesets`).
 - **Analytics** are cookie-less (daily-rotating hashed visitor id) → no consent banner needed for the guest menu.
 - **Realtime orders** via Postgres LISTEN/NOTIFY → works with multiple app instances.
+- **Long AI work = background jobs** (`src/core/jobs`): production sits behind Cloudflare, which cuts any request at 100 s (524). Anything that can exceed ~60 s (theme/print generation + chat edits, agent plan, translation batches, allergen detection, AI images) is a `jobAction(kind, schema, prepare)`: the action checks permissions, captures request data and returns a job handle at once; the work runs in-process (row in `jobs`, heartbeat, stale → `interrupted`). Clients wrap the action with `viaJob()` (same `ActionResult` contract, polls `GET /api/restaurants/[rid]/jobs/[jobId]`); `useResumeJob()` resumes the progress UI after a reload. Menu import and the menu kit use their own rows (`menu_imports.status`, kit job) the same way. AI results stay proposals (dry run → approve).
 
 ## Conventions
 

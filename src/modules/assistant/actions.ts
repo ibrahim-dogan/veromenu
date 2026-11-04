@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { jobAction } from "@/core/jobs/background";
 import { getLocale } from "next-intl/server";
 import { aiTranscribe } from "@/core/ai";
 import { assertRestaurantPermission } from "@/core/auth/guards";
@@ -28,11 +29,14 @@ export const transcribeVoice = action(
   },
 );
 
-export const planChanges = action(
+/** Background job (AI call incl. fallback can exceed Cloudflare's 100 s); still only a dry-run change set. */
+export const planChanges = jobAction(
+  "agent_plan",
   z.object({ restaurantId: rid, input: z.string().trim().min(2).max(4000), inputKind: z.enum(["text", "voice"]).default("text") }),
   async ({ restaurantId, input, inputKind }) => {
     const ctx = await agentContext(restaurantId, "ai.use");
-    return planChangeset({ restaurantId, userId: ctx.user.id, input, inputKind, replyLocale: await getLocale() });
+    const replyLocale = await getLocale();
+    return { restaurantId, userId: ctx.user.id, run: () => planChangeset({ restaurantId, userId: ctx.user.id, input, inputKind, replyLocale }) };
   },
 );
 

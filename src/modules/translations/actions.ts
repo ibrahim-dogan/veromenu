@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { jobAction } from "@/core/jobs/background";
 import { and, eq, sql as dsql } from "drizzle-orm";
 import { db } from "@/core/db";
 import { glossary, restaurants } from "@/core/db/schema";
@@ -40,26 +41,35 @@ export const planTranslationJob = action(
   },
 );
 
-export const runTranslationBatch = action(
+/** One batch = translate + independent review (+ fallbacks) → background job (Cloudflare cuts requests at 100 s). */
+export const runTranslationBatch = jobAction(
+  "translation_batch",
   z.object({ restaurantId: rid, locale, keys: z.array(key).min(1).max(BATCH_SIZE), force: z.boolean().optional() }),
   async (input) => {
     const ctx = await assertRestaurantPermission(input.restaurantId, PERM);
-    const res = await translateBatch(input.restaurantId, input.locale, input.keys, { userId: ctx.user.id, force: input.force });
-    await audit({
+    return {
       restaurantId: input.restaurantId,
       userId: ctx.user.id,
-      action: "translations.ai_translate",
-      data: { locale: input.locale, ...res, force: !!input.force },
-    });
-    return res;
+      run: async () => {
+        const res = await translateBatch(input.restaurantId, input.locale, input.keys, { userId: ctx.user.id, force: input.force });
+        await audit({
+          restaurantId: input.restaurantId,
+          userId: ctx.user.id,
+          action: "translations.ai_translate",
+          data: { locale: input.locale, ...res, force: !!input.force },
+        });
+        return res;
+      },
+    };
   },
 );
 
-export const runReviewOnly = action(
+export const runReviewOnly = jobAction(
+  "translation_review",
   z.object({ restaurantId: rid, locale, keys: z.array(key).min(1).max(BATCH_SIZE) }),
   async (input) => {
     const ctx = await assertRestaurantPermission(input.restaurantId, PERM);
-    return reviewExisting(input.restaurantId, input.locale, input.keys, { userId: ctx.user.id });
+    return { restaurantId: input.restaurantId, userId: ctx.user.id, run: () => reviewExisting(input.restaurantId, input.locale, input.keys, { userId: ctx.user.id }) };
   },
 );
 

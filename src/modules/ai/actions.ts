@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { jobAction } from "@/core/jobs/background";
 import { assertRestaurantPermission, getRestaurantContext } from "@/core/auth/guards";
 import { action, AppError } from "@/core/http/action";
 import { planHas } from "@/modules/billing/plans";
@@ -27,7 +28,9 @@ export const getAiImageContext = action(z.object({ restaurantId: rid, target }),
   return { state: "ok", subject: defaultSubject(t), name: t.name, current: await currentImage(restaurantId, t.imageMediaId) };
 });
 
-export const generateAiImage = action(
+/** Background job: image model + fallback can exceed Cloudflare's 100 s. The draft is only accepted by the user. */
+export const generateAiImage = jobAction(
+  "ai_image",
   z.object({
     restaurantId: rid,
     target,
@@ -39,7 +42,7 @@ export const generateAiImage = action(
   async ({ restaurantId, target, subject, style, referenceMediaId, discardToken }) => {
     const ctx = await imageContext(restaurantId);
     if (discardToken) await discardImageDraft(restaurantId, discardToken).catch(() => undefined);
-    return generateImageDraft({ restaurantId, userId: ctx.user.id, target, subject, style, referenceMediaId });
+    return { restaurantId, userId: ctx.user.id, run: () => generateImageDraft({ restaurantId, userId: ctx.user.id, target, subject, style, referenceMediaId }) };
   },
 );
 

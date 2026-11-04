@@ -25,9 +25,16 @@ import { PrintCardPreview } from "@/modules/theme-studio/components/print-frame"
 import { VoiceButton } from "@/modules/theme-studio/components/voice-button";
 import { readFileText, studioGet } from "@/modules/theme-studio/lib/client";
 import { localizedText } from "@/modules/theme-studio/lib/package";
-import { generateFromStoredSourcesAction } from "@/modules/kit/actions";
+import { generateFromStoredSourcesAction as startFromStoredSources } from "@/modules/kit/actions";
 import { StoredSourcesOption } from "@/modules/kit/components/stored-sources";
-import { generatePrintFromFiles, generatePrintFromPrompt } from "../actions";
+import { generatePrintFromFiles as startPrintFromFiles, generatePrintFromPrompt as startPrintFromPrompt } from "../actions";
+import { viaJob } from "@/core/jobs/client";
+import { useResumeJob } from "@/core/jobs/use-resume-job";
+
+// AI generation runs as a background job (30–120 s); these resolve when the job is done.
+const generatePrintFromFiles = viaJob(startPrintFromFiles);
+const generatePrintFromPrompt = viaJob(startPrintFromPrompt);
+const generateFromStoredSourcesAction = viaJob(startFromStoredSources);
 
 type Mode = "templates" | "files" | "prompt" | "blank" | null;
 type Template = { id: string | null; starterKey: string | null; name: string; description: string | null; pkg: ThemePackage };
@@ -60,7 +67,27 @@ export function NewPrintDesign({ restaurantId, canUseAi, onCreated }: { restaura
     else router.refresh();
   };
 
-  /** Runs an AI generation; the overlay can be dismissed – the request keeps running. Never throws. */
+  // Page reloaded while a generation was running → show the progress again and present the result when ready.
+  useResumeJob<{ themeId: string; summary: string }>(
+    restaurantId,
+    ["print_files", "print_prompt"],
+    {
+      onResume: (j) => {
+        setJob({ kind: j.kind === "print_files" ? "printFiles" : "printPrompt", startedAt: new Date(j.createdAt).getTime() });
+        setOverlay(true);
+      },
+      onDone: (res) => {
+        setJob(null);
+        setOverlay(false);
+        if (!res.ok) return toast.error(errorText(res));
+        toast.success(t("generated"));
+        created({ themeId: res.data.themeId, summary: res.data.summary });
+      },
+    },
+    canUseAi,
+  );
+
+  /** Runs an AI generation (background job); the overlay can be dismissed – the job keeps running. Never throws. */
   async function runAi(kind: AiProgressKind, fn: () => Promise<ActionResult<{ themeId: string; summary: string }>>): Promise<boolean> {
     if (job) {
       toast(t("busy"));

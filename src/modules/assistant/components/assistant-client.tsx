@@ -6,10 +6,14 @@ import { cn } from "@/core/utils";
 import { Badge, Button, Card, CardBody, Textarea } from "@/components/ui";
 import { toast } from "@/components/ui/toast";
 import { useBusyAction } from "@/modules/ai/components/use-busy-action";
-import { applyChanges, discardChanges, planChanges, transcribeVoice, undoChanges } from "../actions";
+import { applyChanges, discardChanges, planChanges as startPlanChanges, transcribeVoice, undoChanges } from "../actions";
+import { viaJob } from "@/core/jobs/client";
 import type { ChangesetDto, ChangesetStatus, PlanResult } from "../types";
 import { ChangesetWarnings, OpCard } from "./changeset-view";
 import { useVoiceRecorder, type RecorderError } from "./use-voice-recorder";
+
+/** Runs as a background job (long AI call; Cloudflare cuts requests at 100 s) – resolves when done. */
+const planChanges = viaJob(startPlanChanges);
 
 const EXAMPLES = ["example1", "example2", "example3", "example4"] as const;
 

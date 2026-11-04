@@ -6,10 +6,14 @@ import { Sparkles, X } from "lucide-react";
 import { Button, Card, CardBody, CardHeader, EmptyState } from "@/components/ui";
 import { toast } from "@/components/ui/toast";
 import { ALLERGENS } from "@/modules/allergens/catalog";
-import { detectAllergensChunk } from "@/modules/allergens/actions";
+import { detectAllergensChunk as startDetectAllergensChunk } from "@/modules/allergens/actions";
+import { viaJob } from "@/core/jobs/client";
 import { AllergenDetectButton } from "@/modules/allergens/components/allergen-detect-button";
 import { AllergenStatusBadge } from "@/modules/allergens/components/allergen-review-panel";
 import type { AllergenStatus } from "@/core/db/schema";
+
+/** Runs as a background job (long AI call; Cloudflare cuts requests at 100 s) – resolves when done. */
+const detectAllergensChunk = viaJob(startDetectAllergensChunk);
 
 export type UnconfirmedItem = {
   id: string;

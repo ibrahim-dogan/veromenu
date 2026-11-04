@@ -1,7 +1,13 @@
 import { cn } from "@/core/utils";
+import { DEFAULT_LOCALE, UI_LOCALES } from "@/core/i18n/locales";
 import type { GuestT } from "../t";
 import type { GuestMenuData } from "../types";
 import { guestHref } from "./blocks";
+
+/** VeroMenu privacy policy in the guest's language when the platform UI has it (de has no prefix), else German. */
+export function privacyHref(lang: string) {
+  return lang !== DEFAULT_LOCALE && (UI_LOCALES as readonly string[]).includes(lang) ? `/${lang}/datenschutz` : "/datenschutz";
+}
 
 /** Allergen letters + additive footnote numbers used on this menu (LMIV). */
 export function AllergenLegend({ data, t, className }: { data: GuestMenuData; t: GuestT; className?: string }) {
@@ -101,8 +107,7 @@ export function LegalFooter({ data, t, className, linkClassName }: { data: Guest
         <a href={guestHref(data, { path: "/impressum" })} className={link}>
           {t("imprint")}
         </a>
-        {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- other root layout: full navigation intended */}
-        <a href="/datenschutz" className={link}>
+        <a href={privacyHref(data.locale)} className={link}>
           {t("privacy")}
         </a>
         {data.showBranding && (

@@ -32,7 +32,7 @@ Verified end-to-end in the browser: guest menu → cart → order → status pag
 ## Known gaps / next steps
 
 1. **Payments**: no Stripe/Mollie integration yet – plans are assigned by the admin. This is needed before earning money.
-2. **Legal**: legal texts are templates → have them checked by a lawyer; fill in the `LEGAL_*` env vars.
+2. **Legal** (2026-11-04): Impressum + Datenschutz match production (operator Ibrahim Dogan, Kleinunternehmer § 19 UStG, IONOS hosting, Cloudflare proxy + cookieless Web Analytics, OpenRouter + model providers); `LEGAL_*` set in the server `.env`. Still open: AGB + AVV are templates (lawyer review), studio-theme menus show the imprint only behind the ⓘ info button, name the SMTP provider once configured.
 3. **QR PDF fonts**: Turkish/Polish special characters are transliterated, non-Latin scripts are left out (needs `@pdf-lib/fontkit` + a Noto font).
 4. Voice recording is tested server-side only (WAV → transcription); not yet tried in a real phone browser (iOS Safari).
 5. New items are not translated automatically ("Fehlende übersetzen" button); translation runs take ~1 s per text (batches could run in parallel).

@@ -10,13 +10,24 @@ export type LegalDoc = "impressum" | "datenschutz" | "agb" | "avv";
 export const SUMMARY_COUNT: Record<LegalDoc, number> = { impressum: 4, datenschutz: 6, agb: 6, avv: 5 };
 
 /** Date of the current version of all legal texts. */
-export const LEGAL_VERSION_DATE = new Date("2026-10-09T12:00:00Z");
+export const LEGAL_VERSION_DATE = new Date("2026-11-04T12:00:00Z");
 
 /**
  * Shared layout for legal documents. The legally binding body is always German (lang="de");
  * en/tr visitors additionally get a translated summary box above it.
  */
-export async function LegalPage({ locale, doc, sections }: { locale: string; doc: LegalDoc; sections: LegalSection[] }) {
+export async function LegalPage({
+  locale,
+  doc,
+  sections,
+  setupIncomplete = false,
+}: {
+  locale: string;
+  doc: LegalDoc;
+  sections: LegalSection[];
+  /** Required operator data (LEGAL_*) missing → show the operator-facing "template, review before going live" notice. */
+  setupIncomplete?: boolean;
+}) {
   const t = await getTranslations("legal");
   const date = new Intl.DateTimeFormat(toBcp47(locale), { dateStyle: "long", timeZone: "Europe/Berlin" }).format(LEGAL_VERSION_DATE);
   const summary = Array.from({ length: SUMMARY_COUNT[doc] }, (_, i) => t(`${doc}.s${i + 1}`));
@@ -31,16 +42,18 @@ export async function LegalPage({ locale, doc, sections }: { locale: string; doc
           <p className="mt-3 text-sm text-stone-500">{t("updated", { date })}</p>
         </header>
 
-        <div
-          role="note"
-          className="mt-8 flex max-w-3xl items-start gap-3 rounded-2xl border-2 border-amber-400 bg-amber-50 px-5 py-4 text-amber-900 shadow-sm"
-        >
-          <AlertTriangle size={22} className="mt-0.5 shrink-0 text-amber-600" aria-hidden />
-          <div>
-            <p className="font-semibold">{t("bannerTitle")}</p>
-            <p className="mt-1 text-sm leading-relaxed text-amber-800">{t("bannerBody")}</p>
+        {setupIncomplete && (
+          <div
+            role="note"
+            className="mt-8 flex max-w-3xl items-start gap-3 rounded-2xl border-2 border-amber-400 bg-amber-50 px-5 py-4 text-amber-900 shadow-sm"
+          >
+            <AlertTriangle size={22} className="mt-0.5 shrink-0 text-amber-600" aria-hidden />
+            <div>
+              <p className="font-semibold">{t("bannerTitle")}</p>
+              <p className="mt-1 text-sm leading-relaxed text-amber-800">{t("bannerBody")}</p>
+            </div>
           </div>
-        </div>
+        )}
 
         {!isGerman && (
           <section aria-labelledby="legal-summary" className="mt-6 max-w-3xl rounded-2xl border border-stone-200 bg-white p-5 shadow-sm sm:p-6">

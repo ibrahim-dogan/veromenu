@@ -20,5 +20,7 @@ export async function renderLegalPage({ params }: Params, doc: LegalDoc, build: 
   await connection();
   const { locale } = await params;
   setRequestLocale(locale);
-  return <LegalPage locale={locale} doc={doc} sections={build(getOperator())} />;
+  const op = getOperator();
+  const setupIncomplete = !op.name || !op.address?.length || !op.email || !op.phone;
+  return <LegalPage locale={locale} doc={doc} sections={build(op)} setupIncomplete={setupIncomplete} />;
 }

@@ -8,8 +8,14 @@ export function avvSections(op: Operator): LegalSection[] {
     {
       name: op.hoster[0] ?? "Hetzner Online GmbH",
       purpose: "Hosting von Anwendung, Datenbank und Dateien; Backups",
-      location: op.hosterIsDefault ? "Deutschland" : "siehe Anbieterangaben",
+      location: "Deutschland",
       basis: "Art. 28 DSGVO",
+    },
+    {
+      name: "Cloudflare, Inc.",
+      purpose: "Content-Delivery-Network, TLS-Terminierung, Schutz vor Angriffen (Reverse-Proxy)",
+      location: "USA / weltweites Netzwerk",
+      basis: "Art. 28 DSGVO; EU-US Data Privacy Framework (Art. 45 DSGVO)",
     },
     {
       name: "E-Mail-Versanddienstleister (SMTP)",
@@ -18,7 +24,7 @@ export function avvSections(op: Operator): LegalSection[] {
       basis: "Art. 28 DSGVO",
     },
     {
-      name: "OpenRouter, Inc. und angebundene Modellanbieter",
+      name: "OpenRouter, Inc. und angebundene Modellanbieter (derzeit Anthropic, OpenAI, Google, Alibaba/Qwen)",
       purpose: "KI-Verarbeitung ausschließlich von Speisekarteninhalten – keine Gästedaten",
       location: "USA",
       basis: "Art. 28 DSGVO; DPF bzw. Standardvertragsklauseln (Art. 45, 46 Abs. 2 lit. c DSGVO)",

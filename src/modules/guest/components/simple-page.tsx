@@ -17,6 +17,7 @@ export async function GuestSimplePage({
   dir,
   backHref,
   backLabel,
+  footer,
   children,
 }: {
   themeId: string;
@@ -25,6 +26,8 @@ export async function GuestSimplePage({
   dir: "ltr" | "rtl";
   backHref: string;
   backLabel: string;
+  /** Optional footer below the content (e.g. legal links). */
+  footer?: ReactNode;
   children: ReactNode;
 }) {
   const { theme, config } = await resolveTheme(themeId, themeConfig);
@@ -39,6 +42,7 @@ export async function GuestSimplePage({
           <Back size={16} aria-hidden /> {backLabel}
         </a>
         <main className="mt-4">{children}</main>
+        {footer}
       </div>
     </div>
   );

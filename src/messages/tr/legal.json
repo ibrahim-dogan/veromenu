@@ -14,18 +14,18 @@
   "impressum": {
     "title": "Künye",
     "metaDescription": "Alman Dijital Hizmetler Yasası (DDG) 5. madde uyarınca VeroMenu hizmet sağlayıcı bilgileri.",
-    "s1": "Bu sayfada VeroMenu’yu işleten şirketin adı, adresi ve iletişim bilgileri yer alır.",
-    "s2": "Ayrıca KDV numarası, ticaret sicili kaydı ve içerikten sorumlu kişi belirtilir.",
+    "s1": "Bu sayfada VeroMenu’yu işleten kişinin (Ibrahim Dogan şahıs işletmesi, Hamburg) adı, adresi ve iletişim bilgileri yer alır.",
+    "s2": "Ayrıca KDV notu (Alman KDV Kanunu § 19 uyarınca küçük işletme) ve içerikten sorumlu kişi belirtilir.",
     "s3": "VeroMenu yalnızca işletmelere sunulur; tüketici tahkim süreçlerine katılmıyoruz.",
     "s4": "Her restoran kendi menüsünden ve kendi künyesinden sorumludur."
   },
   "datenschutz": {
     "title": "Gizlilik politikası",
-    "metaDescription": "VeroMenu kişisel verileri nasıl işler: Almanya’da barındırma, izleme çerezi yok, çerezsiz istatistik.",
-    "s1": "Sunucularımız Almanya’dadır ve yalnızca zorunlu çerezler kullanırız – takip yok, çerez bildirimi yok.",
-    "s2": "Menü istatistikleri çerez kullanmadan, her gün değişen ve geri döndürülemeyen bir hash ile tutulur.",
+    "metaDescription": "VeroMenu kişisel verileri nasıl işler: Almanya’da barındırma, Cloudflare, izleme çerezi yok, çerezsiz istatistik.",
+    "s1": "Sunucularımız Almanya’dadır, site Cloudflare üzerinden sunulur; yalnızca zorunlu çerezler – takip yok, çerez bildirimi yok.",
+    "s2": "Siteyi ve menüleri çerezsiz ölçeriz: Cloudflare Web Analytics ve her gün değişen, takma adlı bir hash ile.",
     "s3": "Misafir siparişleri, bu verilerden sorumlu olan restoran adına işlenir.",
-    "s4": "Yapay zekâ özellikleri için OpenRouter’a (ABD) yalnızca menü içeriği gönderilir – misafir verisi asla gönderilmez.",
+    "s4": "Yapay zekâ özellikleri için yalnızca işletmenin kendi içeriği OpenRouter (ABD) üzerinden yapay zekâ modellerine gönderilir – misafir verisi asla gönderilmez.",
     "s5": "Üçüncü ülkelere aktarımlar AB-ABD Veri Gizliliği Çerçevesi’ne veya Standart Sözleşme Maddelerine dayanır.",
     "s6": "Bilgi alma, silme, itiraz etme ve denetim makamına şikâyette bulunma hakların vardır."
   },

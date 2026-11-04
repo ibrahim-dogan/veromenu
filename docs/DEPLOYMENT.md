@@ -68,13 +68,17 @@ nano .env
 | `LEGAL_EMAIL` | ja | Kontakt-E-Mail (Impressum, Kontaktseite) |
 | `LEGAL_PHONE` | ja | Telefonnummer |
 | `LEGAL_VAT_ID` | falls vorhanden | USt-IdNr. `DE123456789` |
+| `LEGAL_SMALL_BUSINESS` | nein | `1` = Kleinunternehmer nach § 19 UStG → Impressum zeigt den Hinweis statt einer USt-IdNr. |
+| `LEGAL_HOSTER` | nein | Hosting-Anbieter für Datenschutz/AVV, Zeilen mit `\n` getrennt (Standard: Hetzner). Produktion: IONOS SE |
 | `APP_PORT` | nein | Host-Port der App (nur 127.0.0.1), Standard `3000` |
 | `STORAGE_DRIVER` / `STORAGE_LOCAL_DIR` | nein | Im Container fest auf `local` / `/app/data/uploads` |
 | `SEED_DEMO` | nein | `1` legt zusätzlich ein Demo-Restaurant an |
 | `SKIP_MIGRATIONS` / `SKIP_SEED` | nein | `1` überspringt Migrationen bzw. Seed beim Start |
 | `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` | nur Multi-Instanz | siehe unten |
 
-> ⚖️ **Rechtstexte** (Impressum, Datenschutz, AGB, AVV) sind **Vorlagen** und auf den Seiten entsprechend
+> ⚖️ **Rechtstexte**: Impressum und Datenschutz sind an den Produktivbetrieb angepasst (Cloudflare-Proxy + Web Analytics,
+> IONOS-Hosting, OpenRouter). Bei neuen Diensten (SMTP-Anbieter, Zahlungsanbieter, KI-Anbieter) `datenschutz.tsx` und
+> `avv.tsx` aktualisieren. AGB und AVV sind **Vorlagen** und auf den Seiten entsprechend
 > markiert. Vor dem Livegang juristisch prüfen lassen und `LEGAL_*` vollständig setzen – fehlende Angaben
 > werden im Impressum als gut sichtbare Platzhalter angezeigt.
 

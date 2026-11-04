@@ -14,18 +14,18 @@
   "impressum": {
     "title": "Impressum",
     "metaDescription": "Anbieterkennzeichnung von VeroMenu gemäß § 5 DDG.",
-    "s1": "Hier findest du Name, Anschrift und Kontaktdaten des Betreibers von VeroMenu.",
-    "s2": "Angegeben sind außerdem Umsatzsteuer-ID, Registereintrag und die inhaltlich verantwortliche Person.",
+    "s1": "Hier findest du Name, Anschrift und Kontaktdaten des Betreibers von VeroMenu (Einzelunternehmen Ibrahim Dogan, Hamburg).",
+    "s2": "Angegeben sind außerdem der Hinweis zur Umsatzsteuer (Kleinunternehmer nach § 19 UStG) und die inhaltlich verantwortliche Person.",
     "s3": "VeroMenu richtet sich nur an Unternehmen; an Verbraucherschlichtungsverfahren nehmen wir nicht teil.",
     "s4": "Für die Speisekarten der Restaurants ist der jeweilige Betrieb verantwortlich."
   },
   "datenschutz": {
     "title": "Datenschutzerklärung",
-    "metaDescription": "Wie VeroMenu personenbezogene Daten verarbeitet: Hosting in Deutschland, keine Tracking-Cookies, cookiefreie Statistik.",
-    "s1": "Wir hosten in Deutschland und setzen nur technisch notwendige Cookies ein – kein Tracking, kein Cookie-Banner.",
-    "s2": "Statistiken der Speisekarte entstehen ohne Cookies über einen täglich wechselnden, nicht umkehrbaren Hashwert.",
+    "metaDescription": "Wie VeroMenu personenbezogene Daten verarbeitet: Hosting in Deutschland, Cloudflare, keine Tracking-Cookies, cookiefreie Statistik.",
+    "s1": "Server in Deutschland, ausgeliefert über Cloudflare; nur technisch notwendige Cookies – kein Tracking, kein Cookie-Banner.",
+    "s2": "Website und Speisekarten messen wir cookiefrei: mit Cloudflare Web Analytics und einem täglich wechselnden, pseudonymen Hashwert.",
     "s3": "Bestellungen von Gästen verarbeiten wir im Auftrag des Restaurants, das dafür verantwortlich ist.",
-    "s4": "Für KI-Funktionen gehen nur Speisekarteninhalte an OpenRouter (USA) – niemals Daten von Gästen.",
+    "s4": "Für KI-Funktionen gehen nur Inhalte des Betriebs über OpenRouter (USA) an KI-Modelle – niemals Daten von Gästen.",
     "s5": "Drittlandübermittlungen stützen sich auf das EU-US Data Privacy Framework bzw. Standardvertragsklauseln.",
     "s6": "Du hast Rechte auf Auskunft, Löschung, Widerspruch und Beschwerde bei der Aufsichtsbehörde."
   },

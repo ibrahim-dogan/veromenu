@@ -9,14 +9,19 @@ const isDev = process.env.NODE_ENV !== "production";
  * "CSP-lite": blocks third-party scripts/frames/objects while still allowing Next.js inline
  * bootstrap scripts, JSON-LD and Tailwind/next-font inline styles. Fonts are self-hosted via next/font.
  * Images allow https: (AI-generated / external menu images) plus data:/blob: for upload previews.
+ * Cloudflare Web Analytics (cookieless, beacon auto-injected by the Cloudflare proxy in front of prod):
+ * script from static.cloudflareinsights.com, beacon POSTs to cloudflareinsights.com. Mentioned in the Datenschutz.
  */
+const CF_INSIGHTS_SCRIPT = "https://static.cloudflareinsights.com";
+const CF_INSIGHTS_CONNECT = "https://cloudflareinsights.com";
+
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' ${CF_INSIGHTS_SCRIPT}${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
+  `connect-src 'self' ${CF_INSIGHTS_CONNECT}${isDev ? " ws: wss:" : ""}`,
   "media-src 'self' blob: data:",
   "worker-src 'self' blob:",
   "frame-src 'self'",

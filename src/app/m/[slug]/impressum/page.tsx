@@ -7,6 +7,7 @@ import { resolveGuestLocale } from "@/modules/guest/locale";
 import { getGuestT } from "@/modules/guest/i18n";
 import { firstParam } from "@/modules/guest/request";
 import { GuestSimplePage } from "@/modules/guest/components/simple-page";
+import { privacyHref } from "@/modules/guest/components/legal-footer";
 
 async function ctx(slug: string, sp: Record<string, string | string[] | undefined>) {
   const r = await getGuestRestaurantRow(slug);
@@ -95,8 +96,7 @@ export default async function ImprintPage({ params, searchParams }: PageProps<"/
       {!hasLegal && <p className="text-g-muted mt-4 text-sm">{t("imprintMissing")}</p>}
       <p className="text-g-muted mt-8 text-sm">
         {t("imprintPlatform")}{" "}
-        {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- other root layout: full navigation intended */}
-        <a href="/datenschutz" className="underline underline-offset-4">
+        <a href={privacyHref(lang)} className="underline underline-offset-4">
           {t("privacy")}
         </a>
       </p>

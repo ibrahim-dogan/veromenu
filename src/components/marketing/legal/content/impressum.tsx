@@ -47,16 +47,21 @@ export function impressumSections(op: Operator): LegalSection[] {
     });
   }
 
-  sections.push(
-    {
+  // USt-IdNr. only if one exists; Kleinunternehmer (§ 19 UStG) get the corresponding note instead.
+  if (op.vatId || op.smallBusiness) {
+    sections.push({
       id: "umsatzsteuer",
-      heading: "Umsatzsteuer-ID",
+      heading: "Umsatzsteuer",
       content: (
-        <p>
-          Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz: <Val value={op.vatId} name="LEGAL_VAT_ID" />
-        </p>
+        <>
+          {op.vatId && <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz: {op.vatId}</p>}
+          {op.smallBusiness && <p>Kleinunternehmer im Sinne von § 19 UStG. Es wird keine Umsatzsteuer ausgewiesen.</p>}
+        </>
       ),
-    },
+    });
+  }
+
+  sections.push(
     {
       id: "verantwortlich",
       heading: "Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV",
@@ -75,8 +80,8 @@ export function impressumSections(op: Operator): LegalSection[] {
       content: (
         <>
           <p>
-            Unser Angebot richtet sich ausschließlich an Unternehmer im Sinne des § 14 BGB. Wir sind weder bereit noch verpflichtet,
-            an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen (§ 36 VSBG).
+            Unser Angebot richtet sich ausschließlich an Unternehmer im Sinne des § 14 BGB. Wir sind nicht bereit und nicht
+            verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen (§ 36 VSBG).
           </p>
           <p>
             Die Plattform der Europäischen Kommission zur Online-Streitbeilegung (OS-Plattform) wurde mit Wirkung zum 20. Juli 2025

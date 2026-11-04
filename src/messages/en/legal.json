@@ -14,18 +14,18 @@
   "impressum": {
     "title": "Legal notice",
     "metaDescription": "Provider identification of VeroMenu under Section 5 of the German Digital Services Act (DDG).",
-    "s1": "This page lists the name, address and contact details of the company operating VeroMenu.",
-    "s2": "It also states the VAT ID, the commercial register entry and the person responsible for the content.",
+    "s1": "This page lists the name, address and contact details of the operator of VeroMenu (sole proprietorship Ibrahim Dogan, Hamburg).",
+    "s2": "It also contains the VAT note (small business under Section 19 of the German VAT Act) and the person responsible for the content.",
     "s3": "VeroMenu is offered to businesses only; we do not take part in consumer arbitration proceedings.",
     "s4": "Each restaurant is responsible for its own menu and its own legal notice."
   },
   "datenschutz": {
     "title": "Privacy policy",
-    "metaDescription": "How VeroMenu processes personal data: hosting in Germany, no tracking cookies, cookie-free analytics.",
-    "s1": "We host in Germany and only use strictly necessary cookies – no tracking, no cookie banner.",
-    "s2": "Menu analytics work without cookies, using a daily-rotating, irreversible hash.",
+    "metaDescription": "How VeroMenu processes personal data: hosting in Germany, Cloudflare, no tracking cookies, cookie-free analytics.",
+    "s1": "Servers in Germany, delivered via Cloudflare; only strictly necessary cookies – no tracking, no cookie banner.",
+    "s2": "We measure the website and menus without cookies: with Cloudflare Web Analytics and a daily-rotating, pseudonymous hash.",
     "s3": "Guest orders are processed on behalf of the restaurant, which is the controller for that data.",
-    "s4": "For AI features, only menu content is sent to OpenRouter (USA) – never any guest data.",
+    "s4": "For AI features, only the restaurant’s own content is sent via OpenRouter (USA) to AI models – never any guest data.",
     "s5": "Transfers to third countries rely on the EU-US Data Privacy Framework or Standard Contractual Clauses.",
     "s6": "You have the right to access, erasure and objection, and to complain to the supervisory authority."
   },

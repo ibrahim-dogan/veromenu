@@ -46,7 +46,10 @@ export async function SiteFooter() {
               <ShieldCheck size={14} className="text-brand-600" aria-hidden /> {t("trustGdpr")}
             </li>
             <li className="flex items-center gap-2">
-              <Cookie size={14} className="text-brand-600" aria-hidden /> {t("trustCookies")}
+              <Cookie size={14} className="text-brand-600" aria-hidden />
+              <Link href="/datenschutz#cookies" className="focus-ring rounded hover:text-brand-700">
+                {t("trustCookies")}
+              </Link>
             </li>
           </ul>
         </div>

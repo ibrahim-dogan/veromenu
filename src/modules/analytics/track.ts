@@ -1,5 +1,6 @@
 import "server-only";
 import { createHash } from "node:crypto";
+import { lt } from "drizzle-orm";
 import { db } from "@/core/db";
 import { analyticsEvents, type AnalyticsEventType } from "@/core/db/schema";
 import { env } from "@/core/env";
@@ -17,6 +18,22 @@ function dailySalt(now = new Date()) {
   const salt = createHash("sha256").update(`${env().APP_SECRET}:vm-analytics:${day}`).digest("hex");
   saltCache = { day, salt };
   return salt;
+}
+
+/** Retention promised in the Datenschutzerklärung: events older than 24 months are deleted. */
+const RETENTION_MONTHS = 24;
+let lastPurgeDay: string | null = null;
+
+/** Deletes expired events at most once per day per instance (fire-and-forget, never throws). */
+function purgeExpiredEvents() {
+  const day = new Date().toISOString().slice(0, 10);
+  if (lastPurgeDay === day) return;
+  lastPurgeDay = day;
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - RETENTION_MONTHS);
+  db.delete(analyticsEvents)
+    .where(lt(analyticsEvents.createdAt, cutoff))
+    .catch((err) => console.error("[analytics] purge failed", err));
 }
 
 /** Non-reversible visitor id: sha256(ip + ua + restaurantId + daily salt). Raw IP / UA are never stored. */
@@ -46,6 +63,7 @@ export async function trackEvent(e: {
     // Prefetches (link hover / speculation rules) are not views.
     const purpose = e.headers.get("sec-purpose") ?? e.headers.get("purpose") ?? "";
     if (/prefetch|prerender/i.test(purpose)) return;
+    purgeExpiredEvents();
     await db.insert(analyticsEvents).values({
       restaurantId: e.restaurantId,
       type: e.type,

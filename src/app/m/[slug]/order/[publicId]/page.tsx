@@ -7,6 +7,7 @@ import { resolveGuestLocale } from "@/modules/guest/locale";
 import { getGuestMessages, getGuestT } from "@/modules/guest/i18n";
 import { firstParam } from "@/modules/guest/request";
 import { GuestSimplePage } from "@/modules/guest/components/simple-page";
+import { privacyHref } from "@/modules/guest/components/legal-footer";
 import { OrderStatus } from "@/modules/guest/components/order-status";
 
 const PUBLIC_ID = /^[A-Za-z0-9_-]{6,64}$/;
@@ -40,6 +41,16 @@ export default async function OrderStatusPage({ params, searchParams }: PageProp
       dir={isRtl(lang) ? "rtl" : "ltr"}
       backHref={`/m/${slug}?${back.toString()}`}
       backLabel={t("backToMenu")}
+      footer={
+        <nav aria-label={t("legalNav")} className="text-g-muted mt-12 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+          <a href={`/m/${slug}/impressum?${back.toString()}`} className="underline underline-offset-4 hover:no-underline">
+            {t("imprint")}
+          </a>
+          <a href={privacyHref(lang)} className="underline underline-offset-4 hover:no-underline">
+            {t("privacy")}
+          </a>
+        </nav>
+      }
     >
       <OrderStatus publicId={publicId} locale={lang} messages={getGuestMessages(lang)} />
     </GuestSimplePage>

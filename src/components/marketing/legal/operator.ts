@@ -7,7 +7,8 @@
  *   LEGAL_ADDRESS               Anschrift, lines separated by "\n" or ", " (required)
  *   LEGAL_EMAIL                 Kontakt-E-Mail (required)
  *   LEGAL_PHONE                 Telefon (required)
- *   LEGAL_VAT_ID                USt-IdNr. (required if available)
+ *   LEGAL_VAT_ID                USt-IdNr. (only if available – no placeholder when missing)
+ *   LEGAL_SMALL_BUSINESS        "1" = Kleinunternehmer nach § 19 UStG (Impressum shows the note instead of a VAT ID)
  *   LEGAL_REPRESENTATIVE        Vertretungsberechtigte Person(en) (optional)
  *   LEGAL_REGISTER              Registereintrag, e.g. "Amtsgericht Hamburg, HRB 12345" (optional)
  *   LEGAL_SUPERVISORY_AUTHORITY Datenschutz-Aufsichtsbehörde, lines (optional, default HmbBfDI)
@@ -30,6 +31,7 @@ export type Operator = {
   vatId?: string;
   representative?: string;
   register?: string;
+  smallBusiness: boolean;
   supervisoryAuthority: string[];
   supervisoryAuthorityIsDefault: boolean;
   hoster: string[];
@@ -68,6 +70,7 @@ export function getOperator(): Operator {
     vatId: val("LEGAL_VAT_ID"),
     representative: val("LEGAL_REPRESENTATIVE"),
     register: val("LEGAL_REGISTER"),
+    smallBusiness: /^(1|true|yes|ja)$/i.test(val("LEGAL_SMALL_BUSINESS") ?? ""),
     supervisoryAuthority: sa ?? DEFAULT_SUPERVISORY_AUTHORITY,
     supervisoryAuthorityIsDefault: !sa,
     hoster: hoster ?? DEFAULT_HOSTER,

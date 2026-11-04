@@ -1,8 +1,10 @@
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/core/i18n/navigation";
 import { Logo } from "@/components/brand/logo";
 import { LocaleSwitcher } from "@/components/shell/locale-switcher";
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default async function AuthLayout({ children }: { children: React.ReactNode }) {
+  const t = await getTranslations("landing.footer");
   return (
     <div className="flex min-h-screen flex-col bg-[radial-gradient(ellipse_at_top,_var(--color-brand-50),_transparent_60%)]">
       <header className="flex items-center justify-between px-6 py-5">
@@ -14,6 +16,19 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <main className="flex flex-1 items-start justify-center px-4 pt-6 pb-16 sm:pt-12">
         <div className="w-full max-w-md rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">{children}</div>
       </main>
+      <footer className="px-6 pb-6">
+        <nav aria-label={t("legal")} className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-stone-500">
+          <Link href="/impressum" className="focus-ring rounded hover:text-brand-700">
+            {t("imprint")}
+          </Link>
+          <Link href="/datenschutz" className="focus-ring rounded hover:text-brand-700">
+            {t("privacy")}
+          </Link>
+          <Link href="/agb" className="focus-ring rounded hover:text-brand-700">
+            {t("terms")}
+          </Link>
+        </nav>
+      </footer>
     </div>
   );
 }
